@@ -89,3 +89,29 @@
 2026-10-22 14:53:03;Eliseu;alerta;Isolar da Rede;10;3;40.3;11
 2026-10-22 14:53:09;Eliseu;contido;Abrir Chamado (SOC);10;3;5.3;24
 2026-10-22 14:53:14;Eliseu;preservar;Registrar Linha do Tempo;10;3;5.6;37
+2026-10-22 14:58:07;Eliseu;alerta;Registrar Linha do Tempo;6;3;8.4;9
+2026-10-22 14:58:16;Eliseu;alerta;Isolar da Rede;10;3;16.9;22
+2026-10-22 15:23:50;Eliseu;alerta;Isolar da Rede;10;3;5.2;13
+2026-10-22 15:27:44;Eliseu;alerta;Isolar da Rede;10;3;29.6;13
+2026-10-22 15:27:58;Eliseu;contido;Registrar Linha do Tempo;10;3;13.6;26
+2026-10-22 15:28:16;Eliseu;contido;Abrir Chamado (SOC);10;3;31.6;39
+2026-10-22 15:38:11;Eliseu;alerta;Isolar da Rede;10;3;4.3;13
+2026-10-22 15:40:29;Eliseu;alerta;Isolar da Rede;10;3;34.5;13
+2026-10-22 15:41:52;Eliseu;contido;Registrar Linha do Tempo;10;3;83.4;26
+2026-10-22 15:44:32;Eliseu;contido;Sem ação a tempo;-2;0;243.6;24
+2026-10-22 15:48:32;Eliseu;preservar;Sem ação a tempo;-3;0;240.0;21
+2026-10-22 15:51:07;Eliseu;alerta;Isolar da Rede;10;3;13.4;13
+2026-10-22 15:55:08;Eliseu;contido;Sem ação a tempo;-2;0;240.6;11
+2026-10-22 15:56:57;Sabrina;alerta;Isolar da Rede;10;3;7.1;13
+2026-10-22 15:57:13;Sabrina;contido;Abrir Chamado (SOC);10;3;15.1;26
+2026-10-22 15:57:33;Sabrina;preservar;Registrar Linha do Tempo;10;3;20.8;39
+2026-10-22 15:58:08;Eliseu;preservar;Sem ação a tempo;-3;0;180.0;8
+2026-10-22 16:17:35;Eliseu;alerta;Isolar da Rede;10;3;93.3;13
+2026-10-22 16:17:44;Eliseu;contido;Retirar Cabo de Rede;-2;0;8.5;11
+2026-10-22 16:17:55;Eliseu;contido;Limpar Histórico;-10;0;19.8;1
+2026-10-22 16:18:05;Eliseu;contido;Desligar da Tomada;-3;0;29.5;-2
+2026-10-22 16:18:18;Eliseu;contido;Chat do Gestor;4;3;42.5;5
+2026-10-22 16:18:31;Eliseu;contido;Gerenciador de Tarefas;0;0;55.5;5
+2026-10-22 16:18:39;Eliseu;contido;Remover Arquivo Instalador;-1;0;63.9;4
+2026-10-22 16:18:50;Eliseu;contido;Abrir Chamado (SOC);10;3;75.0;17
+2026-10-22 16:18:56;Eliseu;preservar;Registrar Linha do Tempo;10;3;5.3;30
