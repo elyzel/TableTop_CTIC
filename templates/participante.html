@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estação de Trabalho</title>
+<style>
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;overflow:hidden;font-family:"Segoe UI",system-ui,sans-serif;color:#fff;background:#000}
+#desk{position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,#2d6cdf,#0a1a4d 60%,#050a1f)}
+#area{position:absolute;inset:0 0 48px 0}
+.grade{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;
+  grid-template-columns:repeat(5,110px);gap:16px;transition:left .45s}
+.aberto .grade{left:30%;grid-template-columns:repeat(3,110px)}
+.ic{text-align:center;cursor:pointer;padding:10px 4px;border-radius:8px;font-size:12px;transition:.2s}
+.ic:hover{background:#ffffff22}.ic.sel{background:#ffffff38;outline:1px solid #8cf}
+.ic .img{font-size:44px}.ic.usado{opacity:.3;pointer-events:none}
+.win{position:absolute;background:#202530ee;backdrop-filter:blur(10px);border:1px solid #ffffff30;
+  border-radius:10px;box-shadow:0 12px 40px #0009;overflow:hidden}
+.tb{background:#151922;padding:8px 12px;font-size:13px}
+#detalhe{right:4%;top:50%;width:360px;transform:translate(130%,-50%);transition:transform .45s}
+#detalhe.on{transform:translate(0,-50%)}
+#detalhe .corpo{padding:20px}#d-ic{font-size:48px}#d-nome{font-size:18px;margin:6px 0}
+#d-desc{color:#c9d3e3;line-height:1.5;font-size:14px}
+.btns{display:flex;gap:10px;margin-top:20px}
+.btn{flex:1;padding:12px;border:0;border-radius:6px;font-size:14px;cursor:pointer;color:#fff}
+.exec{background:#2e8b57}.canc{background:#444b5c}.btn:hover{filter:brightness(1.15)}
+#notepad{left:50%;top:40%;width:460px;background:#fff;color:#111;transform:translate(-50%,-50%) scale(.9);
+  opacity:0;pointer-events:none;transition:.3s}
+#notepad.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#np{margin:0;padding:12px;height:200px;font:14px Consolas,monospace;white-space:pre-wrap}
+#bd{right:16px;bottom:64px;width:330px;border:2px solid #ff4d4f;background:#2a1013;
+  opacity:0;transform:translateY(30px);transition:.3s}
+#bd.on{opacity:1;transform:none}#bd div{padding:12px 14px;font-size:13px}
+#bd .tb{background:#ff4d4f;font-weight:bold}
+#flash{position:fixed;inset:0;pointer-events:none;z-index:40}
+#flash.on{animation:pulse 1s 4}
+@keyframes pulse{50%{box-shadow:inset 0 0 120px 20px #f008}}
+#narr{position:fixed;top:12%;left:50%;transform:translateX(-50%);background:#000c;padding:14px 36px;
+  border-radius:30px;font-size:26px;opacity:0;transition:.5s;z-index:45}
+#narr.on{opacity:1}
+#toast{position:fixed;left:16px;bottom:64px;width:340px;background:#1b2a42;border-left:4px solid #3b9eff;
+  padding:12px 14px;font-size:13px;border-radius:6px;opacity:0;transform:translateY(20px);transition:.3s;z-index:20}
+#toast.on{opacity:1;transform:none}
+#taskbar{position:fixed;left:0;right:0;bottom:0;height:48px;background:#10141df0;display:flex;
+  align-items:center;gap:18px;padding:0 16px;font-size:13px;z-index:10}
+#bdi.alerta{color:#ff4d4f;animation:pulse2 1s infinite}@keyframes pulse2{50%{opacity:.35}}
+.risco{width:130px;height:8px;background:#333;border-radius:4px;overflow:hidden}
+#rb{height:100%;width:10%;background:#2ecc71;transition:.5s}
+#mudo{background:none;border:0;color:#fff;cursor:pointer;font-size:16px}
+#preto{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:.4s;z-index:50}
+#preto.on{opacity:1;pointer-events:all}
+.err{position:fixed;z-index:30;width:260px;background:#f0f0f0;color:#111;border:1px solid #888;font-size:12px}
+.err b{display:block;background:#c00;color:#fff;padding:4px 8px}.err p{margin:0;padding:10px}
+#inicio,#final{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:#0b0f14;z-index:60;padding:20px;overflow:auto}
+.caixa{background:#121923;border:1px solid #1f2b3a;border-radius:10px;padding:28px;max-width:720px;width:100%}
+.caixa h1,.caixa h2{margin-top:0}
+input{width:100%;padding:12px;background:#0b0f14;color:#fff;border:1px solid #2a3a50;border-radius:6px;font-size:16px}
+#inicio .btn{margin-top:14px;background:#3b9eff;width:100%}
+.h{border-top:1px solid #1f2b3a;padding:10px 0;font-size:14px}
+.pos{color:#2ecc71}.neg{color:#ff4d4f}
+.f-otimo{color:#2ecc71}.f-ruim{color:#ff4d4f}.f-medio{color:#f5b942}
+</style>
+</head>
+<body>
+
+<section id="inicio">
+  <div class="caixa" style="max-width:440px">
+    <h1>Exercício TableTop</h1>
+    <p>Identifique-se e clique em Começar.</p>
+    <input id="nome" placeholder="Seu nome" maxlength="40">
+    <button class="btn" onclick="comecar()">Começar</button>
+  </div>
+</section>
+
+<section id="desk" hidden>
+  <div id="area">
+    <div class="grade" id="grade" hidden></div>
+  </div>
+  <div id="notepad" class="win">
+    <div class="tb" style="color:#fff">Sem título - Bloco de Notas</div>
+    <pre id="np"></pre>
+  </div>
+  <div id="bd" class="win">
+    <div class="tb">&#128737; Bitdefender</div>
+    <div><b>Ameaça detectada</b><br>Comportamento suspeito: notepad.exe<br>Ação recomendada: verificar o sistema.</div>
+  </div>
+  <div id="detalhe" class="win">
+    <div class="tb">Detalhes da ação</div>
+    <div class="corpo">
+      <div id="d-ic"></div><div id="d-nome"></div><div id="d-desc"></div>
+      <div class="btns">
+        <button class="btn canc" onclick="fechar()">Cancelar</button>
+        <button class="btn exec" onclick="executar()">&#9654; Executar</button>
+      </div>
+    </div>
+  </div>
+  <div id="toast"></div>
+  <div id="taskbar">
+    <span>&#8862;</span>
+    <span id="bdi">&#128737; BitDefender</span>
+    <span id="net">&#127760; Rede</span>
+    <span>Risco <span class="risco"><div id="rb"></div></span></span>
+    <span style="margin-left:auto">Pontos: <b id="pts">0</b></span>
+    <span>&#9201; <b id="tempo">--:--</b></span>
+    <button id="mudo" onclick="alternarSom()">&#128266;</button>
+    <span id="relogio"></span>
+  </div>
+</section>
+
+<div id="narr"></div>
+<div id="flash"></div>
+<div id="preto"></div>
+
+<section id="final" hidden>
+  <div class="caixa">
+    <h2 id="f-t"></h2><p id="f-x"></p>
+    <p>Pontuação final: <b id="f-p"></b></p>
+    <h3>Debriefing</h3><div id="f-h"></div>
+  </div>
+</section>
+
+<script>
+const $=id=>document.getElementById(id), sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=s=>{const d=document.createElement("div");d.textContent=s;return d.innerHTML};
+const post=(u,b)=>fetch(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b||{})}).then(r=>r.json());
+let pid=localStorage.getItem("tt_pid"),est=null,faseVista=null,sel=null,mudo=false,ac=null,rt=0,poll=null,ocupado=false,tt;
+
+function bip(f,d,t="sine"){if(mudo)return;try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();
+  o.type=t;o.frequency.value=f;g.gain.value=.07;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+function alarme(){[0,250,500,750].forEach(t=>setTimeout(()=>bip(880,.18,"square"),t))}
+function alternarSom(){mudo=!mudo;$("mudo").innerHTML=mudo?"&#128263;":"&#128266;"}
+function toast(t){const e=$("toast");e.textContent=t;e.classList.add("on");bip(660,.15);clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("on"),7000)}
+const fmt=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+
+function mostrarDesk(){$("inicio").hidden=true;$("desk").hidden=false}
+
+async function intro(){
+  await sleep(6000);
+  $("notepad").classList.add("on");bip(500,.1);
+  for(const ch of "Olá.\n\nEste arquivo foi criado automaticamente.\nNinguém digitou nada aqui.\n\n[EXERCÍCIO SIMULADO]"){
+    $("np").textContent+=ch;await sleep(45)}
+  await sleep(1200);
+  $("bd").classList.add("on");$("flash").classList.add("on");alarme();
+  await sleep(2500);
+  $("narr").textContent="O que deve fazer?";$("narr").classList.add("on");
+  await sleep(4000);
+  $("narr").classList.remove("on");$("notepad").classList.remove("on");
+  $("bd").classList.remove("on");$("flash").classList.remove("on");
+}
+
+async function comecar(){
+  const nome=$("nome").value.trim();if(!nome)return;
+  await post("/api/entrar",{nome});pid=nome;localStorage.setItem("tt_pid",pid);
+  sessionStorage.removeItem("tt_ord");
+  bip(1,.01);                      // libera o áudio do navegador
+  mostrarDesk();await intro();
+  $("grade").hidden=false;
+  await post("/api/iniciar",{pid});await atualizar();
+  poll=setInterval(atualizar,2000);
+}
+
+function renderGrade(){
+  let ord=JSON.parse(sessionStorage.getItem("tt_ord")||"null");
+  const ids=est.acoes.map(a=>a.id);
+  if(!ord||ord.length!==ids.length){ord=[...ids].sort(()=>Math.random()-.5);sessionStorage.setItem("tt_ord",JSON.stringify(ord))}
+  $("grade").innerHTML=ord.map(id=>{const a=est.acoes.find(x=>x.id===id);
+    return `<div class="ic ${est.usadas.includes(id)?"usado":""} ${sel===id?"sel":""}" onclick="abrir('${id}')">
+      <div class="img">${a.icone}</div>${esc(a.nome)}</div>`}).join("");
+}
+function abrir(id){
+  sel=id;const a=est.acoes.find(x=>x.id===id);
+  $("d-ic").textContent=a.icone;$("d-nome").textContent=a.nome;$("d-desc").textContent=a.descricao;
+  $("area").classList.add("aberto");$("detalhe").classList.add("on");renderGrade();
+}
+function fechar(){sel=null;$("area").classList.remove("aberto");$("detalhe").classList.remove("on");if(est&&est.acoes)renderGrade()}
+
+async function executar(){
+  if(!sel||ocupado)return;ocupado=true;
+  const r=await post("/api/executar",{pid,acao:sel});ocupado=false;fechar();
+  if(r.erro){await atualizar();return}
+  if(r.efeito==="reboot")await reboot();
+  toast(r.consequencia);await atualizar();
+}
+async function reboot(){
+  $("preto").classList.add("on");await sleep(3000);$("preto").classList.remove("on");
+  $("np").textContent="Olá novamente.\n";$("notepad").classList.add("on");$("flash").classList.add("on");alarme();
+  await sleep(3500);$("notepad").classList.remove("on");$("flash").classList.remove("on");
+}
+function caos(){
+  for(let i=0;i<6;i++)setTimeout(()=>{
+    const e=document.createElement("div");e.className="err";
+    e.style.left=Math.random()*70+"%";e.style.top=Math.random()*60+"%";
+    e.innerHTML="<b>Erro do sistema</b><p>Arquivos da pasta compartilhada foram alterados.</p>";
+    document.body.appendChild(e);bip(300,.15,"square");setTimeout(()=>e.remove(),9000)},i*700);
+}
+
+async function atualizar(){
+  if(!pid)return;
+  let r;try{r=await fetch("/api/estado/"+encodeURIComponent(pid))}catch(e){return}
+  if(r.status===404){localStorage.removeItem("tt_pid");location.reload();return}
+  est=await r.json();
+  if(est.status==="finalizado"){clearInterval(poll);mostrarFinal();return}
+  if(est.status!=="jogando")return;
+  if(faseVista!==null&&est.fase!==faseVista){toast(est.evento);if(est.efeito_fase==="caos")caos()}
+  faseVista=est.fase;rt=est.restante_total;
+  $("pts").textContent=est.pontos;
+  const rb=$("rb");rb.style.width=est.risco+"%";
+  rb.style.background=est.risco>66?"#ff4d4f":est.risco>33?"#f5b942":"#2ecc71";
+  const iso=est.flags.includes("isolou");
+  $("net").textContent=iso?"🚫 Sem rede":"🌐 Rede";$("bdi").classList.toggle("alerta",!iso);
+  renderGrade();
+}
+
+function mostrarFinal(){
+  const f=est.final;$("final").hidden=false;
+  $("f-t").textContent=f.titulo;$("f-t").className="f-"+(f.tipo||"medio");
+  $("f-x").textContent=f.texto;$("f-p").textContent=est.pontos;
+  $("f-h").innerHTML=est.historico.map(h=>{const t=h.pontos+h.bonus;
+    return `<div class="h"><b>${esc(h.acao)}</b> <small>(${esc(h.fase)}, ${h.tempo_s}s)</small><br>
+    <span class="${t>=0?"pos":"neg"}">${t>=0?"+":""}${t} pts</span><br><i>${esc(h.feedback)}</i></div>`}).join("");
+}
+
+setInterval(()=>{rt=Math.max(0,rt-1);$("tempo").textContent=fmt(rt);
+  $("relogio").textContent=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})},1000);
+
+async function init(){
+  if(pid){try{const r=await fetch("/api/estado/"+encodeURIComponent(pid));
+    if(r.ok){const d=await r.json();
+      if(d.status==="jogando"||d.status==="finalizado"){
+        mostrarDesk();$("grade").hidden=false;await atualizar();poll=setInterval(atualizar,2000);return}}}catch(e){}}
+  $("inicio").hidden=false;
+}
+$("nome").addEventListener("keydown",e=>{if(e.key==="Enter")comecar()});
+init();
+</script>
+</body>
+</html>

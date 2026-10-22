@@ -1,0 +1,19 @@
+﻿data_hora;participante;fase;acao;pontos_acao;bonus_tempo;tempo_s;total
+2026-10-22 11:13:11;Eliseu;alerta;Isolar da Rede;10;3;9.7;13
+2026-10-22 11:13:29;Eliseu;contido;Abrir Chamado (SOC);10;3;18.2;26
+2026-10-22 11:14:24;Eliseu;preservar;Chat do Gestor;4;0;54.7;30
+2026-10-22 11:14:29;Eliseu;preservar;Sem ação a tempo;-3;0;60.1;27
+2026-10-22 11:18:41;Eliseu;alerta;Sem ação a tempo;-15;0;60.0;-15
+2026-10-22 11:18:44;Eliseu;atraso;Isolar da Rede;3;3;2.6;-9
+2026-10-22 11:18:52;Eliseu;contido;Varredura BitDefender;2;3;7.9;-4
+2026-10-22 11:19:00;Eliseu;contido;Registrar Linha do Tempo;10;3;16.4;9
+2026-10-22 11:21:30;Eliseu;alerta;Formatar Máquina;-10;0;15.7;-10
+2026-10-22 11:22:23;Eliseu;alerta;Gerenciador de Tarefas;0;0;14.0;0
+2026-10-22 11:22:31;Eliseu;alerta;Reiniciar;-10;0;21.7;-10
+2026-10-22 11:22:43;Eliseu;reiniciou;Limpar Histórico;-10;0;12.3;-20
+2026-10-22 11:23:01;Eliseu;reiniciou;Chat do Gestor;4;0;29.9;-16
+2026-10-22 11:23:08;Eliseu;reiniciou;Registrar Linha do Tempo;2;0;36.9;-14
+2026-10-22 11:23:12;Eliseu;reiniciou;Varredura BitDefender;2;0;40.6;-12
+2026-10-22 11:23:17;Eliseu;reiniciou;Sem ação a tempo;-15;0;46.3;-27
+2026-10-22 11:23:26;Eliseu;atraso;Abrir Chamado (SOC);4;3;8.3;-20
+2026-10-22 11:24:04;Eliseu;atraso;Sem ação a tempo;-10;0;46.3;-30
