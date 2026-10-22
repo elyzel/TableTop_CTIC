@@ -2,164 +2,436 @@
   "titulo": "Máquina Contaminada",
   "tempo_total": 420,
   "inicio": "alerta",
+
   "fases": {
+
     "alerta": {
-      "evento": "BitDefender detectou comportamento suspeito em notepad.exe.",
+      "evento": "BitDefender detectou atividade suspeita após a execução de DIVIDA_PENDENTE.pdf.exe, incluindo a abertura de powershell.exe.",
       "limite": 60,
-      "se_demorar": {"pontos": -15, "flags": ["ignorou"], "proxima": "atraso",
-        "feedback": "Sem reação ao alerta: a exposição aumentou e o incidente escalou."}
+
+      "se_demorar": {
+        "pontos": -15,
+        "flags": [
+          "ignorou"
+        ],
+        "proxima": "atraso",
+        "feedback": "Sem reação ao alerta: a exposição aumentou e o incidente escalou."
+      }
     },
+
     "reiniciou": {
-      "evento": "A máquina reiniciou, o Bloco de Notas abriu de novo e o BitDefender alertou outra vez.",
+      "evento": "A máquina reiniciou, porém o comportamento suspeito voltou a ser detectado pelo BitDefender.",
       "limite": 45,
-      "se_demorar": {"pontos": -15, "flags": ["ignorou"], "proxima": "atraso",
-        "feedback": "Mesmo após o novo alerta, não houve reação a tempo."}
+
+      "se_demorar": {
+        "pontos": -15,
+        "flags": [
+          "ignorou"
+        ],
+        "proxima": "atraso",
+        "feedback": "Mesmo após o novo alerta, não houve reação a tempo."
+      }
     },
+
     "atraso": {
       "evento": "Colegas relatam arquivos estranhos na pasta compartilhada.",
       "efeito": "caos",
       "limite": 45,
-      "se_demorar": {"pontos": -10, "flags": ["ignorou"], "proxima": "FIM",
-        "feedback": "A falta de contenção permitiu que o problema se espalhasse pela rede."}
+
+      "se_demorar": {
+        "pontos": -10,
+        "flags": [
+          "ignorou"
+        ],
+        "proxima": "FIM",
+        "feedback": "A falta de contenção permitiu que o problema se espalhasse pela rede."
+      }
     },
+
     "contido": {
-      "evento": "A máquina está isolada da rede. A equipe de TI aguarda o seu relato.",
+      "evento": "A máquina está isolada da rede. A equipe de TI aguarda o seu relato sobre o e-mail, o link acessado e o arquivo executado.",
       "limite": 90,
-      "se_demorar": {"pontos": -2, "flags": [], "proxima": "preservar",
-        "feedback": "Demorar a relatar o incidente atrasa a investigação."}
+
+      "se_demorar": {
+        "pontos": -2,
+        "flags": [],
+        "proxima": "preservar",
+        "feedback": "Demorar a relatar o incidente atrasa a investigação."
+      }
     },
+
     "preservar": {
-      "evento": "O SOC pede que você preserve a situação da máquina para análise.",
+      "evento": "O SOC pede que você preserve a situação da máquina e registre os eventos ocorridos desde o recebimento do e-mail.",
       "limite": 60,
-      "se_demorar": {"pontos": -3, "flags": [], "proxima": "FIM",
-        "feedback": "Sem registro organizado, a investigação perdeu informações."}
+
+      "se_demorar": {
+        "pontos": -3,
+        "flags": [],
+        "proxima": "FIM",
+        "feedback": "Sem registro organizado, a investigação perdeu informações."
+      }
     }
+
   },
+
   "acoes": {
+
     "isolar": {
-      "nome": "Isolar da Rede", "icone": "🌐",
+
+      "nome": "Isolar da Rede",
+
+      "icone": "🌐",
+
       "descricao": "Desconecta a máquina da rede, mantendo-a ligada e com a memória preservada.",
+
       "fases": {
-        "alerta": {"pontos": 10, "flags": ["isolou"], "proxima": "contido", "efeito": "isolado",
+
+        "alerta": {
+          "pontos": 10,
+          "flags": [
+            "isolou"
+          ],
+          "proxima": "contido",
+          "efeito": "isolado",
           "consequencia": "Máquina isolada da rede (simulado). Nenhum tráfego suspeito sai dela.",
-          "feedback": "Correto: isolar contém a propagação e preserva as evidências em memória."},
-        "reiniciou": {"pontos": 5, "flags": ["isolou"], "proxima": "contido", "efeito": "isolado",
-          "consequencia": "Máquina isolada (simulado), mas parte das evidências já se perdeu.",
-          "feedback": "Caminho certo, porém tardio: o ideal era isolar antes de reiniciar."},
-        "atraso": {"pontos": 3, "flags": ["isolou"], "proxima": "contido", "efeito": "isolado",
-          "consequencia": "Máquina isolada (simulado), mas o impacto na rede já ocorreu.",
-          "feedback": "Reagir é melhor que ignorar, mas o dano já tinha se espalhado."}
+          "feedback": "Correto: isolar contém uma possível propagação e preserva as evidências em memória."
+        },
+
+        "reiniciou": {
+          "pontos": 5,
+          "flags": [
+            "isolou"
+          ],
+          "proxima": "contido",
+          "efeito": "isolado",
+          "consequencia": "Máquina isolada da rede (simulado), mas parte das evidências já se perdeu.",
+          "feedback": "Caminho correto, porém tardio: o ideal era isolar antes de reiniciar."
+        },
+
+        "atraso": {
+          "pontos": 3,
+          "flags": [
+            "isolou"
+          ],
+          "proxima": "contido",
+          "efeito": "isolado",
+          "consequencia": "Máquina isolada da rede (simulado), mas o impacto na rede já ocorreu.",
+          "feedback": "Reagir é melhor que ignorar, mas o incidente já havia avançado."
+        }
+
       },
-      "padrao": {"pontos": -2, "feedback": "Ação sem efeito neste momento."}
+
+      "padrao": {
+        "pontos": -2,
+        "feedback": "Ação sem efeito neste momento."
+      }
+
     },
+
     "reiniciar": {
-      "nome": "Reiniciar", "icone": "🔄",
+
+      "nome": "Reiniciar",
+
+      "icone": "🔄",
+
       "descricao": "Desliga e liga o computador, encerrando todos os programas em execução.",
+
       "fases": {
-        "alerta": {"pontos": -10, "flags": ["perdeu_evidencia"], "proxima": "reiniciou", "efeito": "reboot",
+
+        "alerta": {
+          "pontos": -10,
+          "flags": [
+            "perdeu_evidencia"
+          ],
+          "proxima": "reiniciou",
+          "efeito": "reboot",
           "consequencia": "A máquina reiniciou.",
-          "feedback": "Reiniciar apaga evidências voláteis (memória) e pode acionar mecanismos de persistência."}
+          "feedback": "Reiniciar pode eliminar evidências voláteis existentes na memória e não garante a remoção da ameaça."
+        }
+
       },
-      "padrao": {"pontos": -8, "flags": ["perdeu_evidencia"], "efeito": "reboot",
+
+      "padrao": {
+        "pontos": -8,
+        "flags": [
+          "perdeu_evidencia"
+        ],
+        "efeito": "reboot",
         "consequencia": "A máquina reiniciou.",
-        "feedback": "Reiniciar apaga evidências voláteis e não resolve a causa."}
+        "feedback": "Reiniciar pode eliminar evidências voláteis e não resolve necessariamente a causa do incidente."
+      }
+
     },
+
     "gestor": {
-      "nome": "Chat do Gestor", "icone": "💬",
-      "descricao": "Abre o chat para avisar o seu gestor sobre o que está acontecendo.",
+
+      "nome": "Chat do Gestor",
+
+      "icone": "💬",
+
+      "descricao": "Abre o chat para avisar o gestor sobre o incidente.",
+
       "fases": {},
-      "padrao": {"pontos": 4, "flags": ["comunicou"],
-        "consequencia": "O gestor foi avisado e pediu que você siga o procedimento de incidentes.",
-        "feedback": "Comunicar é bom, mas não substitui a contenção nem o chamado ao SOC."}
+
+      "padrao": {
+        "pontos": 4,
+        "flags": [
+          "comunicou"
+        ],
+        "consequencia": "O gestor foi avisado e pediu que você siga o procedimento institucional de resposta a incidentes.",
+        "feedback": "Comunicar é importante, mas não substitui a contenção nem o acionamento do SOC."
+      }
+
     },
+
     "chamado": {
-      "nome": "Abrir Chamado (SOC)", "icone": "🎫",
-      "descricao": "Registra um incidente para o SOC com horário, link clicado e alerta exibido.",
+
+      "nome": "Abrir Chamado (SOC)",
+
+      "icone": "🎫",
+
+      "descricao": "Registra o incidente informando horário, e-mail recebido, link acessado, arquivo baixado e alerta do BitDefender.",
+
       "fases": {
-        "alerta": {"pontos": 5, "flags": ["comunicou_soc"],
-          "consequencia": "O SOC abriu o incidente, mas a máquina continua conectada à rede.",
-          "feedback": "Reportar ajuda, mas a contenção deveria vir primeiro."},
-        "reiniciou": {"pontos": 5, "flags": ["comunicou_soc"],
-          "consequencia": "O SOC abriu o incidente, mas a máquina segue conectada.",
-          "feedback": "Reportar ajuda, mas a contenção deve vir junto."},
-        "contido": {"pontos": 10, "flags": ["comunicou_soc"], "proxima": "preservar",
-          "consequencia": "O SOC recebeu um relato completo e assumiu a investigação.",
-          "feedback": "Um relato objetivo, feito após a contenção, acelera a investigação."}
+
+        "alerta": {
+          "pontos": 5,
+          "flags": [
+            "comunicou_soc"
+          ],
+          "consequencia": "O SOC recebeu o incidente, mas a máquina continua conectada à rede.",
+          "feedback": "Reportar é importante, porém a contenção deve ocorrer rapidamente."
+        },
+
+        "reiniciou": {
+          "pontos": 5,
+          "flags": [
+            "comunicou_soc"
+          ],
+          "consequencia": "O SOC recebeu o incidente, porém a máquina continua conectada à rede.",
+          "feedback": "Reportar ajuda, mas a contenção deve ser realizada."
+        },
+
+        "contido": {
+          "pontos": 10,
+          "flags": [
+            "comunicou_soc"
+          ],
+          "proxima": "preservar",
+          "consequencia": "O SOC recebeu as informações sobre o e-mail, o link acessado, o arquivo DIVIDA_PENDENTE.pdf.exe e o alerta apresentado.",
+          "feedback": "Correto: comunicar o incidente após a contenção permite que a investigação seja iniciada com contexto suficiente."
+        }
+
       },
-      "padrao": {"pontos": 4, "flags": ["comunicou_soc"],
-        "consequencia": "O SOC abriu o incidente.",
-        "feedback": "Reportar ajuda, mas o momento ideal é logo após a contenção."}
+
+      "padrao": {
+        "pontos": 4,
+        "flags": [
+          "comunicou_soc"
+        ],
+        "consequencia": "O SOC recebeu o registro do incidente.",
+        "feedback": "Reportar ajuda, mas o momento ideal é imediatamente após a contenção."
+      }
+
     },
+
     "antivirus": {
-      "nome": "Varredura BitDefender", "icone": "🛡️",
-      "descricao": "Executa uma varredura completa com o antivírus instalado.",
+
+      "nome": "Varredura BitDefender",
+
+      "icone": "🛡️",
+
+      "descricao": "Executa uma varredura completa utilizando o BitDefender.",
+
       "fases": {},
-      "padrao": {"pontos": 2,
-        "consequencia": "A varredura foi concluída e confirmou a ameaça, sem removê-la totalmente.",
-        "feedback": "Útil para confirmar, mas não substitui contenção e comunicação."}
+
+      "padrao": {
+        "pontos": 2,
+        "consequencia": "A varredura confirmou a presença de comportamento suspeito relacionado ao arquivo executado.",
+        "feedback": "A varredura auxilia na investigação, mas não substitui a contenção e a comunicação."
+      }
+
     },
+
     "historico": {
-      "nome": "Limpar Histórico", "icone": "🧹",
-      "descricao": "Apaga o histórico, cookies e arquivos temporários do navegador.",
+
+      "nome": "Limpar Histórico",
+
+      "icone": "🧹",
+
+      "descricao": "Apaga histórico, cookies e arquivos temporários do navegador.",
+
       "fases": {},
-      "padrao": {"pontos": -10, "flags": ["apagou_evidencia"],
-        "consequencia": "O histórico foi apagado. O rastro do link ficou mais difícil de seguir.",
-        "feedback": "Apagar histórico destrói evidências importantes para a investigação."}
+
+      "padrao": {
+        "pontos": -10,
+        "flags": [
+          "apagou_evidencia"
+        ],
+        "consequencia": "O histórico foi apagado. Informações sobre o e-mail e o link acessado ficaram mais difíceis de recuperar.",
+        "feedback": "Apagar o histórico remove evidências importantes para reconstruir a origem do incidente."
+      }
+
     },
+
     "desligar": {
-      "nome": "Desligar da Tomada", "icone": "🔌",
-      "descricao": "Interrompe a energia do computador imediatamente.",
+
+      "nome": "Desligar da Tomada",
+
+      "icone": "🔌",
+
+      "descricao": "Interrompe imediatamente a energia do computador.",
+
       "fases": {},
-      "padrao": {"pontos": -3, "flags": ["perdeu_evidencia"], "efeito": "reboot",
-        "consequencia": "A máquina desligou e religou. A memória foi perdida.",
-        "feedback": "Desligar perde evidências em memória. Só faz sentido se orientado pelo time forense."}
+
+      "padrao": {
+        "pontos": -3,
+        "flags": [
+          "perdeu_evidencia"
+        ],
+        "efeito": "reboot",
+        "consequencia": "A máquina foi desligada. As informações existentes somente em memória foram perdidas.",
+        "feedback": "Desligar abruptamente o equipamento pode eliminar evidências voláteis importantes para a investigação."
+      }
+
     },
+
     "formatar": {
-      "nome": "Formatar Máquina", "icone": "💽",
+
+      "nome": "Formatar Máquina",
+
+      "icone": "💽",
+
       "descricao": "Apaga o disco e reinstala o sistema operacional.",
+
       "fases": {},
-      "padrao": {"pontos": -10, "flags": ["apagou_evidencia"], "proxima": "FIM",
-        "consequencia": "A máquina foi formatada. Nenhuma análise será possível.",
-        "feedback": "Formatar destrói toda a evidência e impede descobrir o que foi comprometido."}
+
+      "padrao": {
+        "pontos": -10,
+        "flags": [
+          "apagou_evidencia"
+        ],
+        "proxima": "FIM",
+        "consequencia": "A máquina foi formatada. Grande parte das evidências necessárias para a investigação foi destruída.",
+        "feedback": "Formatar prematuramente impede a análise adequada do incidente."
+      }
+
     },
+
     "linha_tempo": {
-      "nome": "Registrar Linha do Tempo", "icone": "📝",
-      "descricao": "Anota horários, telas e ações realizadas, mantendo a máquina como está.",
+
+      "nome": "Registrar Linha do Tempo",
+
+      "icone": "📝",
+
+      "descricao": "Registra os horários do recebimento do e-mail, clique no link, download, execução, alerta do BitDefender e ações tomadas.",
+
       "fases": {
-        "contido": {"pontos": 10, "flags": ["preservou"], "proxima": "FIM",
-          "consequencia": "A equipe de TI coletou memória e logs com base no seu registro.",
-          "feedback": "Correto: manter a máquina ligada e isolada e documentar preserva as evidências."},
-        "preservar": {"pontos": 10, "flags": ["preservou"], "proxima": "FIM",
-          "consequencia": "A equipe de TI coletou memória e logs com base no seu registro.",
-          "feedback": "Correto: manter a máquina ligada e isolada e documentar preserva as evidências."}
+
+        "contido": {
+          "pontos": 10,
+          "flags": [
+            "preservou"
+          ],
+          "proxima": "FIM",
+          "consequencia": "O SOC conseguiu utilizar o registro para reconstruir a sequência do incidente e coletar evidências.",
+          "feedback": "Correto: documentar os acontecimentos ajuda a reconstruir a cadeia do ataque."
+        },
+
+        "preservar": {
+          "pontos": 10,
+          "flags": [
+            "preservou"
+          ],
+          "proxima": "FIM",
+          "consequencia": "O SOC conseguiu utilizar o registro para reconstruir a sequência do incidente e coletar evidências.",
+          "feedback": "Correto: manter o equipamento isolado e documentar os acontecimentos preserva informações importantes para a investigação."
+        }
+
       },
-      "padrao": {"pontos": 2,
-        "consequencia": "Você anotou o que viu até agora.",
-        "feedback": "Documentar ajuda, mas a prioridade neste momento era conter o incidente."}
+
+      "padrao": {
+        "pontos": 2,
+        "consequencia": "Você registrou os acontecimentos observados até o momento.",
+        "feedback": "Documentar é importante, mas a contenção ainda deve ser priorizada."
+      }
+
     },
+
     "gerenciador": {
-      "nome": "Gerenciador de Tarefas", "icone": "📊",
-      "descricao": "Mostra os processos em execução e o uso de recursos da máquina.",
+
+      "nome": "Gerenciador de Tarefas",
+
+      "icone": "📊",
+
+      "descricao": "Mostra os processos em execução e o uso de recursos do computador.",
+
       "fases": {},
-      "padrao": {"pontos": 0,
-        "consequencia": "Há vários processos em execução; nada conclusivo.",
-        "feedback": "Apenas consulta: não altera o incidente e consome tempo."}
+
+      "padrao": {
+        "pontos": 0,
+        "consequencia": "O Gerenciador de Tarefas mostra powershell.exe entre os processos, porém isso isoladamente não determina toda a extensão do incidente.",
+        "feedback": "Consultar processos pode auxiliar, mas não deve atrasar a contenção."
+      }
+
     }
+
   },
+
   "finais": [
-    {"titulo": "Vazamento de dados", "tipo": "ruim",
-     "texto": "O atraso na resposta permitiu que o malware se espalhasse e dados foram exfiltrados. A empresa precisa notificar o incidente.",
-     "condicao": {"requer": ["ignorou"]}},
-    {"titulo": "Contenção exemplar", "tipo": "otimo",
-     "texto": "Você isolou a máquina, comunicou o SOC e preservou as evidências. O incidente foi contido sem propagação.",
-     "condicao": {"requer": ["isolou", "comunicou_soc", "preservou"],
-                  "proibe": ["perdeu_evidencia", "apagou_evidencia", "ignorou", "tempo_esgotado"],
-                  "min_pontos": 30}},
-    {"titulo": "Contenção parcial", "tipo": "medio",
-     "texto": "O incidente foi contido, mas falhas na comunicação ou na preservação de evidências dificultaram a investigação.",
-     "condicao": {"requer": ["isolou"], "proibe": ["ignorou"], "min_pontos": 5}},
-    {"titulo": "Propagação na rede", "tipo": "ruim",
-     "texto": "As decisões tomadas permitiram que o malware se propagasse antes da contenção. Vários setores foram afetados.",
-     "condicao": {}}
+
+    {
+      "titulo": "Vazamento de dados",
+      "tipo": "ruim",
+      "texto": "O atraso na resposta permitiu que o incidente evoluísse e dados fossem potencialmente comprometidos.",
+      "condicao": {
+        "requer": [
+          "ignorou"
+        ]
+      }
+    },
+
+    {
+      "titulo": "Contenção exemplar",
+      "tipo": "otimo",
+      "texto": "Você isolou a máquina, comunicou o SOC e preservou informações importantes para a investigação. O incidente foi contido sem propagação.",
+      "condicao": {
+        "requer": [
+          "isolou",
+          "comunicou_soc",
+          "preservou"
+        ],
+        "proibe": [
+          "perdeu_evidencia",
+          "apagou_evidencia",
+          "ignorou",
+          "tempo_esgotado"
+        ],
+        "min_pontos": 30
+      }
+    },
+
+    {
+      "titulo": "Contenção parcial",
+      "tipo": "medio",
+      "texto": "O incidente foi contido, porém algumas decisões prejudicaram a comunicação ou a preservação das evidências.",
+      "condicao": {
+        "requer": [
+          "isolou"
+        ],
+        "proibe": [
+          "ignorou"
+        ],
+        "min_pontos": 5
+      }
+    },
+
+    {
+      "titulo": "Propagação na rede",
+      "tipo": "ruim",
+      "texto": "As decisões tomadas permitiram que o incidente avançasse antes da contenção. Outros recursos da organização foram afetados.",
+      "condicao": {}
+    }
+
   ]
 }
