@@ -1274,7 +1274,7 @@
       pregame = 'aguarda_browser';
       $('desktop-browser').classList.add('guia');
       mostrarNotice('Um novo e-mail acabou de chegar. Acesse o navegador para verificar a mensagem.', 'info', '📧 NOVO E-MAIL RECEBIDO', 10000);
-      mostrarDica('Clique no ícone Navegador da área de trabalho.', 10000);
+      mostrarDica('Clique no ícone Navegador da área de trabalho.', 4000);
     }
 
     async function abrirNavegadorParticipante() {
@@ -1306,15 +1306,15 @@
 
     async function phishingAutomatico() {
       $('email-novo').classList.add('destacado');
-      narrar('A partir daqui, as ações do personagem são demonstradas automaticamente.');
-      await sleep(1900);
+      narrar('A usuária se desesperou, e infelizmente baixou o anexo e o executou...');
+      await sleep(7000);
       pararNarracao();
 
       await clicarDemo($('email-novo'));
       $('email-novo').classList.remove('destacado');
       $('email-placeholder').style.display = 'none';
       $('email-body').classList.add('aberto');
-      await sleep(1300);
+      await sleep(4000);
 
       $('phish-link').classList.add('destacado');
       await clicarDemo($('phish-link'));
