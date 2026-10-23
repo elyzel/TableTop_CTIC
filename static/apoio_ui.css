@@ -1,0 +1,89 @@
+.tt-som {
+  position: fixed;
+  top: 84px;
+  right: 12px;
+  z-index: 600;
+  font: 13px "Segoe UI", sans-serif;
+  padding: 8px 12px;
+  color: #fff;
+  background: #151b25;
+  border: 1px solid #73829a;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.tt-moldura {
+  position: fixed;
+  z-index: 10000;
+  border: 3px solid #8bd9ff;
+  border-radius: 8px;
+  pointer-events: none;
+  box-shadow: 0 0 0 9999px #0009;
+}
+
+.tt-guia {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  width: min(520px, calc(100vw - 24px));
+  max-height: 45vh;
+  overflow: auto;
+  padding: 20px;
+  background: #111d2c;
+  color: #fff;
+  border: 1px solid #8bd9ff;
+  border-radius: 12px;
+  font: 16px/1.5 "Segoe UI", sans-serif;
+  box-sizing: border-box;
+}
+
+.tt-guia p {
+  margin: 12px 0;
+}
+
+.tt-guia strong {
+  font-size: 18px;
+}
+
+.tt-guia small {
+  display: block;
+  margin: 10px 0;
+  color: #c3d7e8;
+}
+
+.tt-guia button {
+  font: inherit;
+  padding: 9px 12px;
+  background: #21486d;
+  color: #fff;
+  border: 1px solid #88b6db;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.tt-guia-acoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.tt-guia :focus-visible,
+.tt-som:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+  .tt-som {
+    top: auto;
+    bottom: 8px;
+    right: 8px;
+    font-size: 11px;
+  }
+
+  .tt-guia {
+    font-size: 14px;
+  }
+}

@@ -1,43 +1,35 @@
+<!--
+OBJETIVO: corrigir a ordem de carregamento da Fase 2 e evitar acesso ao body antes de sua criação.
+ARQUIVO: templates/fase2.html
+SUBSTITUA TODO O CONTEÚDO.
+-->
 <!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-
   <title>Fase 2 — O interrogatório</title>
-
-  <link
-    rel="stylesheet"
-    href="{{ url_for('static', filename='interrogatorio.css') }}"
-  >
-
-  <link
-  rel="stylesheet"
-  href="{{ url_for('static', filename='cinematica.css') }}"
->
+  <link rel="stylesheet" href="{{ url_for('static', filename='interrogatorio.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='cinematica.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='apoio_ui.css') }}">
 </head>
-
 <body style="margin:0;background:#0d0c0b">
   <div id="caso"></div>
 
+  <script src="{{ url_for('static', filename='apoio_ui.js') }}"></script>
   <script src="{{ url_for('static', filename='interrogatorio.js') }}"></script>
-
   <script>
-    iniciarInterrogatorio(
-      document.getElementById('caso'),
-      {
-        pid: localStorage.getItem('tt_pid'),
-
-        onAtividadeConcluida(resultado) {
-          document.dispatchEvent(
-            new CustomEvent(
-              'tabletop:atividadeConcluida',
-              { detail: resultado }
-            )
-          );
-        }
+    iniciarInterrogatorio(document.getElementById('caso'), {
+      pid: localStorage.getItem('tt_pid'),
+      onAtividadeConcluida(resultado) {
+        document.dispatchEvent(
+          new CustomEvent(
+            'tabletop:atividadeConcluida',
+            {detail: resultado}
+          )
+        );
       }
-    );
+    });
   </script>
 </body>
 </html>

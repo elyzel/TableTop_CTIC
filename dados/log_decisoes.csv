@@ -179,3 +179,27 @@
 2026-10-23 14:49:53;Eliseu;fase2_interrogatorio;Pergunta: s3/conexoes;-50;0;189.9;600
 2026-10-23 15:19:50;Eliseu;alerta;Formatar Máquina;-10;0;4.0;-10
 2026-10-23 15:26:49;Eliseu;alerta;Formatar Máquina;-10;0;9.5;-10
+2026-10-23 16:48:20;Eliseu;alerta;Varredura BitDefender;2;3;8.7;5
+2026-10-23 16:48:23;Eliseu;alerta;Isolar da Rede;10;3;11.7;18
+2026-10-23 16:48:26;Eliseu;contido;Abrir Chamado (SOC);10;3;3.1;31
+2026-10-23 16:48:32;Eliseu;preservar;Registrar Linha do Tempo;10;3;6.4;44
+2026-10-23 16:49:49;Eliseu;fase2_interrogatorio;Pergunta: s1/conexoes;-25;0;63.5;975
+2026-10-23 16:50:14;Eliseu;fase2_interrogatorio;Pergunta: s1/trafego;-25;0;88.6;950
+2026-10-23 16:50:18;Eliseu;fase2_interrogatorio;Pergunta: s1/arquivos;-25;0;92.3;925
+2026-10-23 16:52:28;Sabrina;alerta;Isolar da Rede;10;3;8.2;13
+2026-10-23 16:52:37;Sabrina;contido;Abrir Chamado (SOC);10;3;8.4;26
+2026-10-23 16:52:42;Sabrina;preservar;Registrar Linha do Tempo;10;3;5.6;39
+2026-10-23 16:55:35;Sabrina;fase2_interrogatorio;Pergunta: s1/edr;-25;0;167.5;975
+2026-10-23 16:56:05;Sabrina;fase2_interrogatorio;Pergunta: s2/edr;-25;0;197.9;950
+2026-10-23 16:56:14;Sabrina;fase2_interrogatorio;Pergunta: s3/edr;-25;0;206.4;925
+2026-10-23 16:56:34;Sabrina;fase2_interrogatorio;Pergunta: s1/logins;-25;0;226.3;900
+2026-10-23 16:56:49;Sabrina;fase2_interrogatorio;Pergunta: s2/logins;-25;0;241.1;875
+2026-10-23 16:57:03;Sabrina;fase2_interrogatorio;Pergunta: s3/logins;-25;0;255.8;850
+2026-10-23 16:57:24;Sabrina;fase2_interrogatorio;Pergunta: s2/arquivos;-25;0;276.2;825
+2026-10-23 16:57:49;Sabrina;fase2_interrogatorio;Pergunta: s2/logs;-25;0;301.6;800
+2026-10-23 16:58:20;Sabrina;fase2_interrogatorio;Pergunta: s1/intervalo;-25;0;333.0;775
+2026-10-23 16:58:29;Sabrina;fase2_interrogatorio;Pergunta: s1/destinos;-25;0;341.7;750
+2026-10-23 16:58:46;Sabrina;fase2_interrogatorio;Pergunta: s2/destinos;-25;0;358.5;725
+2026-10-23 16:59:01;Sabrina;fase2_interrogatorio;Pergunta: s3/destinos;-25;0;373.8;700
+2026-10-23 16:59:25;Sabrina;fase2_interrogatorio;Pergunta: s3/intervalo;-25;0;397.7;675
+2026-10-23 16:59:46;Sabrina;fase2_resultado;Acusação: s3;500;0;418.3;1175

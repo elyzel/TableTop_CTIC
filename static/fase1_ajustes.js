@@ -144,6 +144,8 @@ Carregue-o depois do script principal de participante.html.
     timer = setInterval(() => {
       n.textContent = texto.slice(0, ++i);
 
+      window.TTUI?.toque(texto[i - 1]);
+
       if (i >= texto.length) {
         clearInterval(timer);
       }
@@ -207,7 +209,7 @@ Carregue-o depois do script principal de participante.html.
       .classList.add('on');
 
     // 1,6 segundo de entrada + 6,5 segundos para ler.
-    await sleep(8100);
+    await sleep(4100);
 
     document.getElementById('faseintro')
       .classList.remove('on');

@@ -1069,17 +1069,27 @@ def api_csv():
         as_attachment=True
     )
 
-# ARQUIVO: app.py
-# INSERÇÃO: imediatamente ANTES da linha 1073 do arquivo original:
-#
-# if __name__ == "__main__":
-#
-# Não remova nem altere o app.run existente.
-# Cole apenas as duas instruções abaixo nesse ponto.
+
 
 from fase2 import instalar_fase2
 
 instalar_fase2(app, participantes, lock, log)
+
+@app.get("/api/orientacao/fase1")
+def orientacao_fase1():
+    c = cenario()
+
+    return jsonify({
+        "acoes": [
+            {
+                "id": aid,
+                "nome": acao["nome"],
+                "icone": acao["icone"],
+                "descricao": acao["descricao"],
+            }
+            for aid, acao in c["acoes"].items()
+        ]
+    })
 
 if __name__ == "__main__":
 
