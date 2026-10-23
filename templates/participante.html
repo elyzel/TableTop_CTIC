@@ -1100,19 +1100,106 @@
   </div>
   <div id="dica"></div>
 
-  <section id="final" hidden>
-    <div class="caixa">
-      <h2 id="f-t"></h2>
-      <p id="f-x"></p>
-      <p>Pontuação final: <b id="f-p"></b></p>
-      <h3>Debriefing</h3>
-      <div id="f-h"></div>
+<section id="final" hidden style="overflow:auto;align-items:flex-start">
+  <div class="caixa" style="margin:auto">
+    <h2 id="f-t"></h2>
+    <p id="f-x"></p>
+    <p>Pontuação da Fase 1: <b id="f-p"></b></p>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:20px 0">
+      <button
+        id="reiniciar-fase1"
+        class="btn"
+        type="button"
+        style="background:#40516b"
+      >
+        Reiniciar Fase 1
+      </button>
+
+      <button
+        id="avancar-fase2"
+        class="btn"
+        type="button"
+        style="background:#176cc2"
+      >
+        Avançar para Fase 2 →
+      </button>
     </div>
-  </section>
+
+    <p id="erro-reinicio" role="alert" hidden></p>
+
+    <h3>Debriefing</h3>
+    <div id="f-h"></div>
+  </div>
+</section>
+
+<script>
+  document.getElementById('avancar-fase2').addEventListener('click', () => {
+    location.assign('/fase2');
+  });
+
+  document.getElementById('reiniciar-fase1').addEventListener('click', async () => {
+    const mensagem =
+      'Reiniciar sua Fase 1? Sua tentativa da Fase 2, se existir, ' +
+      'também será reiniciada. Os demais participantes serão mantidos.';
+
+    if (!confirm(mensagem)) return;
+
+    const botao = document.getElementById('reiniciar-fase1');
+    const erro = document.getElementById('erro-reinicio');
+
+    botao.disabled = true;
+    erro.hidden = true;
+
+    try {
+      const resposta = await fetch('/api/participante/reiniciar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          pid: localStorage.getItem('tt_pid')
+        })
+      });
+
+      const dados = await resposta.json();
+
+      if (!resposta.ok) {
+        throw new Error(dados.erro || 'Não foi possível reiniciar.');
+      }
+
+      localStorage.removeItem('tt_pid');
+      sessionStorage.removeItem('tt_ord');
+
+      location.assign('/');
+    } catch (e) {
+      erro.textContent = e.message;
+      erro.hidden = false;
+      botao.disabled = false;
+    }
+  });
+</script>
 
   <script>
-    const $ = id => document.getElementById(id),
-      sleep = ms => new Promise(r => setTimeout(r, ms));
+    /*
+BLOCO 7
+ARQUIVO: templates/participante.html
+
+No começo do script principal, procure este trecho:
+
+const $ = id => document.getElementById(id),
+  sleep = ms => new Promise(r => setTimeout(r, ms));
+
+No arquivo original, ele está nas linhas 1114–1115.
+As inserções anteriores podem ter deslocado esses números.
+
+SUBSTITUA ESSE TRECHO pelas instruções abaixo.
+*/
+
+const $ = id => document.getElementById(id),
+  sleep = ms => window.ttEsperar
+    ? window.ttEsperar(ms)
+    : new Promise(r => setTimeout(r, ms));
 
     const esc = s => {
       const d = document.createElement("div");
@@ -1670,6 +1757,19 @@
 
     init();
   </script>
+
+  <!--
+BLOCO 8
+ARQUIVO: templates/participante.html
+
+INSIRA a linha de script abaixo imediatamente ANTES de </body>,
+depois do fechamento do script principal existente.
+
+Não remova o script principal.
+Não adicione a linha duas vezes.
+-->
+
+<script src="{{ url_for('static', filename='fase1_ajustes.js') }}"></script>
 </body>
 
 </html>

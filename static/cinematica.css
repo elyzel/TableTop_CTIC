@@ -1,0 +1,82 @@
+/*
+6. ARQUIVO NOVO: static/cinematica.css
+COLE TODO ESTE CONTEÚDO.
+
+Este arquivo padroniza títulos e legendas das duas fases.
+*/
+
+#faseintro h1,
+.interrog-app .interrog-title {
+  position: absolute !important;
+  inset: auto !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+
+  width: min(90vw, 1000px) !important;
+  max-width: 1000px !important;
+  margin: 0 !important;
+  padding: 24px !important;
+
+  font:
+    600 clamp(28px, 4vw, 48px)/1.35
+    "Segoe UI", system-ui, sans-serif !important;
+
+  text-align: center !important;
+  color: #f4f7ff !important;
+  letter-spacing: .02em;
+  text-wrap: balance;
+}
+
+#faseintro,
+.interrog-app .interrog-title {
+  transition: opacity 1.6s ease !important;
+}
+
+.interrog-app .interrog-room {
+  transition: opacity 6s ease;
+}
+
+#narr,
+.interrog-app .interrog-narr {
+  position: fixed !important;
+  inset: auto 0 0 !important;
+  transform: none !important;
+
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 120px !important;
+
+  padding: 24px 6vw !important;
+  border-radius: 0 !important;
+
+  background: #000 !important;
+  border-top: 1px solid #555;
+  color: #fff !important;
+
+  font:
+    clamp(18px, 2.2vw, 25px)/1.5
+    "Segoe UI", system-ui, sans-serif !important;
+
+  text-align: center !important;
+  text-shadow: none !important;
+  z-index: 250 !important;
+}
+
+#narr {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#narr.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #faseintro,
+  .interrog-app .interrog-title,
+  .interrog-app .interrog-room {
+    transition: none !important;
+  }
+}

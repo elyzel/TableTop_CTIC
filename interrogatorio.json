@@ -1,0 +1,134 @@
+[
+  {
+    "id": "reinicio",
+    "pergunta": "Quando ligou e desligou?",
+    "exame": "Último reinício",
+    "referencia": "Há 12 dias, em janela autorizada",
+    "anomalia": true,
+    "pista_falsa": true,
+    "normal": {"fala": "Mantenho minha rotina. Meu último reinício estava autorizado.", "valor": "Há 12 dias, em janela autorizada", "unidade": "", "observacao": "Janela de manutenção registrada."},
+    "infectado": {"fala": "Recomeçar às vezes faz bem. Não guardei o motivo.", "valor": "Ontem às 03:12", "unidade": "", "observacao": "Nenhuma ordem de manutenção para o horário."},
+    "pista": {"fala": "Hoje precisei recomeçar. Está tudo no chamado.", "valor": "Hoje às 02:00", "unidade": "", "observacao": "Chamado MAN-204: reinício autorizado às 02:00."}
+  },
+  {
+    "id": "requisicoes",
+    "pergunta": "Quantas requisições tem feito?",
+    "exame": "Requisições",
+    "referencia": "1200 /min",
+    "anomalia": true,
+    "pista_falsa": true,
+    "normal": {"fala": "Atendo quem chega, no ritmo de sempre.", "valor": 1200, "unidade": "/min", "observacao": "Demanda habitual deste serviço."},
+    "infectado": {"fala": "A noite foi movimentada. Prefiro não entrar nos detalhes.", "valor": 4700, "unidade": "/min", "observacao": "Origem do aumento não consta no planejamento."},
+    "pista": {"fala": "A campanha trouxe gente. O aumento estava previsto.", "valor": 3100, "unidade": "/min", "observacao": "Campanha de marketing autorizada, registrada no calendário."}
+  },
+  {
+    "id": "conexoes",
+    "pergunta": "Quantas conexões abertas?",
+    "exame": "Conexões",
+    "referencia": "180 conexões",
+    "anomalia": true,
+    "pista_falsa": false,
+    "normal": {"fala": "Mantenho contato com vários colegas. Pode conferir.", "valor": 180, "unidade": "conexões", "observacao": "Conexões distribuídas entre clientes e serviços."},
+    "infectado": {"fala": "Poucas conversas, sempre com o mesmo endereço. Discrição é meu forte.", "valor": 12, "unidade": "conexões", "observacao": "11 das 12 conexões para 203.0.113.77, sem vínculo cadastrado."},
+    "pista": {"fala": "O volume varia com a demanda. Hoje não houve mudança programada.", "valor": 180, "unidade": "conexões", "observacao": "Distribuição compatível com os clientes do serviço."}
+  },
+  {
+    "id": "arquivos",
+    "pergunta": "Quantos arquivos alterados nas últimas 24h?",
+    "exame": "Arquivos alterados",
+    "referencia": "35 arquivos/24h",
+    "anomalia": true,
+    "pista_falsa": true,
+    "normal": {"fala": "Tenho registros e cache para manter. Sempre sobra uma anotação.", "valor": 35, "unidade": "arquivos/24h", "observacao": "Logs e cache geram pequenas alterações diárias."},
+    "infectado": {"fala": "Nada mudou por aqui. Pelo menos é o que os números dizem.", "valor": 0, "unidade": "arquivos/24h", "observacao": "Este servidor mantém logs e cache locais; não há manutenção registrada."},
+    "pista": {"fala": "Sou réplica somente leitura. Alterar arquivos não é minha função.", "valor": 0, "unidade": "arquivos/24h", "observacao": "Réplica somente leitura: ausência de alterações prevista no inventário."}
+  },
+  {
+    "id": "cpu",
+    "pergunta": "Quanto de CPU está usando?",
+    "exame": "Uso de CPU",
+    "referencia": "35 % — faixa habitual: 30 a 40%",
+    "anomalia": false,
+    "pista_falsa": true,
+    "normal": {"fala": "Trabalho sem perder o fôlego. Nada fora da rotina.", "valor": 35, "unidade": "%", "observacao": "Referência: 30 a 40%, com pequenas oscilações."},
+    "infectado": {"fala": "Meu pulso parece tranquilo. É o que você queria saber?", "valor": 38, "unidade": "%", "observacao": "Amostra dentro da faixa habitual de CPU."},
+    "pista": {"fala": "Estou ocupado com o backup. O trabalho tem hora para acabar.", "valor": 82, "unidade": "%", "observacao": "Backup noturno agendado e autorizado em execução."}
+  },
+  {
+    "id": "trafego",
+    "pergunta": "Quanto tráfego sai em relação ao que entra?",
+    "exame": "Razão saída/entrada",
+    "referencia": "1,2 vezes",
+    "anomalia": true,
+    "pista_falsa": false,
+    "normal": {"fala": "Respondo um pouco mais do que recebo. É o meu trabalho.", "valor": "1,2", "unidade": "vezes", "observacao": "Saída aproximadamente 1,2 vez a entrada."},
+    "infectado": {"fala": "Tenho muito a dizer lá fora. O destino prefere silêncio.", "valor": "9,0", "unidade": "vezes", "observacao": "Saída concentrada em destino externo sem vínculo cadastrado."},
+    "pista": {"fala": "Hoje a relação entre entrada e saída segue o perfil do serviço.", "valor": "1,2", "unidade": "vezes", "observacao": "Nenhuma transferência extraordinária programada."}
+  },
+  {
+    "id": "intervalo",
+    "pergunta": "Qual o intervalo entre as conexões externas?",
+    "exame": "Intervalo externo",
+    "referencia": "Irregular",
+    "anomalia": true,
+    "pista_falsa": false,
+    "normal": {"fala": "Converso quando há demanda. Não sigo um relógio.", "valor": "Irregular", "unidade": "", "observacao": "Intervalos variáveis conforme a demanda."},
+    "infectado": {"fala": "Sempre pontual. A cada minuto, nem antes, nem depois.", "valor": "60,0 s; desvio ±0,0 s", "unidade": "", "observacao": "Periodicidade observada durante toda a janela de coleta."},
+    "pista": {"fala": "Os intervalos acompanham as solicitações recebidas.", "valor": "Irregular", "unidade": "", "observacao": "Não existe tarefa periódica associada às conexões observadas."}
+  },
+  {
+    "id": "logs",
+    "pergunta": "Como estão seus registros?",
+    "exame": "Lacunas nos logs",
+    "referencia": "Sem lacunas",
+    "anomalia": true,
+    "pista_falsa": true,
+    "normal": {"fala": "Anotei tudo. Pode ler de cima a baixo.", "valor": "Sem lacunas", "unidade": "", "observacao": "Registros contínuos no período observado."},
+    "infectado": {"fala": "Duas horas passaram em branco. Não tenho muito a acrescentar.", "valor": "2 horas: 02:50 a 04:50", "unidade": "", "observacao": "Não há rotação ou parada documentada para esse intervalo."},
+    "pista": {"fala": "Troquei o caderno por cinco minutos. A rotação foi documentada.", "valor": "5 minutos", "unidade": "", "observacao": "Rotação de logs documentada, com arquivos anteriores preservados."}
+  },
+  {
+    "id": "destinos",
+    "pergunta": "Com quantos destinos externos diferentes falou?",
+    "exame": "Destinos externos",
+    "referencia": "45 destinos",
+    "anomalia": true,
+    "pista_falsa": false,
+    "normal": {"fala": "Conheço vários serviços. Todos têm lugar no inventário.", "valor": 45, "unidade": "destinos", "observacao": "Destinos distribuídos e cadastrados."},
+    "infectado": {"fala": "Um só contato basta quando ele sabe o que quer.", "valor": 1, "unidade": "destinos", "observacao": "Único destino: 203.0.113.77; não cadastrado para este serviço."},
+    "pista": {"fala": "Os destinos continuam distribuídos entre serviços cadastrados.", "valor": 45, "unidade": "destinos", "observacao": "Distribuição habitual entre serviços externos cadastrados."}
+  },
+  {
+    "id": "portas",
+    "pergunta": "Quais portas tem abertas?",
+    "exame": "Portas de entrada",
+    "referencia": "80, 443, 22 TCP",
+    "anomalia": false,
+    "pista_falsa": false,
+    "normal": {"fala": "As portas de sempre. Nenhuma surpresa na entrada.", "valor": "80, 443, 22", "unidade": "TCP", "observacao": "Portas previstas no inventário do cluster."},
+    "infectado": {"fala": "Não precisei abrir uma porta nova. As antigas continuam aí.", "valor": "80, 443, 22", "unidade": "TCP", "observacao": "Portas de entrada iguais às previstas no inventário."},
+    "pista": {"fala": "A lista de portas segue a configuração aprovada.", "valor": "80, 443, 22", "unidade": "TCP", "observacao": "Configuração de entrada aprovada e sem mudanças."}
+  },
+  {
+    "id": "logins",
+    "pergunta": "Quem fez login recentemente?",
+    "exame": "Logins administrativos",
+    "referencia": "2 administradores conhecidos em horário comercial",
+    "anomalia": false,
+    "pista_falsa": true,
+    "normal": {"fala": "Vieram os dois de sempre, no horário de trabalho.", "valor": "2 administradores conhecidos", "unidade": "", "observacao": "Logins administrativos interativos em horário comercial."},
+    "infectado": {"fala": "Os administradores são conhecidos. Sobre eles, nada a acrescentar.", "valor": "2 administradores conhecidos", "unidade": "", "observacao": "Logins administrativos interativos em horário comercial."},
+    "pista": {"fala": "Recebi o plantonista à noite. O atendimento estava autorizado.", "valor": "Administrador às 23:40", "unidade": "", "observacao": "Plantão autorizado, vinculado ao chamado INC-318."}
+  },
+  {
+    "id": "edr",
+    "pergunta": "Seu antivírus ou EDR acusou algo?",
+    "exame": "Estado do EDR",
+    "referencia": "Ativo, sem alertas",
+    "anomalia": false,
+    "pista_falsa": false,
+    "normal": {"fala": "O agente está de serviço. Não registrou alerta nesta coleta.", "valor": "Ativo, sem alertas", "unidade": "", "observacao": "Ausência de alertas deve ser avaliada junto às demais evidências."},
+    "infectado": {"fala": "Nenhum alerta. Parece uma resposta confortável, não?", "valor": "Ativo, sem alertas", "unidade": "", "observacao": "Ausência de alertas deve ser avaliada junto às demais evidências."},
+    "pista": {"fala": "O agente segue ativo; não há alerta nesta coleta.", "valor": "Ativo, sem alertas", "unidade": "", "observacao": "Agente ativo e coleta de eventos em funcionamento."}
+  }
+]

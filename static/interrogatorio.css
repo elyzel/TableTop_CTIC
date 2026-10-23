@@ -1,0 +1,427 @@
+/*
+BLOCO 4
+ARQUIVO NOVO: static/interrogatorio.css
+COLE TODO O CONTEÚDO.
+*/
+
+.interrog-app {
+  --papel: #e9dcc0;
+  --tinta: #25221b;
+  --ouro: #dbc28f;
+
+  color: #f2e9d9;
+  min-height: 100vh;
+  font: 16px/1.5 Georgia, serif;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0,
+      #5d5139 0,
+      transparent 65%
+    ),
+    repeating-linear-gradient(
+      38deg,
+      #201c16 0 2px,
+      #242018 2px 5px
+    );
+
+  padding-bottom: 145px;
+}
+
+.interrog-app * {
+  box-sizing: border-box;
+}
+
+.interrog-app [hidden] {
+  display: none !important;
+}
+
+.interrog-app button,
+.interrog-app select,
+.interrog-app textarea {
+  font: inherit;
+}
+
+.interrog-app button {
+  background: #292a27;
+  border: 1px solid #bca97c;
+  color: #fff0d0;
+  padding: 11px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.interrog-app button:hover {
+  background: #414036;
+}
+
+.interrog-app button:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
+.interrog-app :focus-visible {
+  outline: 3px solid #70cde2;
+  outline-offset: 4px;
+}
+
+.interrog-app .interrog-hud {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  background: #0b0b0bef;
+  padding: 15px 5vw;
+  border-bottom: 1px solid #8a7857;
+}
+
+.interrog-app .interrog-hud a {
+  color: #ead7ae;
+}
+
+.interrog-app .interrog-hud strong {
+  display: block;
+}
+
+.interrog-app .interrog-tokens {
+  letter-spacing: 5px;
+  color: #e5c67c;
+}
+
+.interrog-app .interrog-main {
+  max-width: 1250px;
+  margin: auto;
+  padding: 30px 24px;
+}
+
+.interrog-app .interrog-lamp {
+  height: 60px;
+  text-align: center;
+  font-size: 42px;
+  filter: drop-shadow(0 15px 18px #f7cf7a);
+}
+
+.interrog-app .interrog-wall {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.interrog-app .interrog-card {
+  background: var(--papel);
+  color: var(--tinta);
+  padding: 14px 14px 25px;
+  transform: rotate(-2deg);
+  box-shadow: 5px 12px 22px #0008;
+  text-align: left;
+  border: 0;
+  width: 100%;
+  transition: transform .25s;
+}
+
+.interrog-app .interrog-card:nth-child(2) {
+  transform: rotate(2deg);
+}
+
+.interrog-app .interrog-card:hover {
+  background: #f6ead1;
+  transform: rotate(0) translateY(-6px);
+}
+
+.interrog-app .interrog-card strong {
+  display: block;
+  font-size: 24px;
+}
+
+.interrog-app .interrog-card small {
+  display: block;
+  font: 14px/1.5 Consolas, monospace;
+}
+
+.interrog-app .interrog-photo {
+  background: radial-gradient(#746953, #151614);
+  height: 260px;
+  padding: 10px;
+  overflow: hidden;
+  filter: sepia(.35) grayscale(.65);
+}
+
+.interrog-app .interrog-photo svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.interrog-app .interrog-stamp {
+  display: inline-block;
+  border: 2px solid #79462e;
+  padding: 2px 7px;
+  margin-top: 10px;
+  font: 13px Consolas, monospace;
+}
+
+.interrog-app .interrog-columns {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 28px;
+}
+
+.interrog-app .interrog-portrait {
+  height: 330px;
+}
+
+.interrog-app .interrog-paper {
+  background: var(--papel);
+  color: var(--tinta);
+  padding: 24px;
+  border-radius: 2px;
+}
+
+.interrog-app .interrog-paper h2 {
+  margin-top: 0;
+}
+
+.interrog-app .interrog-exam {
+  border-top: 1px solid #ae9c7a;
+  padding: 12px 0;
+}
+
+.interrog-app .interrog-exam code {
+  display: block;
+  font: 17px/1.5 Consolas, monospace;
+}
+
+.interrog-app .interrog-menu {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 22px 0;
+}
+
+.interrog-app .interrog-menu button {
+  text-align: left;
+}
+
+.interrog-app .interrog-message {
+  padding: 12px;
+  border-left: 4px solid #d3b779;
+  background: #0a0a0a;
+  margin: 15px 0;
+}
+
+.interrog-app .interrog-narr {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 30;
+  min-height: 116px;
+  background: #000f;
+  border-top: 1px solid #555;
+  color: #fff;
+  text-align: center;
+  padding: 23px 7vw;
+  font: clamp(18px, 2.2vw, 24px)/1.5 Georgia, serif;
+  cursor: pointer;
+}
+
+.interrog-app .interrog-dialog {
+  background: #eee1c5;
+  color: #26231d;
+  border: 2px solid #a38a5e;
+  max-width: 1150px;
+  width: 94vw;
+  max-height: 90vh;
+  padding: 24px;
+}
+
+.interrog-app .interrog-dialog::backdrop {
+  background: #000c;
+}
+
+.interrog-app .interrog-dialog button {
+  background: #32332d;
+  color: #fff;
+}
+
+.interrog-app .interrog-scroll {
+  overflow: auto;
+  max-height: 58vh;
+}
+
+.interrog-app table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 730px;
+}
+
+.interrog-app th,
+.interrog-app td {
+  border: 1px solid #ac9978;
+  padding: 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.interrog-app th {
+  background: #d5c4a0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.interrog-app td small {
+  display: block;
+  margin: 8px 0;
+}
+
+.interrog-app textarea {
+  width: 100%;
+  min-height: 75px;
+  padding: 10px;
+  background: #fff9e9;
+  color: #242018;
+}
+
+.interrog-app select {
+  padding: 12px;
+  max-width: 100%;
+}
+
+.interrog-app .interrog-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 15px 0;
+}
+
+.interrog-app .interrog-result {
+  background: #161613;
+  border: 1px solid #ac9470;
+  padding: 25px;
+}
+
+.interrog-app .interrog-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  background: #000;
+  overflow: hidden;
+}
+
+.interrog-app .interrog-title {
+  position: absolute;
+  inset: 20% 8% auto;
+  text-align: center;
+  font-size: clamp(28px, 4vw, 52px);
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.interrog-app .interrog-intro.titulo .interrog-title {
+  opacity: 1;
+}
+
+.interrog-app .interrog-room {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1vw;
+  background: radial-gradient(
+    ellipse at 50% 45%,
+    #2f4058,
+    #040608 72%
+  );
+  opacity: 0;
+  transition: opacity 4s;
+}
+
+.interrog-app .interrog-room svg {
+  width: 20%;
+  height: 65vh;
+  filter: brightness(.6);
+}
+
+.interrog-app .interrog-room svg:nth-child(3) {
+  height: 78vh;
+  filter: brightness(.95);
+}
+
+.interrog-app .interrog-intro.revelar .interrog-room {
+  opacity: 1;
+}
+
+.interrog-app .interrog-led {
+  position: absolute;
+  left: 50%;
+  top: 49%;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #5fbaff;
+  box-shadow: 0 0 40px 14px #188cff;
+  opacity: 0;
+  animation: interrog-pulse 2s infinite;
+}
+
+.interrog-app .interrog-intro.azul .interrog-led {
+  opacity: 1;
+}
+
+.interrog-app .interrog-intro.vermelho .interrog-led {
+  background: #ff4848;
+  box-shadow: 0 0 75px 25px #b61616;
+  animation: none;
+  opacity: 1;
+}
+
+.interrog-app .interrog-skip {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  z-index: 2;
+}
+
+@keyframes interrog-pulse {
+  50% {
+    box-shadow: 0 0 85px 25px #218bff;
+  }
+}
+
+@media (max-width: 760px) {
+  .interrog-app .interrog-wall,
+  .interrog-app .interrog-columns,
+  .interrog-app .interrog-menu {
+    grid-template-columns: 1fr;
+  }
+
+  .interrog-app .interrog-card {
+    max-width: 400px;
+    margin: auto;
+  }
+
+  .interrog-app .interrog-dialog {
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 96vh;
+    padding: 15px;
+  }
+
+  .interrog-app .interrog-main {
+    padding: 20px 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .interrog-app * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

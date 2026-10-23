@@ -1,44 +1,393 @@
-<!DOCTYPE html>
+<!--
+5. ARQUIVO: templates/facilitador.html
+SUBSTITUA TODO O CONTEÚDO.
+-->
+
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<title>Painel do Facilitador</title>
-<style>
-  body{margin:0;background:#0b0f14;color:#d6e2f0;font-family:Consolas,monospace;padding:24px}
-  h1{color:#3b9eff;margin-top:0}
-  .barra{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
-  button,a.btn{font-family:inherit;font-size:15px;padding:10px 18px;border:none;border-radius:6px;cursor:pointer;color:#fff;text-decoration:none}
-  .amarelo{background:#f5b942;color:#222}.vermelho{background:#ff4d4f}.azul{background:#3b9eff}
-  table{width:100%;border-collapse:collapse;background:#121923}
-  th,td{padding:10px 14px;border-bottom:1px solid #1f2b3a;text-align:left}th{color:#f5b942}
-  .flag{background:#1f2b3a;border-radius:4px;padding:2px 6px;margin-right:4px;font-size:12px}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Painel do Facilitador</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: #0b0f14;
+      color: #d6e2f0;
+      font: 16px/1.5 "Segoe UI", system-ui, sans-serif;
+      padding: 24px;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #7ab9ff;
+    }
+
+    .barra {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 18px 0;
+    }
+
+    button,
+    a.btn {
+      font: inherit;
+      padding: 10px 18px;
+      border: 1px solid #526b89;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #1b2a40;
+      color: white;
+      text-decoration: none;
+    }
+
+    button[aria-pressed="true"] {
+      background: #176cc2;
+      border-color: #83bcff;
+    }
+
+    .amarelo {
+      background: #775516;
+    }
+
+    .vermelho {
+      background: #862b36;
+    }
+
+    .azul {
+      background: #185997;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 3px solid white;
+      outline-offset: 3px;
+    }
+
+    .rolagem {
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 740px;
+      background: #121923;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #29394b;
+      text-align: left;
+    }
+
+    th {
+      color: #f5cf7c;
+    }
+
+    .flag {
+      display: inline-block;
+      background: #253246;
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin: 2px;
+      font: 12px Consolas, monospace;
+    }
+
+    #erro {
+      color: #ffc9c9;
+    }
+
+    #atualizacao,
+    #descricao {
+      color: #b8c9df;
+    }
+  </style>
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='cinematica.css') }}"
+>
 </head>
+
 <body>
-<h1>Painel do Facilitador</h1>
-<div class="barra">
-  <button class="amarelo" onclick="if(confirm('Encerrar o exercício de todos?'))acao('/api/encerrar')">&#9632; Encerrar todos</button>
-  <button class="vermelho" onclick="if(confirm('Apagar todos os participantes?'))acao('/api/resetar')">&#8635; Resetar</button>
-  <a class="btn azul" href="/api/csv">&#8595; Baixar CSV</a>
-</div>
-<table>
-  <thead><tr><th>Participante</th><th>Fase</th><th>Ações</th><th>Pontos</th><th>Flags</th><th>Final</th></tr></thead>
-  <tbody id="corpo"></tbody>
-</table>
-<script>
-  const esc=s=>{const d=document.createElement("div");d.textContent=s;return d.innerHTML};
-  async function acao(u){await fetch(u,{method:"POST"});atualizar()}
-  async function atualizar(){
-    try{
-      const d=await (await fetch("/api/painel")).json();
-      document.getElementById("corpo").innerHTML=d.participantes.sort((a,b)=>b.pontos-a.pontos).map(p=>`
-        <tr><td>${esc(p.nome)}</td><td>${p.finalizado?"concluído":esc(p.fase)}</td><td>${p.acoes}</td>
-        <td><b>${p.pontos}</b></td>
-        <td>${p.flags.map(f=>`<span class="flag">${esc(f)}</span>`).join("")}</td>
-        <td>${esc(p.final)}</td></tr>`).join("");
-    }catch(e){}
-  }
-  setInterval(atualizar,2000);atualizar();
-</script>
+  <h1>Painel do Facilitador</h1>
+
+  <div
+    class="barra"
+    role="group"
+    aria-label="Escolher placar"
+  >
+    <button id="aba1" aria-pressed="true">
+      Fase 1
+    </button>
+
+    <button id="aba2" aria-pressed="false">
+      Fase 2
+    </button>
+  </div>
+
+  <h2 id="titulo">Placar da Fase 1</h2>
+  <p id="descricao"></p>
+
+  <div class="barra">
+    <button id="encerrar" class="amarelo">
+      Encerrar Fase 1 de todos
+    </button>
+
+    <button id="resetar" class="vermelho">
+      Resetar todos
+    </button>
+
+    <a class="btn azul" href="/api/csv">
+      Baixar CSV
+    </a>
+  </div>
+
+  <p id="erro" role="alert" hidden></p>
+  <p id="atualizacao"></p>
+
+  <div class="rolagem">
+    <table>
+      <thead>
+        <tr id="cabecalho"></tr>
+      </thead>
+
+      <tbody id="corpo"></tbody>
+    </table>
+  </div>
+
+  <script>
+    (() => {
+      let fase = 1;
+      let carregando = false;
+      let placares = { 1: [], 2: [] };
+
+      const el = id => document.getElementById(id);
+
+      function cel(tag, texto) {
+        const n = document.createElement(tag);
+        n.textContent = texto;
+        return n;
+      }
+
+      function render() {
+        el('aba1').setAttribute(
+          'aria-pressed',
+          String(fase === 1)
+        );
+
+        el('aba2').setAttribute(
+          'aria-pressed',
+          String(fase === 2)
+        );
+
+        el('titulo').textContent =
+          'Placar da Fase ' + fase;
+
+        el('descricao').textContent = fase === 1
+          ? 'Pontuação e decisões da máquina inicial.'
+          : (
+            'Saldo atualizado a cada consulta. ' +
+            'Bônus de acerto e marcações são aplicados ' +
+            'no encerramento do caso.'
+          );
+
+        const titulos = fase === 1
+          ? [
+            'Participante',
+            'Situação',
+            'Ações',
+            'Pontos',
+            'Flags',
+            'Resultado'
+          ]
+          : [
+            'Participante',
+            'Situação',
+            'Consultas',
+            'Pontos',
+            'Marcações',
+            'Resultado'
+          ];
+
+        el('cabecalho').replaceChildren(
+          ...titulos.map(t => cel('th', t))
+        );
+
+        el('corpo').replaceChildren();
+
+        const lista = [...placares[fase]].sort(
+          (a, b) => (
+            (b.pontos ?? -Infinity)
+            - (a.pontos ?? -Infinity)
+          ) || a.nome.localeCompare(b.nome, 'pt-BR')
+        );
+
+        lista.forEach(p => {
+          const tr = document.createElement('tr');
+
+          const situacao = fase === 1
+            ? (
+              p.finalizado
+                ? 'Concluído'
+                : p.fase
+            )
+            : p.status;
+
+          tr.append(
+            cel('td', p.nome),
+            cel('td', situacao),
+            cel(
+              'td',
+              fase === 1 ? p.acoes : p.perguntas
+            ),
+            cel('td', p.pontos ?? '—')
+          );
+
+          const extras = cel('td', '');
+
+          if (fase === 1) {
+            (p.flags || []).forEach(f => {
+              const marca = cel('span', f);
+              marca.className = 'flag';
+              extras.append(marca);
+            });
+          } else {
+            extras.textContent = p.marcacoes;
+          }
+
+          tr.append(
+            extras,
+            cel(
+              'td',
+              fase === 1
+                ? (p.final || '—')
+                : p.resultado
+            )
+          );
+
+          el('corpo').append(tr);
+        });
+
+        if (!lista.length) {
+          const tr = document.createElement('tr');
+          const td = cel(
+            'td',
+            'Nenhum participante cadastrado.'
+          );
+
+          td.colSpan = 6;
+          tr.append(td);
+          el('corpo').append(tr);
+        }
+      }
+
+      async function json(url, opcoes) {
+        const r = await fetch(
+          url,
+          {
+            cache: 'no-store',
+            ...opcoes
+          }
+        );
+
+        if (!r.ok) {
+          throw new Error(
+            'Não foi possível atualizar o painel. ' +
+            'HTTP ' + r.status
+          );
+        }
+
+        return r.json();
+      }
+
+      async function atualizar() {
+        if (carregando) return;
+
+        carregando = true;
+
+        try {
+          const [a, b] = await Promise.all([
+            json('/api/painel'),
+            json('/api/fase2/painel')
+          ]);
+
+          placares = {
+            1: a.participantes,
+            2: b.participantes
+          };
+
+          render();
+          el('erro').hidden = true;
+
+          el('atualizacao').textContent =
+            'Atualizado às ' +
+            new Date().toLocaleTimeString('pt-BR');
+        } catch (e) {
+          el('erro').textContent = e.message;
+          el('erro').hidden = false;
+        } finally {
+          carregando = false;
+        }
+      }
+
+      async function comando(
+        url,
+        mensagem,
+        botao
+      ) {
+        if (!confirm(mensagem)) return;
+
+        botao.disabled = true;
+
+        try {
+          await json(
+            url,
+            { method: 'POST' }
+          );
+
+          await atualizar();
+        } catch (e) {
+          el('erro').textContent = e.message;
+          el('erro').hidden = false;
+        } finally {
+          botao.disabled = false;
+        }
+      }
+
+      el('aba1').onclick = () => {
+        fase = 1;
+        render();
+      };
+
+      el('aba2').onclick = () => {
+        fase = 2;
+        render();
+      };
+
+      el('encerrar').onclick = () => comando(
+        '/api/encerrar',
+        'Encerrar a Fase 1 dos participantes? ' +
+        'A Fase 2 não será encerrada.',
+        el('encerrar')
+      );
+
+      el('resetar').onclick = () => comando(
+        '/api/resetar',
+        'Apagar os participantes das duas fases ' +
+        'e o histórico das animações? ' +
+        'O CSV será mantido.',
+        el('resetar')
+      );
+
+      render();
+      atualizar();
+      setInterval(atualizar, 2000);
+    })();
+  </script>
 </body>
 </html>

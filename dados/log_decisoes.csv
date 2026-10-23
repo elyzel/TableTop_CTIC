@@ -127,3 +127,55 @@
 2026-10-22 16:46:30;Eliseu;contido;Gerenciador de Tarefas;0;0;47.5;34
 2026-10-22 16:46:40;Eliseu;contido;Abrir Chamado (SOC);10;3;57.8;47
 2026-10-22 17:05:37;Eliseu;alerta;Formatar Máquina;-10;0;12.7;-10
+2026-10-23 10:54:01;Eliseu;alerta;Isolar da Rede;10;3;14.0;13
+2026-10-23 10:54:09;Eliseu;contido;Registrar Linha do Tempo;10;3;8.3;26
+2026-10-23 10:54:16;Eliseu;contido;Abrir Chamado (SOC);10;3;15.0;39
+2026-10-23 13:22:09;Eliseu;alerta;Isolar da Rede;10;3;4.4;13
+2026-10-23 13:22:12;Eliseu;contido;Formatar Máquina;-10;0;3.3;3
+2026-10-23 13:23:19;Eliseu;fase2_atividade_1;Investigar a relação com o incidente;5;0;63.5;5
+2026-10-23 13:23:54;Eliseu;fase2_atividade_2;Apagar imediatamente os arquivos alterados;-10;0;99.1;-5
+2026-10-23 13:24:09;Eliseu;fase2_atividade_2;Apenas aumentar a capacidade do servidor;-5;0;113.5;-10
+2026-10-23 13:25:54;Eliseu;alerta;Formatar Máquina;-10;0;7.5;-10
+2026-10-23 13:29:21;Eliseu;alerta;Formatar Máquina;-10;0;4.2;-10
+2026-10-23 13:30:49;Eliseu;alerta;Formatar Máquina;-10;0;2.6;-10
+2026-10-23 13:33:15;Eliseu;alerta;Formatar Máquina;-10;0;2.7;-10
+2026-10-23 13:43:46;Eliseu;fase2_atividade_1;Investigar a relação com o incidente;5;0;629.3;5
+2026-10-23 13:44:03;Eliseu;fase2_atividade_2;Tratar como possível continuidade do incidente;10;0;646.4;15
+2026-10-23 13:44:25;Eliseu;fase2_atividade_3;Conter o ARQ-01 conforme o procedimento;10;0;668.5;25
+2026-10-23 13:44:45;Eliseu;fase2_atividade_4;Preservar registros;0;0;687.8;25
+2026-10-23 13:44:47;Eliseu;fase2_atividade_4;Registrar linha do tempo;0;0;690.2;25
+2026-10-23 13:44:49;Eliseu;fase2_atividade_4;Comunicar SOC e responsáveis pelo serviço;10;0;692.1;35
+2026-10-23 13:45:17;Eliseu;fase2_atividade_5;Solicitar análise, remediação e validação;0;0;720.2;35
+2026-10-23 13:45:20;Eliseu;fase2_atividade_5;Restabelecer de forma controlada e monitorar;10;0;723.5;45
+2026-10-23 14:25:52;Eliseu;alerta;Formatar Máquina;-10;0;3.3;-10
+2026-10-23 14:26:45;Eliseu;fase2_interrogatorio;Pergunta: s1/edr;-50;0;46.0;950
+2026-10-23 14:26:55;Eliseu;fase2_interrogatorio;Pergunta: s1/logins;-50;0;55.5;900
+2026-10-23 14:27:06;Eliseu;fase2_interrogatorio;Pergunta: s1/reinicio;-50;0;66.9;850
+2026-10-23 14:27:11;Eliseu;fase2_interrogatorio;Pergunta: s1/requisicoes;-50;0;71.5;800
+2026-10-23 14:27:15;Eliseu;fase2_interrogatorio;Pergunta: s1/arquivos;-50;0;76.1;750
+2026-10-23 14:27:36;Eliseu;fase2_interrogatorio;Pergunta: s2/reinicio;-50;0;96.6;700
+2026-10-23 14:27:39;Eliseu;fase2_interrogatorio;Pergunta: s2/requisicoes;-50;0;100.1;650
+2026-10-23 14:27:49;Eliseu;fase2_interrogatorio;Pergunta: s2/logins;-50;0;109.6;600
+2026-10-23 14:28:23;Eliseu;fase2_resultado;Acusação: s2;0;0;144.1;600
+2026-10-23 14:30:15;Eliseu;alerta;Formatar Máquina;-10;0;41.5;-10
+2026-10-23 14:32:06;Eliseu;fase2_interrogatorio;Pergunta: s3/portas;-50;0;109.9;950
+2026-10-23 14:32:16;Eliseu;fase2_interrogatorio;Pergunta: s3/arquivos;-50;0;119.4;900
+2026-10-23 14:32:24;Eliseu;fase2_interrogatorio;Pergunta: s3/conexoes;-50;0;127.5;850
+2026-10-23 14:32:37;Eliseu;fase2_interrogatorio;Pergunta: s1/destinos;-50;0;140.6;800
+2026-10-23 14:32:56;Eliseu;fase2_interrogatorio;Pergunta: s1/conexoes;-50;0;159.2;750
+2026-10-23 14:42:13;Eliseu;fase2_resultado;Acusação: s1;500;0;716.8;1250
+2026-10-23 14:43:35;Eliseu;alerta;Formatar Máquina;-10;0;4.2;-10
+2026-10-23 14:44:37;Eliseu;alerta;Formatar Máquina;-10;0;12.0;-10
+2026-10-23 14:46:20;Eliseu;alerta;Isolar da Rede;10;3;9.8;13
+2026-10-23 14:46:30;Eliseu;contido;Abrir Chamado (SOC);10;3;10.3;26
+2026-10-23 14:46:36;Eliseu;preservar;Registrar Linha do Tempo;10;3;5.7;39
+2026-10-23 14:47:14;Eliseu;fase2_interrogatorio;Pergunta: s1/portas;-50;0;31.0;950
+2026-10-23 14:47:29;Eliseu;fase2_interrogatorio;Pergunta: s1/trafego;-50;0;45.6;900
+2026-10-23 14:48:17;Eliseu;fase2_interrogatorio;Pergunta: s2/portas;-50;0;93.6;850
+2026-10-23 14:48:30;Eliseu;fase2_interrogatorio;Pergunta: s2/logins;-50;0;107.1;800
+2026-10-23 14:48:45;Eliseu;fase2_interrogatorio;Pergunta: s3/requisicoes;-50;0;122.1;750
+2026-10-23 14:48:56;Eliseu;fase2_interrogatorio;Pergunta: s3/portas;-50;0;133.0;700
+2026-10-23 14:49:06;Eliseu;fase2_interrogatorio;Pergunta: s3/destinos;-50;0;143.2;650
+2026-10-23 14:49:53;Eliseu;fase2_interrogatorio;Pergunta: s3/conexoes;-50;0;189.9;600
+2026-10-23 15:19:50;Eliseu;alerta;Formatar Máquina;-10;0;4.0;-10
+2026-10-23 15:26:49;Eliseu;alerta;Formatar Máquina;-10;0;9.5;-10
