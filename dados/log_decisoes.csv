@@ -203,3 +203,31 @@
 2026-10-23 16:59:01;Sabrina;fase2_interrogatorio;Pergunta: s3/destinos;-25;0;373.8;700
 2026-10-23 16:59:25;Sabrina;fase2_interrogatorio;Pergunta: s3/intervalo;-25;0;397.7;675
 2026-10-23 16:59:46;Sabrina;fase2_resultado;Acusação: s3;500;0;418.3;1175
+2026-10-26 08:07:03;Eliseu;alerta;Retirar Cabo de Rede;-2;0;8.6;-2
+2026-10-26 08:07:26;Eliseu;alerta;Varredura BitDefender;2;3;32.0;3
+2026-10-26 08:07:33;Eliseu;alerta;Remover Arquivo Instalador;-1;0;39.0;2
+2026-10-26 08:07:41;Eliseu;alerta;Limpar Histórico;-10;0;47.2;-8
+2026-10-26 08:07:47;Eliseu;alerta;Reiniciar;-10;0;52.8;-18
+2026-10-26 08:08:00;Eliseu;reiniciou;Desligar da Tomada;-3;0;12.8;-21
+2026-10-26 08:08:16;Eliseu;reiniciou;Gerenciador de Tarefas;0;0;28.9;-21
+2026-10-26 08:08:23;Eliseu;reiniciou;Chat do Gestor;4;3;36.1;-14
+2026-10-26 08:08:32;Eliseu;reiniciou;Isolar da Rede;5;3;45.1;-6
+2026-10-26 08:08:37;Eliseu;contido;Registrar Linha do Tempo;10;3;5.2;7
+2026-10-26 08:08:40;Eliseu;contido;Abrir Chamado (SOC);10;3;7.9;20
+2026-10-26 08:10:14;Eliseu;fase2_interrogatorio;Pergunta: s1/trafego;-25;0;86.7;975
+2026-10-26 08:10:46;Eliseu;fase2_interrogatorio;Pergunta: s1/portas;-25;0;118.6;950
+2026-10-26 08:11:00;Eliseu;fase2_interrogatorio;Pergunta: s1/destinos;-25;0;132.2;925
+2026-10-26 08:11:20;Eliseu;fase2_interrogatorio;Pergunta: s1/cpu;-25;0;152.8;900
+2026-10-26 08:11:28;Eliseu;fase2_interrogatorio;Pergunta: s1/conexoes;-25;0;160.8;875
+2026-10-26 08:11:42;Eliseu;fase2_interrogatorio;Pergunta: s1/arquivos;-25;0;174.4;850
+2026-10-26 08:11:53;Eliseu;fase2_interrogatorio;Pergunta: s1/requisicoes;-25;0;185.2;825
+2026-10-26 08:12:01;Eliseu;fase2_interrogatorio;Pergunta: s1/logs;-25;0;193.9;800
+2026-10-26 08:13:45;Eliseu;fase2_resultado;Acusação: s1;585;0;297.9;1385
+2026-10-26 15:51:39;Eliseu;alerta;Varredura BitDefender;2;3;8.1;5
+2026-10-26 15:51:48;Eliseu;alerta;Isolar da Rede;10;3;17.7;18
+2026-10-26 15:51:55;Eliseu;contido;Abrir Chamado (SOC);10;3;6.3;31
+2026-10-26 15:53:33;Eliseu;preservar;Registrar Linha do Tempo;10;0;98.1;41
+2026-10-26 15:54:45;Eliseu;alerta;Formatar Máquina;-10;0;2.7;-10
+2026-10-26 16:09:29;Eliseu;alerta;Isolar da Rede;10;3;5.8;13
+2026-10-26 16:09:33;Eliseu;contido;Registrar Linha do Tempo;10;3;4.4;26
+2026-10-26 16:09:38;Eliseu;contido;Abrir Chamado (SOC);10;3;9.0;39
