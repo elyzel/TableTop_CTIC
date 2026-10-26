@@ -1,5 +1,8 @@
 /*
-OBJETIVO: corrigir a inicialização do interrogatório, liberar consultas e manter caderno, orientação, resultado e som.
+OBJETIVO: apresentar as respostas no prontuário na sequência das
+perguntas realizadas, de cima para baixo, com rolagem vertical.
+Preserva a posição de leitura e acompanha novas respostas quando
+o usuário está próximo do final do prontuário.
 ARQUIVO: static/interrogatorio.js
 SUBSTITUA TODO O CONTEÚDO.
 */
@@ -22,8 +25,10 @@ SUBSTITUA TODO O CONTEÚDO.
 
   function rack() {
     const id = 'irack-' + (++svgId);
+
     const unidades = Array.from({length: 8}, (_, i) => {
       const y = 48 + i * 37;
+
       return `<g transform="translate(32 ${y})"><rect width="166" height="31" rx="3" fill="#26303b" stroke="#66717d"/><rect x="8" y="6" width="81" height="18" rx="2" fill="#12181e"/><path d="M12 10h70m-70 4h70m-70 4h70" stroke="#48525d" stroke-width="2"/><rect x="99" y="5" width="40" height="21" fill="#3b4652" stroke="#83909c"/><path d="M109 7v17m10-17v17m10-17v17" stroke="#10181f" stroke-width="3"/><circle cx="150" cy="10" r="2" fill="#7cb6bc"/><circle cx="150" cy="20" r="2" fill="#78946c"/><circle cx="4" cy="15" r="1.5" fill="#b6bdc4"/></g>`;
     }).join('');
 
@@ -47,24 +52,47 @@ SUBSTITUA TODO O CONTEÚDO.
           <a href="/">Fase 1</a>
         </div>
       </header>
+
       <main class="interrog-main">
         <p data-el="erro" role="alert" hidden></p>
         <div data-el="conteudo"></div>
       </main>
+
       <section class="interrog-intro" data-el="intro" hidden>
-        <h1 class="interrog-title">Fase 2<br>A sua máquina não é a única contaminada...</h1>
-        <div class="interrog-room">${rack()}${rack()}${rack()}${rack()}${rack()}</div>
+        <h1 class="interrog-title">
+          Fase 2<br>A sua máquina não é a única contaminada...
+        </h1>
+
+        <div class="interrog-room">
+          ${rack()}${rack()}${rack()}${rack()}${rack()}
+        </div>
+
         <div class="interrog-led"></div>
-        <button class="interrog-skip" data-el="pular" hidden>Pular animação</button>
+
+        <button class="interrog-skip" data-el="pular" hidden>
+          Pular animação
+        </button>
       </section>
+
       <div class="interrog-narr" data-el="narracao" hidden></div>
-      <dialog class="interrog-dialog" data-el="dialogo" aria-labelledby="interrog-dialog-title">
+
+      <dialog
+        class="interrog-dialog"
+        data-el="dialogo"
+        aria-labelledby="interrog-dialog-title"
+      >
         <div data-el="modal"></div>
       </dialog>
     `;
 
-    const el = nome => container.querySelector(`[data-el="${nome}"]`);
-    const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const el = nome => container.querySelector(
+      `[data-el="${nome}"]`
+    );
+
+    const reduz = matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+
     const marcas = ['', 'frio', 'morno', 'quente'];
 
     const labels = {
@@ -78,12 +106,16 @@ SUBSTITUA TODO O CONTEÚDO.
     let ocupado = false;
     let terminarTexto = null;
     let cancelarIntro = null;
+
     const notificados = new Set();
+    const posicoesProntuario = new Map();
 
     function criar(tag, texto, classe) {
       const n = document.createElement(tag);
+
       if (texto !== undefined) n.textContent = texto;
       if (classe) n.className = classe;
+
       return n;
     }
 
@@ -110,13 +142,21 @@ SUBSTITUA TODO O CONTEÚDO.
           ...extra
         })
       });
+
       const dado = await r.json();
-      if (!r.ok) throw new Error(dado.erro || 'Não foi possível concluir.');
+
+      if (!r.ok) {
+        throw new Error(
+          dado.erro || 'Não foi possível concluir.'
+        );
+      }
+
       return dado;
     }
 
     async function transacao(acao, extra = {}) {
       if (ocupado) return false;
+
       ocupado = true;
       el('erro').hidden = true;
 
@@ -146,9 +186,12 @@ SUBSTITUA TODO O CONTEÚDO.
 
     function digitar(texto, alvo = null) {
       terminarTexto?.();
+
       const n = el('narracao');
+
       n.hidden = false;
       n.textContent = '';
+
       if (alvo) alvo.textContent = '';
 
       return new Promise(resolve => {
@@ -157,8 +200,10 @@ SUBSTITUA TODO O CONTEÚDO.
 
         const fim = () => {
           clearInterval(timer);
+
           n.textContent = texto;
           if (alvo) alvo.textContent = texto;
+
           terminarTexto = null;
           resolve();
         };
@@ -173,6 +218,7 @@ SUBSTITUA TODO O CONTEÚDO.
         timer = setInterval(() => {
           n.textContent = texto.slice(0, ++i);
           window.TTUI?.toque(texto[i - 1]);
+
           if (alvo) alvo.textContent = n.textContent;
           if (i >= texto.length) fim();
         }, CINEMA.DIGITACAO_MS);
@@ -185,8 +231,11 @@ SUBSTITUA TODO O CONTEÚDO.
       const n = criar(
         'div',
         undefined,
-        'interrog-photo' + (grande ? ' interrog-portrait' : '')
+        'interrog-photo' + (
+          grande ? ' interrog-portrait' : ''
+        )
       );
+
       n.innerHTML = rack();
       return n;
     }
@@ -197,15 +246,21 @@ SUBSTITUA TODO O CONTEÚDO.
 
     function abrir(titulo) {
       if (el('dialogo').open) fechar();
+
       el('modal').replaceChildren();
+
       const h = criar('h2', titulo);
       h.id = 'interrog-dialog-title';
+
       el('modal').append(h);
       el('dialogo').showModal();
+
       return el('modal');
     }
 
     function parede() {
+      salvarRolagemProntuario();
+
       const area = el('conteudo');
       area.replaceChildren();
 
@@ -221,7 +276,10 @@ SUBSTITUA TODO O CONTEÚDO.
       const wall = criar('div', undefined, 'interrog-wall');
 
       d.suspeitos.forEach((s, i) => {
-        const qtd = Object.keys(d.respostas[s.id] || {}).length;
+        const qtd = Object.keys(
+          d.respostas[s.id] || {}
+        ).length;
+
         const card = botao('', () => interrogar(s.id));
         card.className = 'interrog-card';
 
@@ -233,7 +291,9 @@ SUBSTITUA TODO O CONTEÚDO.
           criar('small', `CASO 02 / FICHA ${i + 1}`),
           criar(
             'span',
-            qtd ? `INTERROGADO · ${qtd} perguntas` : 'AINDA NÃO INTERROGADO',
+            qtd
+              ? `INTERROGADO · ${qtd} perguntas`
+              : 'AINDA NÃO INTERROGADO',
             'interrog-stamp'
           )
         );
@@ -242,6 +302,24 @@ SUBSTITUA TODO O CONTEÚDO.
       });
 
       area.append(wall);
+    }
+
+    function salvarRolagemProntuario() {
+      const painel = container.querySelector(
+        '.interrog-prontuario-scroll'
+      );
+
+      if (!painel) return;
+
+      const pertoDoFim =
+        painel.scrollHeight
+        - painel.clientHeight
+        - painel.scrollTop <= 64;
+
+      posicoesProntuario.set(painel.dataset.chave, {
+        top: painel.scrollTop,
+        seguir: pertoDoFim
+      });
     }
 
     function prontuario(sid) {
@@ -253,31 +331,102 @@ SUBSTITUA TODO O CONTEÚDO.
         criar('p', `${s.apelido} · ${s.hostname}`)
       );
 
+      const painel = criar(
+        'div',
+        undefined,
+        'interrog-prontuario-scroll'
+      );
+
+      painel.dataset.chave = `${d.tentativa}:${sid}`;
+      painel.tabIndex = 0;
+      painel.setAttribute('role', 'region');
+
+      painel.setAttribute(
+        'aria-label',
+        `Respostas de ${s.apelido}, em ordem de consulta`
+      );
+
+      Object.assign(painel.style, {
+        maxHeight: '52vh',
+        minHeight: '200px',
+        overflowY: 'scroll',
+        overflowX: 'hidden',
+        overscrollBehavior: 'contain',
+        scrollbarGutter: 'stable',
+        overflowWrap: 'anywhere',
+        paddingRight: '12px'
+      });
+
       const respostas = d.respostas[sid] || {};
 
-      if (!Object.keys(respostas).length) {
-        n.append(criar('p', 'Nenhum exame consultado.'));
+      const perguntas = new Map(
+        d.perguntas.map(q => [q.id, q])
+      );
+
+      const ordem = [...new Set([
+        ...(d.ordem_respostas?.[sid] || []),
+        ...Object.keys(respostas)
+      ])];
+
+      if (!ordem.length) {
+        painel.append(
+          criar('p', 'Nenhum exame consultado.')
+        );
       }
 
-      d.perguntas.forEach(q => {
-        const r = respostas[q.id];
-        if (!r) return;
+      ordem.forEach(qid => {
+        const q = perguntas.get(qid);
+        const r = respostas[qid];
 
-        const linha = criar('div', undefined, 'interrog-exam');
+        if (!q || !r) return;
+
+        const linha = criar(
+          'div',
+          undefined,
+          'interrog-exam'
+        );
+
         linha.append(
           criar('strong', q.exame),
           criar('code', `${r.valor} ${r.unidade}`),
           criar('p', 'Observação clínica: ' + r.observacao)
         );
-        n.append(linha);
+
+        painel.append(linha);
+      });
+
+      painel.addEventListener(
+        'scroll',
+        salvarRolagemProntuario,
+        {passive: true}
+      );
+
+      n.append(painel);
+
+      requestAnimationFrame(() => {
+        if (!painel.isConnected) return;
+
+        const posicao = posicoesProntuario.get(
+          painel.dataset.chave
+        );
+
+        painel.scrollTop =
+          !posicao || posicao.seguir
+            ? painel.scrollHeight
+            : posicao.top;
+
+        salvarRolagemProntuario();
       });
 
       return n;
     }
 
     function interrogar(sid) {
+      salvarRolagemProntuario();
+
       const s = d.suspeitos.find(s => s.id === sid);
       const area = el('conteudo');
+
       area.replaceChildren();
 
       area.append(
@@ -285,7 +434,12 @@ SUBSTITUA TODO O CONTEÚDO.
         criar('h1', s.apelido)
       );
 
-      const cols = criar('div', undefined, 'interrog-columns');
+      const cols = criar(
+        'div',
+        undefined,
+        'interrog-columns'
+      );
+
       const retrato = criar('section');
 
       retrato.append(
@@ -300,7 +454,11 @@ SUBSTITUA TODO O CONTEÚDO.
       cols.append(retrato, prontuario(sid));
       area.append(cols);
 
-      const menu = criar('div', undefined, 'interrog-menu');
+      const menu = criar(
+        'div',
+        undefined,
+        'interrog-menu'
+      );
 
       d.perguntas.forEach(q => {
         const feita = !!d.respostas[sid]?.[q.id];
@@ -317,7 +475,9 @@ SUBSTITUA TODO O CONTEÚDO.
             ocupado = true;
 
             try {
-              await digitar(d.respostas[sid][q.id].fala);
+              await digitar(
+                d.respostas[sid][q.id].fala
+              );
             } finally {
               ocupado = false;
             }
@@ -333,12 +493,21 @@ SUBSTITUA TODO O CONTEÚDO.
 
     function caderno(corrigido = false, destino = null) {
       const box = destino || abrir(
-        corrigido ? 'Caderno corrigido' : 'Caderno de evidências'
+        corrigido
+          ? 'Caderno corrigido'
+          : 'Caderno de evidências'
       );
 
-      if (!destino) box.append(botao('Fechar caderno', fechar));
+      if (!destino) {
+        box.append(botao('Fechar caderno', fechar));
+      }
 
-      const scroll = criar('div', undefined, 'interrog-scroll');
+      const scroll = criar(
+        'div',
+        undefined,
+        'interrog-scroll'
+      );
+
       const table = criar('table');
       const head = criar('thead');
       const tr = criar('tr');
@@ -355,17 +524,22 @@ SUBSTITUA TODO O CONTEÚDO.
       const body = criar('tbody');
 
       const linhas = d.perguntas.filter(q =>
-        corrigido || d.suspeitos.some(s => d.respostas[s.id]?.[q.id])
+        corrigido
+        || d.suspeitos.some(s => d.respostas[s.id]?.[q.id])
       );
 
       if (!linhas.length) {
         box.append(
-          criar('p', 'As linhas aparecerão conforme você consultar os servidores.')
+          criar(
+            'p',
+            'As linhas aparecerão conforme você consultar os servidores.'
+          )
         );
       }
 
       linhas.forEach(q => {
         const row = criar('tr');
+
         row.append(
           criar('th', q.exame),
           criar('td', q.referencia)
@@ -374,7 +548,11 @@ SUBSTITUA TODO O CONTEÚDO.
         d.suspeitos.forEach(s => {
           const cel = criar('td');
           const r = d.respostas[s.id]?.[q.id];
-          const verdade = corrigido ? d.gabarito[s.id][q.id] : null;
+
+          const verdade = corrigido
+            ? d.gabarito[s.id][q.id]
+            : null;
+
           const chave = s.id + ':' + q.id;
 
           if (r || verdade) {
@@ -416,6 +594,7 @@ SUBSTITUA TODO O CONTEÚDO.
                     marca: proxima
                   })) {
                     b.textContent = labels[proxima];
+
                     b.setAttribute(
                       'aria-label',
                       `${s.apelido}, ${q.exame}: ${labels[proxima]}. Alterar marcação.`
@@ -425,6 +604,7 @@ SUBSTITUA TODO O CONTEÚDO.
               );
 
               b.disabled = d.finalizado;
+
               b.setAttribute(
                 'aria-label',
                 `${s.apelido}, ${q.exame}: ${labels[d.marcas[chave] || '']}. Alterar marcação.`
@@ -433,7 +613,9 @@ SUBSTITUA TODO O CONTEÚDO.
               cel.append(b);
             }
           } else {
-            cel.append(criar('span', '? — Não consultado'));
+            cel.append(
+              criar('span', '? — Não consultado')
+            );
           }
 
           row.append(cel);
@@ -448,37 +630,54 @@ SUBSTITUA TODO O CONTEÚDO.
 
       if (!corrigido && !d.finalizado) {
         d.suspeitos.forEach(s => {
-          const label = criar('label', 'Anotações: ' + s.apelido);
+          const label = criar(
+            'label',
+            'Anotações: ' + s.apelido
+          );
+
           const txt = criar('textarea');
           txt.maxLength = 1000;
           txt.value = d.notas[s.id] || '';
-          txt.setAttribute('aria-label', 'Anotações sobre ' + s.apelido);
+
+          txt.setAttribute(
+            'aria-label',
+            'Anotações sobre ' + s.apelido
+          );
+
           label.append(txt);
           box.append(label);
 
-          const salvar = botao('Salvar anotação', async () => {
-            if (await transacao(
-              'anotar',
-              {suspeito: s.id, texto: txt.value}
-            )) {
-              salvar.textContent = 'Anotação salva';
+          const salvar = botao(
+            'Salvar anotação',
+            async () => {
+              if (await transacao(
+                'anotar',
+                {suspeito: s.id, texto: txt.value}
+              )) {
+                salvar.textContent = 'Anotação salva';
+              }
             }
-          });
+          );
 
           box.append(salvar);
         });
       }
 
       if (!destino && !d.finalizado) {
-        box.append(botao('Escolher acusação', acusacao));
+        box.append(
+          botao('Escolher acusação', acusacao)
+        );
       }
     }
 
     function acusacao() {
       if (d.finalizado || !d.intro) return;
+
       terminarTexto?.();
 
-      const box = abrir('Uma acusação. Escolha com cuidado.');
+      const box = abrir(
+        'Uma acusação. Escolha com cuidado.'
+      );
 
       box.append(
         criar(
@@ -488,28 +687,46 @@ SUBSTITUA TODO O CONTEÚDO.
       );
 
       const select = criar('select');
-      select.setAttribute('aria-label', 'Servidor que será acusado');
 
-      const vazio = criar('option', 'Selecione o servidor');
+      select.setAttribute(
+        'aria-label',
+        'Servidor que será acusado'
+      );
+
+      const vazio = criar(
+        'option',
+        'Selecione o servidor'
+      );
+
       vazio.value = '';
       select.append(vazio);
 
       d.suspeitos.forEach(s => {
-        const o = criar('option', s.apelido + ' · ' + s.hostname);
+        const o = criar(
+          'option',
+          s.apelido + ' · ' + s.hostname
+        );
+
         o.value = s.id;
         select.append(o);
       });
 
       box.append(select);
 
-      const confirmar = botao('Confirmar acusação', async () => {
-        if (!select.value) return;
+      const confirmar = botao(
+        'Confirmar acusação',
+        async () => {
+          if (!select.value) return;
 
-        if (await transacao('acusar', {suspeito: select.value})) {
-          fechar();
-          resultado();
+          if (await transacao(
+            'acusar',
+            {suspeito: select.value}
+          )) {
+            fechar();
+            resultado();
+          }
         }
-      });
+      );
 
       confirmar.disabled = true;
 
@@ -517,7 +734,11 @@ SUBSTITUA TODO O CONTEÚDO.
         confirmar.disabled = !select.value;
       };
 
-      const botoes = criar('div', undefined, 'interrog-row');
+      const botoes = criar(
+        'div',
+        undefined,
+        'interrog-row'
+      );
 
       botoes.append(
         confirmar,
@@ -534,13 +755,24 @@ SUBSTITUA TODO O CONTEÚDO.
 
       const r = d.resultado;
       const area = el('conteudo');
+
       area.replaceChildren();
 
-      const box = criar('section', undefined, 'interrog-result');
+      const box = criar(
+        'section',
+        undefined,
+        'interrog-result'
+      );
 
       box.append(
-        criar('h1', r.vitoria ? 'Caso resolvido' : 'Acusação incorreta'),
-        criar('h2', 'Servidor infectado: ' + d.infectado.apelido),
+        criar(
+          'h1',
+          r.vitoria ? 'Caso resolvido' : 'Acusação incorreta'
+        ),
+        criar(
+          'h2',
+          'Servidor infectado: ' + d.infectado.apelido
+        ),
         criar(
           'p',
           `${d.infectado.hostname} mantinha um bot/RAT em comunicação com o C2 fictício 203.0.113.77 — atualizacao-cdn.example.`
@@ -568,8 +800,8 @@ SUBSTITUA TODO O CONTEÚDO.
         criar(
           'p',
           perdidas.length
-            ? 'Desvios do infectado não consultados: ' +
-              perdidas.map(q => q.exame).join(', ') + '.'
+            ? 'Desvios do infectado não consultados: '
+              + perdidas.map(q => q.exame).join(', ') + '.'
             : 'Você consultou todos os desvios disponíveis do infectado.'
         ),
         criar('h2', 'O que você aprendeu')
@@ -587,7 +819,11 @@ SUBSTITUA TODO O CONTEÚDO.
 
       box.append(ul);
 
-      const acoes = criar('div', undefined, 'interrog-row');
+      const acoes = criar(
+        'div',
+        undefined,
+        'interrog-row'
+      );
 
       acoes.append(
         botao('Tentar novamente', async () => {
@@ -613,7 +849,10 @@ SUBSTITUA TODO O CONTEÚDO.
 
       box.append(
         acoes,
-        criar('h2', 'Caderno corrigido — inclui evidências não consultadas')
+        criar(
+          'h2',
+          'Caderno corrigido — inclui evidências não consultadas'
+        )
       );
 
       area.append(box);
@@ -621,6 +860,7 @@ SUBSTITUA TODO O CONTEÚDO.
 
       if (!notificados.has(d.tentativa)) {
         notificados.add(d.tentativa);
+
         opcoes.onAtividadeConcluida?.({
           vitoria: r.vitoria,
           pontos: r.pontos,
@@ -632,6 +872,7 @@ SUBSTITUA TODO O CONTEÚDO.
     async function abertura() {
       const intro = el('intro');
       const controle = new AbortController();
+
       intro.className = 'interrog-intro';
       intro.hidden = false;
 
@@ -650,7 +891,11 @@ SUBSTITUA TODO O CONTEÚDO.
         }
 
         const id = setTimeout(() => {
-          controle.signal.removeEventListener('abort', abort);
+          controle.signal.removeEventListener(
+            'abort',
+            abort
+          );
+
           resolve();
         }, ms);
 
@@ -659,12 +904,18 @@ SUBSTITUA TODO O CONTEÚDO.
           reject(new Error('pular'));
         }
 
-        controle.signal.addEventListener('abort', abort, {once: true});
+        controle.signal.addEventListener(
+          'abort',
+          abort,
+          {once: true}
+        );
       });
 
       async function fala(texto) {
         await digitar(texto);
+
         const palavras = texto.trim().split(/\s+/).length;
+
         await espera(Math.max(
           CINEMA.LEITURA_MINIMA_MS,
           palavras * CINEMA.LEITURA_POR_PALAVRA_MS
@@ -673,26 +924,44 @@ SUBSTITUA TODO O CONTEÚDO.
 
       try {
         await espera(80);
+
         intro.classList.add('titulo');
+
         await espera(
-          (reduz ? 0 : CINEMA.FADE_MS) + CINEMA.TITULO_LEITURA_MS
+          (reduz ? 0 : CINEMA.FADE_MS)
+          + CINEMA.TITULO_LEITURA_MS
         );
 
         intro.classList.remove('titulo');
+
         await espera(
-          reduz ? 0 : CINEMA.FADE_MS + CINEMA.ESCURO_MS
+          reduz
+            ? 0
+            : CINEMA.FADE_MS + CINEMA.ESCURO_MS
         );
 
         intro.classList.add('azul');
-        await espera(reduz ? 0 : CINEMA.LUZ_AZUL_MS);
+
+        await espera(
+          reduz ? 0 : CINEMA.LUZ_AZUL_MS
+        );
 
         intro.classList.add('revelar');
-        await espera(reduz ? 0 : CINEMA.REVELACAO_MS);
+
+        await espera(
+          reduz ? 0 : CINEMA.REVELACAO_MS
+        );
 
         intro.classList.add('vermelho');
-        await espera(reduz ? 0 : CINEMA.VERMELHO_MS);
 
-        await fala('A máquina inicial foi apenas o primeiro sinal...');
+        await espera(
+          reduz ? 0 : CINEMA.VERMELHO_MS
+        );
+
+        await fala(
+          'A máquina inicial foi apenas o primeiro sinal...'
+        );
+
         await fala(
           'Alerta na rede. Três servidores, um canal aberto para fora. Um deles está doente. Investigue com cuidado: cada consulta tem um custo, e as evidências precisam fazer sentido juntas.'
         );
@@ -711,7 +980,13 @@ SUBSTITUA TODO O CONTEÚDO.
     }
 
     async function mostrarOrientacao() {
-      if (!d || !d.intro || d.finalizado || ocupado) return;
+      if (
+        !d
+        || !d.intro
+        || d.finalizado
+        || ocupado
+      ) return;
+
       parede();
       ocupado = true;
 
@@ -730,7 +1005,10 @@ SUBSTITUA TODO O CONTEÚDO.
     el('acusar').onclick = acusacao;
 
     if (!opcoes.pid) {
-      erro(new Error('Participante não identificado. Volte à Fase 1.'));
+      erro(new Error(
+        'Participante não identificado. Volte à Fase 1.'
+      ));
+
       return;
     }
 
@@ -747,6 +1025,7 @@ SUBSTITUA TODO O CONTEÚDO.
       }
     } catch (e) {
       erro(e);
+
       el('conteudo').append(
         botao('Atualizar página', () => location.reload())
       );

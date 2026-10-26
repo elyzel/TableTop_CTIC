@@ -1,12 +1,18 @@
 /*
-OBJETIVO: unificar o áudio, posicionar o ícone sem cobrir avisos,
-identificar os objetivos, corrigir o resultado da Fase 1 e incluir
-celebração e suspense instrumental na abertura da Fase 2.
+OBJETIVO: aguardar a narração e uma pausa de 800 ms antes da digitação
+do login; adicionar trilha de suspense e pulsação lenta ao título da
+Fase 1; remover as instruções para abrir navegador/e-mail, preservando
+a notificação de nova mensagem; manter os ajustes anteriores.
+
 ARQUIVO: static/apoio_ui.js
-SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
+SUBSTITUA TODO O CONTEÚDO.
+
+VALIDAÇÃO: sintaxe e comportamentos verificados com DOM, áudio e
+rotas simulados. Confira a aparência e o áudio real no navegador.
 */
 (() => {
   'use strict';
+
   if (window.TTUI) return;
 
   function iniciarApoio() {
@@ -15,12 +21,19 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
     let audio = null;
     let saida = null;
     let som = true;
+
+    try {
+      som = sessionStorage.getItem('tt_audio') !== 'off';
+    } catch {}
+
     let ultimoSom = 0;
     let guiaAtivo = false;
     let musicaTimer = null;
     let musicaPasso = 0;
     let musicaVermelha = false;
+    let musicaCena = null;
     let vitoriaTocada = false;
+    let derrotaTocada = false;
 
     const vozes = new Set();
     const musicaVozes = new Set();
@@ -34,6 +47,134 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
     estilo.textContent = `
       .tt-som {
         display: none !important;
+      }
+
+      #faseintro.on h1 {
+        animation: tt-titulo-suspense 2.8s ease-in-out infinite;
+      }
+
+      @keyframes tt-titulo-suspense {
+        0%, 100% {
+          opacity: 1;
+          filter: brightness(1);
+          text-shadow: 0 0 12px #86aaff33;
+        }
+
+        50% {
+          opacity: .62;
+          filter: brightness(.8);
+          text-shadow: 0 0 2px #86aaff11;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #faseintro.on h1 {
+          animation: none;
+        }
+      }
+
+      button:not(:disabled),
+      a[href] {
+        touch-action: manipulation;
+      }
+
+      button:not(:disabled) {
+        cursor: pointer;
+      }
+
+      button > * {
+        pointer-events: none;
+      }
+
+      #final {
+        z-index: 700 !important;
+      }
+
+      #final button,
+      .interrog-result button {
+        position: relative;
+        pointer-events: auto;
+        min-height: 44px;
+      }
+
+      body[data-tt-modo="resultado"] #narr,
+      body[data-tt-modo="resultado"] #notice,
+      body[data-tt-modo="resultado"] #dica {
+        display: none !important;
+        pointer-events: none !important;
+      }
+
+      .tt-cinema {
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+        pointer-events: none;
+        opacity: 0;
+        background: radial-gradient(
+          ellipse at center,
+          #0001 25%,
+          #0009 100%
+        );
+        transition: opacity .55s ease;
+        box-shadow:
+          inset 0 32px 0 #000,
+          inset 0 -32px 0 #000;
+      }
+
+      body[data-tt-modo="historia"] .tt-cinema {
+        opacity: 1;
+      }
+
+      #desk {
+        transition: transform .65s ease;
+        transform-origin: center;
+      }
+
+      body[data-tt-modo="historia"] #desk {
+        transform: scale(1.015);
+      }
+
+      .tt-sua-vez {
+        position: fixed;
+        left: 50%;
+        top: 16px;
+        transform: translate(-50%, -8px);
+        z-index: 95;
+        width: max-content;
+        max-width: calc(100vw - 128px);
+        box-sizing: border-box;
+        padding: 12px 20px;
+        border-radius: 10px;
+        background: #102236;
+        border: 1px solid #8bd9ff;
+        color: #fff;
+        font: 600 16px/1.4 "Segoe UI", sans-serif;
+        text-align: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .3s, transform .3s;
+      }
+
+      .tt-sua-vez.on {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      body[data-tt-modo="interacao"] #desktop-browser.guia {
+        outline: 2px solid #8bd9ff;
+        outline-offset: 3px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .tt-cinema,
+        .tt-sua-vez,
+        #desk {
+          transition: none !important;
+        }
+
+        body[data-tt-modo="historia"] #desk {
+          transform: none;
+        }
       }
 
       .tt-volume {
@@ -67,7 +208,7 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
         position: fixed;
         top: 12px;
         left: 12px;
-        z-index: 650;
+        z-index: 800;
       }
 
       #taskbar .tt-volume {
@@ -172,7 +313,7 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
           await audio.resume();
         }
       } catch {
-        // A primeira interação pode ser necessária.
+        // O navegador pode aguardar a primeira interação.
       }
     }
 
@@ -195,6 +336,7 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
 
       g.gain.setValueAtTime(0, inicio);
       g.gain.linearRampToValueAtTime(volume, inicio + .015);
+
       g.gain.exponentialRampToValueAtTime(
         .0001,
         inicio + duracao
@@ -254,36 +396,53 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
 
     function pararMusica(suave = true) {
       clearInterval(musicaTimer);
+
       musicaTimer = null;
+      musicaCena = null;
 
       encerrarVozes(musicaVozes, suave);
     }
 
     function acompanharAbertura() {
       const intro = document.querySelector('.interrog-intro');
+      const titulo1 = document.getElementById('faseintro');
 
-      const ativa =
+      const fase1 =
+        titulo1
+        && !titulo1.hidden
+        && titulo1.classList.contains('on');
+
+      const fase2 =
         intro
         && !intro.hidden
-        && intro.classList.contains('azul')
-        && som
-        && !document.hidden;
+        && intro.classList.contains('azul');
+
+      const cena = fase1
+        ? 'fase1'
+        : fase2
+          ? 'fase2'
+          : null;
 
       musicaVermelha =
-        !!intro?.classList.contains('vermelho');
+        cena === 'fase2'
+        && intro.classList.contains('vermelho');
 
-      if (!ativa) {
+      if (!cena || !som || document.hidden) {
         pararMusica();
         return;
       }
 
-      if (musicaTimer || audio?.state !== 'running') return;
+      if (audio?.state !== 'running') return;
 
+      if (musicaTimer && musicaCena === cena) return;
+
+      pararMusica();
+
+      musicaCena = cena;
       musicaPasso = 0;
 
       const tocar = () => {
-        // Arpejos originais em ré menor.
-        // Não utiliza gravação de terceiros.
+        // Trilha original sintetizada em ré menor.
         const acordes = [
           [146.83, 174.61, 220, 293.66],
           [116.54, 146.83, 174.61, 233.08],
@@ -351,6 +510,14 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
 
     function alternarAudio() {
       som = !som;
+
+      try {
+        sessionStorage.setItem(
+          'tt_audio',
+          som ? 'on' : 'off'
+        );
+      } catch {}
+
       rotuloSom();
 
       if (!som) {
@@ -396,34 +563,267 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
       ) return;
 
       ultimoSom = audio.currentTime;
-
       nota(520, .035, .018);
     }
 
     function celebrar() {
-      if (vitoriaTocada) return;
+      if (vitoriaTocada || derrotaTocada) return;
 
       vitoriaTocada = true;
+      vinheta(true);
+    }
 
-      // Vinheta curta, tocada apenas na primeira exibição
-      // do resultado com todos os objetivos concluídos.
-      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
-        nota(
-          f,
-          i === 3 ? 1.4 : .35,
-          .045,
-          i * .27,
-          'triangle'
+    function vinheta(vitoria) {
+      pararMusica(false);
+      encerrarVozes(vozes);
+
+      if (vitoria) {
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+          nota(
+            f,
+            i === 3 ? 1.4 : .35,
+            .045,
+            i * .27,
+            'triangle'
+          );
+        });
+
+        [523.25, 659.25, 783.99].forEach(f => {
+          nota(f, 1.5, .023, 1.08);
+        });
+      } else {
+        [392, 349.23, 311.13, 261.63].forEach((f, i) => {
+          nota(
+            f,
+            i === 3 ? 1.5 : .65,
+            .04,
+            i * .42,
+            'triangle'
+          );
+        });
+
+        [130.81, 155.56, 196].forEach(f => {
+          nota(f, 1.6, .02, 1.3);
+        });
+      }
+    }
+
+    document.addEventListener(
+      'tabletop:atividadeConcluida',
+      evento => {
+        if (typeof evento.detail?.vitoria === 'boolean') {
+          vinheta(evento.detail.vitoria);
+        }
+      }
+    );
+
+    let modo = 'neutro';
+    let avisoVezTimer = null;
+
+    const cinema = document.createElement('div');
+    cinema.className = 'tt-cinema';
+    cinema.setAttribute('aria-hidden', 'true');
+
+    const suaVez = document.createElement('div');
+    suaVez.className = 'tt-sua-vez';
+    suaVez.setAttribute('role', 'status');
+    suaVez.setAttribute('aria-live', 'polite');
+
+    document.body.append(cinema, suaVez);
+
+    function definirModo(novo, mensagem = '') {
+      if (modo === novo && !mensagem) return;
+
+      modo = novo;
+      document.body.dataset.ttModo = novo;
+
+      const mesa = document.getElementById('desk');
+
+      if (mesa) {
+        mesa.inert = novo === 'historia';
+      }
+
+      clearTimeout(avisoVezTimer);
+
+      suaVez.classList.remove('on');
+      suaVez.textContent = '';
+
+      if (novo === 'interacao' && mensagem) {
+        suaVez.textContent = mensagem;
+        suaVez.classList.add('on');
+
+        avisoVezTimer = setTimeout(() => {
+          suaVez.classList.remove('on');
+          suaVez.textContent = '';
+        }, 2400);
+      }
+
+      posicionarSom();
+    }
+
+    function integrarCinemaFase1() {
+      const faseAnterior = introFase;
+
+      introFase = async () => {
+        definirModo('historia');
+        return faseAnterior();
+      };
+
+      introLogin = async () => {
+        definirModo('historia');
+
+        const login = document.getElementById('winlogin');
+
+        login.hidden = false;
+
+        document.getElementById('login-user').textContent = '';
+        document.getElementById('login-pass').textContent = '';
+
+        document.getElementById('login-status').textContent =
+          'Iniciando sessão do usuário...';
+
+        await sleep(50);
+
+        login.classList.add('on');
+
+        const texto =
+          'Maria inicia mais um dia de trabalho. Tudo parece seguir a rotina...';
+
+        narrar(texto);
+
+        // Aguarda a conclusão real da narração.
+        // O clique para completar o texto também é respeitado.
+        while (
+          document.getElementById('narr').textContent !== texto
+        ) {
+          await sleep(30);
+        }
+
+        // Separa os dois sons de digitação.
+        await sleep(3500);
+        pararNarracao();
+
+        await digitarTexto(
+          document.getElementById('login-user'),
+          'maria.silva',
+          90
         );
-      });
 
-      [523.25, 659.25, 783.99].forEach(f => {
-        nota(f, 1.5, .023, 1.08);
-      });
+        document.getElementById('login-status').textContent =
+          'Digitando senha...';
+
+        await sleep(300);
+
+        await digitarTexto(
+          document.getElementById('login-pass'),
+          '••••••••••',
+          90
+        );
+
+        document.getElementById('login-status').textContent =
+          'Entrando no Windows...';
+
+        await sleep(3000);
+
+        document.getElementById('preto')
+          .classList.add('on');
+
+        await sleep(700);
+
+        login.classList.remove('on');
+
+        await sleep(350);
+
+        login.hidden = true;
+
+        document.getElementById('desk').hidden = false;
+
+        await sleep(250);
+
+        document.getElementById('preto')
+          .classList.remove('on');
+
+        await sleep(700);
+      };
+
+      prepararInteracaoPosLogin = async () => {
+        pregame = 'aguarda_browser';
+
+        pararNarracao();
+
+        document.getElementById('desktop-browser')
+          .classList.add('guia');
+
+        definirModo('interacao');
+
+        mostrarNotice(
+          'Uma nova mensagem acaba de chegar.',
+          'info',
+          '📧 NOVO E-MAIL RECEBIDO',
+          10000
+        );
+      };
+
+      const dicaAnterior = mostrarDica;
+
+      mostrarDica = (texto, ...extras) => {
+        if (
+          /navegador|favorito\s+e-?mail/i.test(String(texto))
+        ) return;
+
+        dicaAnterior(texto, ...extras);
+      };
+
+      const phishingAnterior = phishingAutomatico;
+
+      phishingAutomatico = async () => {
+        definirModo('historia');
+
+        try {
+          return await phishingAnterior();
+        } finally {
+          if (modo === 'historia') {
+            pararNarracao();
+            definirModo('interacao');
+          }
+        }
+      };
+
+      const jogoAnterior = iniciarJogo;
+
+      iniciarJogo = async () => {
+        pararNarracao();
+        definirModo('interacao');
+
+        await jogoAnterior();
+
+        if (
+          pregame === 'jogo'
+          && est?.status === 'jogando'
+        ) {
+          definirModo(
+            'interacao',
+            'Sua vez de agir — escolha sua resposta'
+          );
+        }
+      };
+
+      const comecarAnterior = comecar;
+
+      comecar = async () => {
+        try {
+          return await comecarAnterior();
+        } finally {
+          if (!document.getElementById('inicio').hidden) {
+            definirModo('neutro');
+          }
+        }
+      };
     }
 
     async function tutorial(etapas, raiz = document) {
       if (guiaAtivo) return;
+
       guiaAtivo = true;
 
       return new Promise(resolve => {
@@ -490,8 +890,8 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
 
           if (atual !== alvo) {
             removerAlvo();
-            alvo = atual;
 
+            alvo = atual;
             restaurarTab = alvo.getAttribute('tabindex');
             restaurarRole = alvo.getAttribute('role');
 
@@ -530,6 +930,7 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
           fim = true;
 
           clearInterval(timer);
+
           removerAlvo();
           painel.remove();
           moldura.remove();
@@ -616,6 +1017,7 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
           if (fim) return;
 
           removerAlvo();
+
           indice++;
           transicao = false;
 
@@ -648,6 +1050,7 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
             }
 
             transicao = true;
+
             setTimeout(avancar, 0);
             return;
           }
@@ -807,7 +1210,8 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
       let destino = document.body;
 
       if (
-        barra
+        modo !== 'historia'
+        && barra
         && mesa
         && !mesa.hidden
         && inicio?.hidden
@@ -852,8 +1256,6 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
 
       if (!document.getElementById('final')) return;
 
-      // Usa a infraestrutura existente, sem alterar
-      // os cálculos de pontuação do servidor.
       bip = (f, d, tipo = 'sine') => {
         nota(f, d, .05, 0, tipo);
       };
@@ -874,8 +1276,6 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
       };
 
       mostrarNotice = (texto, tipo, titulo, ...extras) => {
-        // A mudança de etapa não representa outro
-        // objetivo de contenção.
         if (
           est?.status === 'jogando'
           && texto === est.evento
@@ -897,6 +1297,8 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
 
       mostrarFinal = () => {
         pregame = 'final';
+
+        definirModo('resultado');
 
         clearInterval(poll);
         fechar();
@@ -1079,7 +1481,6 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
         ).parentElement;
 
         botoes.classList.add('tt-acoes-final');
-
         historico.after(botoes);
 
         const erro = document.getElementById('erro-reinicio');
@@ -1093,7 +1494,18 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
 
         posicionarSom();
 
+        const formatou = (est.historico || []).some(h => (
+          h.acao === 'Formatar Máquina'
+        ));
+
         if (
+          formatou
+          && !derrotaTocada
+          && !vitoriaTocada
+        ) {
+          derrotaTocada = true;
+          vinheta(false);
+        } else if (
           obj.total > 0
           && obj.concluidos === obj.total
         ) {
@@ -1101,8 +1513,8 @@ SUBSTITUA TODO O CONTEÚDO. Não exige outros arquivos nem downloads de áudio.
         }
       };
 
-      // Também atende a uma partida já encerrada
-      // ao recarregar a página.
+      integrarCinemaFase1();
+
       if (est?.status === 'finalizado') {
         mostrarFinal();
       }

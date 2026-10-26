@@ -1,7 +1,17 @@
 <!--
-OBJETIVO: corrigir a inicialização da Fase 1 e carregar os arquivos na ordem correta.
+OBJETIVO: informar a reprovação após executar Formatar Máquina,
+ocultar o avanço para a Fase 2 e manter o reinício disponível.
+Preserva o histórico, a música triste e os ajustes anteriores.
+
 ARQUIVO: templates/participante.html
 SUBSTITUA TODO O CONTEÚDO.
+
+Os arquivos de áudio, bloqueio e tempos de leitura não precisam
+ser alterados. O cursor demonstrativo permanece conforme sua
+última configuração.
+
+VALIDAÇÃO: comportamento do resultado verificado com DOM e áudio
+simulados; confira a apresentação no navegador.
 -->
 <!doctype html>
 <html lang="pt-BR">
@@ -9,6 +19,7 @@ SUBSTITUA TODO O CONTEÚDO.
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Estação de Trabalho</title>
+
   <link rel="stylesheet" href="{{ url_for('static', filename='participante.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='cinematica.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='apoio_ui.css') }}">
@@ -18,8 +29,12 @@ SUBSTITUA TODO O CONTEÚDO.
     <div class="caixa" style="max-width:440px">
       <h1>Exercício TableTop</h1>
       <p>Identifique-se e clique em Começar.</p>
+
       <input id="nome" placeholder="Seu nome" maxlength="40">
-      <button class="btn" onclick="comecar()">Começar</button>
+
+      <button class="btn" onclick="comecar()">
+        Começar
+      </button>
     </div>
   </section>
 
@@ -31,26 +46,36 @@ SUBSTITUA TODO O CONTEÚDO.
     <div class="login-box">
       <div class="login-avatar">👤</div>
       <div class="login-user-title">Maria Silva</div>
+
       <div class="login-field">
         <div class="label">Usuário</div>
         <div class="value" id="login-user"></div>
       </div>
+
       <div class="login-field">
         <div class="label">Senha</div>
         <div class="value" id="login-pass"></div>
       </div>
-      <div id="login-status">Aguardando início da sessão...</div>
+
+      <div id="login-status">
+        Aguardando início da sessão...
+      </div>
     </div>
   </section>
 
   <section id="desk" hidden>
     <div id="area">
       <div id="desktop-icons">
-        <div id="desktop-browser" class="deskicon" onclick="abrirNavegadorParticipante()">
+        <div
+          id="desktop-browser"
+          class="deskicon"
+          onclick="abrirNavegadorParticipante()"
+        >
           <div class="img">🌐</div>
           Navegador
         </div>
       </div>
+
       <div class="grade" id="grade" hidden></div>
     </div>
 
@@ -59,13 +84,30 @@ SUBSTITUA TODO O CONTEÚDO.
         <div class="browser-line1">
           <span class="browser-controls">● ● ●</span>
           <span>🌐 Navegador</span>
-          <div class="address" id="address">https://www.gooogli.local</div>
+
+          <div class="address" id="address">
+            https://www.gooogli.local
+          </div>
         </div>
+
         <div class="browser-line2">
           <span class="fav" id="fav-portal">Portal</span>
-          <span class="fav" id="fav-email" onclick="abrirEmailParticipante()">E-mail</span>
-          <span class="fav" id="fav-intranet">Intranet</span>
-          <span class="fav" id="fav-suporte">Suporte</span>
+
+          <span
+            class="fav"
+            id="fav-email"
+            onclick="abrirEmailParticipante()"
+          >
+            E-mail
+          </span>
+
+          <span class="fav" id="fav-intranet">
+            Intranet
+          </span>
+
+          <span class="fav" id="fav-suporte">
+            Suporte
+          </span>
         </div>
       </div>
 
@@ -73,52 +115,115 @@ SUBSTITUA TODO O CONTEÚDO.
         <div class="gooogli-logo">
           <span>G</span><span>o</span><span>o</span><span>o</span><span>g</span><span>l</span><span>i</span>
         </div>
-        <div class="searchbox">🔍 Pesquisar no Goooogli</div>
+
+        <div class="searchbox">
+          🔍 Pesquisar no Goooogli
+        </div>
       </div>
 
       <div id="mail-app">
         <div class="mail-sidebar">
           <div class="mail-title">Caixa de Entrada</div>
+
           <div class="mail-list">
             <div class="mail-row" id="email-novo">
               <div class="from">Financeiro - Cobranças</div>
-              <div class="subject">POSSÍVEL DÍVIDA EM ABERTO - REGULARIZE AGORA</div>
-              <div class="preview">Identificamos uma possível pendência financeira...</div>
+
+              <div class="subject">
+                POSSÍVEL DÍVIDA EM ABERTO - REGULARIZE AGORA
+              </div>
+
+              <div class="preview">
+                Identificamos uma possível pendência financeira...
+              </div>
             </div>
+
             <div class="mail-row lido">
               <div class="from">RH</div>
-              <div class="subject">Comunicado interno - atualização cadastral</div>
-              <div class="preview">Favor revisar seus dados até sexta-feira.</div>
+
+              <div class="subject">
+                Comunicado interno - atualização cadastral
+              </div>
+
+              <div class="preview">
+                Favor revisar seus dados até sexta-feira.
+              </div>
             </div>
+
             <div class="mail-row lido">
               <div class="from">Infraestrutura</div>
-              <div class="subject">Janela de manutenção programada</div>
-              <div class="preview">Serviços internos terão indisponibilidade controlada.</div>
+
+              <div class="subject">
+                Janela de manutenção programada
+              </div>
+
+              <div class="preview">
+                Serviços internos terão indisponibilidade controlada.
+              </div>
             </div>
+
             <div class="mail-row lido">
               <div class="from">Compras</div>
-              <div class="subject">Pedido de cotação - material de escritório</div>
-              <div class="preview">Encaminhamos atualização do pedido em aberto.</div>
+
+              <div class="subject">
+                Pedido de cotação - material de escritório
+              </div>
+
+              <div class="preview">
+                Encaminhamos atualização do pedido em aberto.
+              </div>
             </div>
+
             <div class="mail-row lido">
               <div class="from">Projetos</div>
-              <div class="subject">Reunião de acompanhamento</div>
-              <div class="preview">Ata e próximos passos da reunião de ontem.</div>
+
+              <div class="subject">
+                Reunião de acompanhamento
+              </div>
+
+              <div class="preview">
+                Ata e próximos passos da reunião de ontem.
+              </div>
             </div>
           </div>
         </div>
 
         <div class="mail-content">
-          <div id="email-placeholder">Selecione um e-mail para visualizar.</div>
+          <div id="email-placeholder">
+            Selecione um e-mail para visualizar.
+          </div>
+
           <div id="email-body">
-            <div class="mail-subject">POSSÍVEL DÍVIDA EM ABERTO - REGULARIZE AGORA</div>
-            <div class="mail-from">De: financeiro@cobrancas-online.com</div>
+            <div class="mail-subject">
+              POSSÍVEL DÍVIDA EM ABERTO - REGULARIZE AGORA
+            </div>
+
+            <div class="mail-from">
+              De: financeiro@cobrancas-online.com
+            </div>
+
             <p>Prezado cliente,</p>
-            <p>Identificamos uma possível pendência financeira vinculada aos seus dados. Para evitar juros adicionais ou possíveis restrições, consulte imediatamente os detalhes da cobrança.</p>
-            <p>Utilize o botão abaixo para visualizar a documentação referente à pendência.</p>
-            <a id="phish-link" href="javascript:void(0)">CONSULTAR DÍVIDA</a>
+
+            <p>
+              Identificamos uma possível pendência financeira vinculada
+              aos seus dados. Para evitar juros adicionais ou possíveis
+              restrições, consulte imediatamente os detalhes da cobrança.
+            </p>
+
+            <p>
+              Utilize o botão abaixo para visualizar a documentação
+              referente à pendência.
+            </p>
+
+            <a id="phish-link" href="javascript:void(0)">
+              CONSULTAR DÍVIDA
+            </a>
+
             <div id="download-box">
-              <div style="font-weight:bold;margin-bottom:10px">⬇ Baixando DIVIDA_PENDENTE.zip</div>
+              <div style="font-weight:bold;margin-bottom:10px">
+                ⬇ Baixando DIVIDA_PENDENTE.zip
+              </div>
+
               <div class="download-progress">
                 <div id="download-bar"></div>
               </div>
@@ -129,16 +234,29 @@ SUBSTITUA TODO O CONTEÚDO.
     </div>
 
     <div id="execwin" class="win">
-      <div class="tb" style="background:#ddd;color:#111">Explorador de Arquivos - Downloads</div>
+      <div class="tb" style="background:#ddd;color:#111">
+        Explorador de Arquivos - Downloads
+      </div>
+
       <div class="exec-content">
         <b>Downloads</b>
-        <div id="arquivo-baixado">📄 DIVIDA_PENDENTE.pdf.exe</div>
-        <div id="exec-status" style="margin-top:14px;color:#666;font-size:13px">Arquivo baixado.</div>
+
+        <div id="arquivo-baixado">
+          📄 DIVIDA_PENDENTE.pdf.exe
+        </div>
+
+        <div
+          id="exec-status"
+          style="margin-top:14px;color:#666;font-size:13px"
+        >
+          Arquivo baixado.
+        </div>
       </div>
     </div>
 
     <div id="bd" class="win">
       <div class="tb">🛡 BitDefender</div>
+
       <div>
         <b>Ameaça detectada</b><br><br>
         Arquivo suspeito:<br>
@@ -151,13 +269,20 @@ SUBSTITUA TODO O CONTEÚDO.
 
     <div id="detalhe" class="win">
       <div class="tb">Detalhes da ação</div>
+
       <div class="corpo">
         <div id="d-ic"></div>
         <div id="d-nome"></div>
         <div id="d-desc"></div>
+
         <div class="btns">
-          <button class="btn canc" onclick="fechar()">Cancelar</button>
-          <button class="btn exec" onclick="executar()">▶ Executar</button>
+          <button class="btn canc" onclick="fechar()">
+            Cancelar
+          </button>
+
+          <button class="btn exec" onclick="executar()">
+            ▶ Executar
+          </button>
         </div>
       </div>
     </div>
@@ -166,11 +291,30 @@ SUBSTITUA TODO O CONTEÚDO.
       <span>⊞</span>
       <span id="bdi">🛡 BitDefender</span>
       <span id="net">🌐 Rede</span>
-      <span>Risco <span class="risco"><span id="rb"></span></span></span>
-      <span>Objetivos: <b id="obj">0/3</b></span>
-      <span style="margin-left:auto">Pontos: <b id="pts">0</b></span>
-      <span>⏱ <b id="tempo">--:--</b></span>
-      <button id="mudo" onclick="alternarSom()">🔊</button>
+
+      <span>
+        Risco
+        <span class="risco">
+          <span id="rb"></span>
+        </span>
+      </span>
+
+      <span>
+        Objetivos: <b id="obj">0/3</b>
+      </span>
+
+      <span style="margin-left:auto">
+        Pontos: <b id="pts">0</b>
+      </span>
+
+      <span>
+        ⏱ <b id="tempo">--:--</b>
+      </span>
+
+      <button id="mudo" onclick="alternarSom()">
+        🔊
+      </button>
+
       <span id="relogio"></span>
     </div>
   </section>
@@ -187,21 +331,42 @@ SUBSTITUA TODO O CONTEÚDO.
 
   <div id="dica"></div>
 
-  <section id="final" hidden style="overflow:auto;align-items:flex-start">
+  <section
+    id="final"
+    hidden
+    style="overflow:auto;align-items:flex-start"
+  >
     <div class="caixa" style="margin:auto">
       <h2 id="f-t"></h2>
       <p id="f-x"></p>
-      <p>Pontuação da Fase 1: <b id="f-p"></b></p>
+
+      <p>
+        Pontuação da Fase 1: <b id="f-p"></b>
+      </p>
+
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin:20px 0">
-        <button id="reiniciar-fase1" class="btn" type="button" style="background:#40516b">
+        <button
+          id="reiniciar-fase1"
+          class="btn"
+          type="button"
+          style="background:#40516b"
+        >
           Reiniciar Fase 1
         </button>
-        <button id="avancar-fase2" class="btn" type="button" style="background:#176cc2">
+
+        <button
+          id="avancar-fase2"
+          class="btn"
+          type="button"
+          style="background:#176cc2"
+        >
           Avançar para Fase 2 →
         </button>
       </div>
+
       <p id="erro-reinicio" role="alert" hidden></p>
-      <h3>Debriefing</h3>
+
+      <h3>Suas ações e pontuações</h3>
       <div id="f-h"></div>
     </div>
   </section>
@@ -209,5 +374,93 @@ SUBSTITUA TODO O CONTEÚDO.
   <script src="{{ url_for('static', filename='apoio_ui.js') }}"></script>
   <script src="{{ url_for('static', filename='participante.js') }}"></script>
   <script src="{{ url_for('static', filename='fase1_ajustes.js') }}"></script>
+  <script src="{{ url_for('static', filename='bloqueio_animacoes.js') }}"></script>
+
+  <script>
+    /*
+    OBJETIVO: aplicar a reprovação à tela final, preservando
+    o histórico e a música de resultado de apoio_ui.js.
+    */
+    (() => {
+      function formatou(estado) {
+        return (estado?.historico || []).some(
+          item => item.acao === 'Formatar Máquina'
+        );
+      }
+
+      function aplicarReprovacao() {
+        if (!est || est.status !== 'finalizado') return;
+
+        const reprovado = formatou(est);
+
+        const avancar = document.getElementById(
+          'avancar-fase2'
+        );
+
+        if (avancar) {
+          avancar.hidden = reprovado;
+          avancar.disabled = reprovado;
+
+          avancar.setAttribute(
+            'aria-disabled',
+            String(reprovado)
+          );
+        }
+
+        document.getElementById(
+          'reiniciar-fase1'
+        ).hidden = false;
+
+        if (!reprovado) return;
+
+        const titulo = document.getElementById('f-t');
+
+        titulo.textContent =
+          'Reprovado na Fase 1 — evidências destruídas pela formatação';
+
+        titulo.className = 'f-ruim';
+
+        document.getElementById('f-x').textContent =
+          'A formatação foi executada antes da conclusão da investigação e destruiu evidências importantes. Reinicie a Fase 1 para tentar novamente. O avanço para a Fase 2 está bloqueado nesta tentativa.';
+      }
+
+      function instalar() {
+        // Executa depois da integração de apoio_ui.js.
+        const finalAnterior = mostrarFinal;
+
+        mostrarFinal = () => {
+          finalAnterior();
+          aplicarReprovacao();
+        };
+
+        document.getElementById(
+          'avancar-fase2'
+        )?.addEventListener(
+          'click',
+          evento => {
+            if (!formatou(est)) return;
+
+            evento.preventDefault();
+            evento.stopImmediatePropagation();
+
+            aplicarReprovacao();
+          },
+          true
+        );
+
+        aplicarReprovacao();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener(
+          'DOMContentLoaded',
+          instalar,
+          {once: true}
+        );
+      } else {
+        instalar();
+      }
+    })();
+  </script>
 </body>
 </html>

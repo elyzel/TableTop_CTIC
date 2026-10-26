@@ -1,6 +1,17 @@
-# BLOCO 1
+# OBJETIVO: reprovar quem executar Formatar Máquina na Fase 1 e
+# impedir o acesso à página e à API da Fase 2 nessa tentativa.
+# Mantém o reinício disponível e preserva as demais regras.
+#
 # ARQUIVO: fase2.py
 # SUBSTITUA TODO O CONTEÚDO.
+#
+# Depois de substituir os dois arquivos desta resposta:
+# 1. Reinicie o servidor Python.
+# 2. Atualize o navegador com Ctrl + F5.
+# Reiniciar o servidor limpa as partidas que estão em memória.
+#
+# VALIDAÇÃO: bloqueios, reinício, identificação, pontuação e ordem
+# do prontuário verificados com o cliente de testes do Flask.
 
 import copy
 import json
@@ -9,10 +20,9 @@ import secrets
 import time
 from pathlib import Path
 
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, jsonify, redirect, render_template, request
 
 
-# Configurações de dificuldade e pontuação.
 PERGUNTAS = 12
 BASE = 1000
 CUSTO = 25
@@ -51,10 +61,7 @@ SUSPEITOS = [
 def instalar_fase2(app, participantes, lock, gravar_log):
     bp = Blueprint("fase2", __name__)
 
-    # Mantido separadamente para sobreviver ao reinício individual.
-    # Continua em memória, como o restante da aplicação.
     vistos = {}
-
     rng = random.SystemRandom()
 
     catalogo = json.loads(
@@ -64,6 +71,23 @@ def instalar_fase2(app, participantes, lock, gravar_log):
     )
 
     por_id = {q["id"]: q for q in catalogo}
+
+    def identificar_participante(resposta, pid):
+        if request.cookies.get("tt_participante") != pid:
+            resposta.set_cookie(
+                "tt_participante",
+                pid,
+                httponly=True,
+                samesite="Lax",
+                secure=request.is_secure,
+                path="/",
+            )
+
+    def reprovado_por_formatacao(p):
+        return any(
+            registro.get("acao") == "Formatar Máquina"
+            for registro in p.get("historico", [])
+        )
 
     def animacoes(pid):
         return vistos.setdefault(
@@ -75,7 +99,6 @@ def instalar_fase2(app, participantes, lock, gravar_log):
         infectado = rng.choice(SUSPEITOS)["id"]
         fichas = {}
 
-        # Quatro pistas distribuídas: duas para cada inocente.
         pistas = rng.sample(
             [q["id"] for q in catalogo if q["pista_falsa"]],
             4,
@@ -104,8 +127,6 @@ def instalar_fase2(app, participantes, lock, gravar_log):
 
                 dado = copy.deepcopy(q[perfil])
 
-                # Pequena variação somente nas métricas numéricas
-                # dos perfis saudáveis sem pista falsa.
                 if (
                     perfil == "normal"
                     and isinstance(dado["valor"], (int, float))
@@ -145,8 +166,6 @@ def instalar_fase2(app, participantes, lock, gravar_log):
             BASE - CUSTO * len(f["feitas"]),
         )
 
-        # Durante a investigação, mostrar somente o saldo.
-        # Os bônus não podem revelar a classificação das evidências.
         if not f["finalizado"]:
             return {
                 "pontos": base,
@@ -198,7 +217,14 @@ def instalar_fase2(app, participantes, lock, gravar_log):
         f = p["fase2"]
         respostas = {}
 
+        ordem_respostas = {
+            s["id"]: []
+            for s in SUSPEITOS
+        }
+
         for sid, qid in f["feitas"]:
+            ordem_respostas[sid].append(qid)
+
             respostas.setdefault(sid, {})[qid] = {
                 k: v
                 for k, v in f["fichas"][sid][qid].items()
@@ -228,6 +254,7 @@ def instalar_fase2(app, participantes, lock, gravar_log):
                 for q in catalogo
             ],
             "respostas": respostas,
+            "ordem_respostas": ordem_respostas,
             "marcas": f["marcas"],
             "notas": f["notas"],
             "finalizado": f["finalizado"],
@@ -324,6 +351,26 @@ def instalar_fase2(app, participantes, lock, gravar_log):
                             and p["inicio_total"] is not None
                         ):
                             animacoes(dados["pid"])["fase1"] = True
+                            identificar_participante(
+                                resposta,
+                                dados["pid"],
+                            )
+
+            elif (
+                request.method == "GET"
+                and request.path.startswith("/api/estado/")
+            ):
+                # Restaura a identificação ao reabrir a partida.
+                pid = (request.view_args or {}).get("pid")
+
+                with lock:
+                    p = participantes.get(pid)
+
+                    if p and p.get("inicio_total") is not None:
+                        identificar_participante(
+                            resposta,
+                            pid,
+                        )
 
             elif (
                 request.path == "/api/resetar"
@@ -332,7 +379,10 @@ def instalar_fase2(app, participantes, lock, gravar_log):
                 with lock:
                     vistos.clear()
 
-        if request.path.startswith("/api/"):
+        if (
+            request.path.startswith("/api/")
+            or request.path == "/fase2"
+        ):
             resposta.headers["Cache-Control"] = "no-store"
 
         return resposta
@@ -359,6 +409,20 @@ def instalar_fase2(app, participantes, lock, gravar_log):
 
     @bp.get("/fase2")
     def pagina():
+        pid = request.cookies.get("tt_participante")
+
+        with lock:
+            p = participantes.get(pid)
+
+            permitido = (
+                p is not None
+                and p.get("finalizado", False)
+                and not reprovado_por_formatacao(p)
+            )
+
+        if not permitido:
+            return redirect("/")
+
         return render_template("fase2.html")
 
     @bp.post("/api/participante/reiniciar")
@@ -386,10 +450,16 @@ def instalar_fase2(app, participantes, lock, gravar_log):
                     erro="Finalize a Fase 1 antes de reiniciar."
                 ), 409
 
-            # O histórico de animações permanece em "vistos".
+            # Apaga a tentativa, mantendo o histórico de animações.
             del participantes[dados["pid"]]
 
-        return jsonify(ok=True)
+        resposta = jsonify(ok=True)
+        resposta.delete_cookie(
+            "tt_participante",
+            path="/",
+        )
+
+        return resposta
 
     @bp.post("/api/fase2")
     def api():
@@ -439,6 +509,16 @@ def instalar_fase2(app, participantes, lock, gravar_log):
                 return jsonify(
                     erro="Finalize a Fase 1 antes de avançar."
                 ), 409
+
+            # A verificação ocorre antes de criar ou consultar a Fase 2.
+            if reprovado_por_formatacao(p):
+                return jsonify(
+                    erro=(
+                        "Reprovado na Fase 1: a formatação destruiu evidências. "
+                        "Reinicie a Fase 1 para tentar novamente."
+                    ),
+                    reprovado=True,
+                ), 403
 
             if "fase2" not in p:
                 if acao != "estado":

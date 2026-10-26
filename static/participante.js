@@ -273,7 +273,7 @@ $('fav-email')?.addEventListener('click', abrirEmailParticipante);
 async function phishingAutomatico() {
   $('email-novo').classList.add('destacado');
   narrar('A usuária se desesperou, e infelizmente baixou o anexo e o executou...');
-  await sleep(7000);
+  await sleep(3500);
   pararNarracao();
 
   await clicarDemo($('email-novo'));

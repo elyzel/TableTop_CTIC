@@ -231,3 +231,31 @@
 2026-10-26 16:09:29;Eliseu;alerta;Isolar da Rede;10;3;5.8;13
 2026-10-26 16:09:33;Eliseu;contido;Registrar Linha do Tempo;10;3;4.4;26
 2026-10-26 16:09:38;Eliseu;contido;Abrir Chamado (SOC);10;3;9.0;39
+2026-10-26 16:15:37;Eliseu;alerta;Formatar Máquina;-10;0;6.7;-10
+2026-10-26 16:16:49;Eliseu;alerta;Varredura BitDefender;2;3;3.6;5
+2026-10-26 16:16:54;Eliseu;alerta;Retirar Cabo de Rede;-2;0;8.6;3
+2026-10-26 16:17:01;Eliseu;alerta;Isolar da Rede;10;3;15.2;16
+2026-10-26 16:17:05;Eliseu;contido;Abrir Chamado (SOC);10;3;4.2;29
+2026-10-26 16:17:10;Eliseu;preservar;Remover Arquivo Instalador;-1;0;5.0;28
+2026-10-26 16:17:13;Eliseu;preservar;Registrar Linha do Tempo;10;3;7.8;41
+2026-10-26 16:19:00;Eliseu;fase2_interrogatorio;Pergunta: s1/conexoes;-25;0;89.7;975
+2026-10-26 16:19:15;Eliseu;fase2_resultado;Acusação: s1;500;0;104.8;1475
+2026-10-26 16:28:29;Eliseu;alerta;Formatar Máquina;-10;0;5.2;-10
+2026-10-26 16:29:19;Eliseu;fase2_interrogatorio;Pergunta: s1/destinos;-25;0;44.4;975
+2026-10-26 16:29:28;Eliseu;fase2_interrogatorio;Pergunta: s1/portas;-25;0;52.6;950
+2026-10-26 16:29:33;Eliseu;fase2_interrogatorio;Pergunta: s1/logins;-25;0;57.6;925
+2026-10-26 16:29:48;Eliseu;fase2_interrogatorio;Pergunta: s2/conexoes;-25;0;73.4;900
+2026-10-26 16:29:57;Eliseu;fase2_resultado;Acusação: s2;500;0;81.5;1400
+2026-10-26 16:47:26;Eli;alerta;Isolar da Rede;10;3;5.4;13
+2026-10-26 16:47:29;Eli;contido;Registrar Linha do Tempo;10;3;2.5;26
+2026-10-26 16:47:31;Eli;contido;Abrir Chamado (SOC);10;3;4.3;39
+2026-10-26 16:48:03;Eli;alerta;Formatar Máquina;-10;0;4.8;-10
+2026-10-26 16:48:51;Eli;fase2_interrogatorio;Pergunta: s2/destinos;-25;0;45.1;975
+2026-10-26 16:49:02;Eli;fase2_resultado;Acusação: s2;500;0;55.9;1475
+2026-10-26 17:05:50;Eli;alerta;Formatar Máquina;-10;0;1.9;-10
+2026-10-26 17:08:14;Eli;fase2_interrogatorio;Pergunta: s2/intervalo;-25;0;138.3;975
+2026-10-26 17:08:21;Eli;fase2_interrogatorio;Pergunta: s2/requisicoes;-25;0;145.2;950
+2026-10-26 17:08:27;Eli;fase2_interrogatorio;Pergunta: s2/portas;-25;0;151.2;925
+2026-10-26 17:08:33;Eli;fase2_interrogatorio;Pergunta: s2/trafego;-25;0;157.3;900
+2026-10-26 17:08:45;Eli;fase2_interrogatorio;Pergunta: s2/logs;-25;0;169.4;875
+2026-10-26 17:09:01;Eli;fase2_resultado;Acusação: s3;0;0;185.2;875
