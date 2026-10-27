@@ -210,10 +210,7 @@ SUBSTITUA TODO O CONTEÚDO.
 
         terminarTexto = fim;
 
-        if (reduz) {
-          fim();
-          return;
-        }
+        
 
         timer = setInterval(() => {
           n.textContent = texto.slice(0, ++i);

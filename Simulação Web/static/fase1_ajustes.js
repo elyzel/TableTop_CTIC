@@ -134,11 +134,8 @@ Carregue-o depois do script principal de participante.html.
     n.textContent = '';
     n.classList.add('on');
 
-    if (reduz) {
-      n.textContent = texto;
-      return;
-    }
 
+    
     let i = 0;
 
     timer = setInterval(() => {
