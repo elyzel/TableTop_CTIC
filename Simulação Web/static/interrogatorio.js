@@ -41,7 +41,7 @@ SUBSTITUA TODO O CONTEÚDO.
     container.innerHTML = `
       <header class="interrog-hud">
         <div>
-          <strong>CASO 02 · O servidor doente</strong>
+          <strong>CASO 02 · O servidor suspeito</strong>
           <span data-el="contador"></span>
           <div class="interrog-tokens" data-el="tokens"></div>
         </div>
@@ -210,7 +210,7 @@ SUBSTITUA TODO O CONTEÚDO.
 
         terminarTexto = fim;
 
-        
+
 
         timer = setInterval(() => {
           n.textContent = texto.slice(0, ++i);
@@ -960,7 +960,7 @@ SUBSTITUA TODO O CONTEÚDO.
         );
 
         await fala(
-          'Alerta na rede. Três servidores, um canal aberto para fora. Um deles está doente. Investigue com cuidado: cada consulta tem um custo, e as evidências precisam fazer sentido juntas.'
+          'Alerta na rede. Três servidores, um canal aberto para fora. Um deles está infectado. Investigue com cuidado: cada consulta tem um custo, e as evidências precisam fazer sentido juntas.'
         );
       } catch (e) {
         if (!controle.signal.aborted) throw e;
