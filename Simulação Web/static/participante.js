@@ -273,7 +273,7 @@ $('fav-email')?.addEventListener('click', abrirEmailParticipante);
 async function phishingAutomatico() {
   $('email-novo').classList.add('destacado');
   narrar('A usuária se desesperou, e infelizmente baixou o anexo e o executou...');
-  await sleep(3500);
+  await sleep(6500);
   pararNarracao();
 
   await clicarDemo($('email-novo'));
@@ -304,7 +304,7 @@ async function phishingAutomatico() {
   $('arquivo-baixado').style.background = '#ffe1e1';
   $('arquivo-baixado').style.border = '2px solid #c92828';
   narrar('O arquivo DIVIDA_PENDENTE.pdf.exe é executado.');
-  await sleep(2100);
+  await sleep(5000);
   pararNarracao();
 
   $('execwin').classList.remove('on');
@@ -325,7 +325,7 @@ async function phishingAutomatico() {
 
   await sleep(2600);
   narrar('O que deve ser feito primeiramente?');
-  await sleep(3300);
+  await sleep(5500);
   pararNarracao();
 
   $('bd').classList.remove('on');

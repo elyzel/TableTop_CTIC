@@ -234,6 +234,10 @@ Depois, execute:
 docker compose up -d --build
 ```
 
+```powershell
+docker compose up -d --force-recreate tabletop
+```
+
 Na primeira execução, o Docker irá:
 
 1. Baixar a imagem base do Python.

@@ -700,7 +700,7 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
         }
 
         // Separa os dois sons de digitação.
-        await sleep(3500);
+        await sleep(6000);
         pararNarracao();
 
         await digitarTexto(
