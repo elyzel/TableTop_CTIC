@@ -272,3 +272,54 @@
 2026-10-26 17:23:20;Eli;fase2_interrogatorio;Pergunta: s2/destinos;-25;0;60.8;950
 2026-10-26 17:23:27;Eli;fase2_interrogatorio;Pergunta: s3/destinos;-25;0;68.1;925
 2026-10-26 17:23:39;Eli;fase2_resultado;Acusação: s3;500;0;80.0;1425
+2026-10-27 09:23:05;Zé das Couves;alerta;Gerenciador de Tarefas;0;0;10.4;0
+2026-10-27 09:24:30;Zé das Couves;alerta;Varredura BitDefender;2;3;95.3;5
+2026-10-27 09:24:52;Zé das Couves;alerta;Retirar Cabo de Rede;-2;0;117.0;3
+2026-10-27 09:25:04;Zé das Couves;alerta;Isolar da Rede;10;0;128.9;13
+2026-10-27 09:25:44;Zé das Couves;contido;Registrar Linha do Tempo;10;3;39.8;26
+2026-10-27 09:25:49;Zé das Couves;contido;Abrir Chamado (SOC);10;3;45.7;39
+2026-10-27 09:30:36;Zé das Couves;fase2_interrogatorio;Pergunta: s1/edr;-25;0;240.3;975
+2026-10-27 09:31:05;Zé das Couves;fase2_interrogatorio;Pergunta: s1/logins;-25;0;269.4;950
+2026-10-27 09:31:30;Zé das Couves;fase2_interrogatorio;Pergunta: s1/reinicio;-25;0;294.0;925
+2026-10-27 09:31:51;Zé das Couves;fase2_interrogatorio;Pergunta: s1/requisicoes;-25;0;315.2;900
+2026-10-27 09:32:02;Zé das Couves;fase2_interrogatorio;Pergunta: s1/arquivos;-25;0;326.5;875
+2026-10-27 09:32:12;Zé das Couves;fase2_interrogatorio;Pergunta: s1/conexoes;-25;0;336.6;850
+2026-10-27 09:32:35;Zé das Couves;fase2_interrogatorio;Pergunta: s1/trafego;-25;0;358.8;825
+2026-10-27 09:32:47;Zé das Couves;fase2_interrogatorio;Pergunta: s1/cpu;-25;0;371.4;800
+2026-10-27 09:33:02;Zé das Couves;fase2_interrogatorio;Pergunta: s1/intervalo;-25;0;386.3;775
+2026-10-27 09:39:24;Zé das Couves;fase2_resultado;Acusação: s1;560;0;767.9;1335
+2026-10-27 09:44:47;Zé das Couves;alerta;Formatar Máquina;-10;0;8.2;-10
+2026-10-27 09:57:26;Eli;alerta;Formatar Máquina;-10;0;2.0;-10
+2026-10-27 09:57:39;Eli;alerta;Isolar da Rede;10;3;2.1;13
+2026-10-27 09:57:41;Eli;contido;Registrar Linha do Tempo;10;3;1.7;26
+2026-10-27 09:57:44;Eli;contido;Abrir Chamado (SOC);10;3;4.9;39
+2026-10-27 10:53:40;muca;alerta;Retirar Cabo de Rede;-2;0;18.5;-2
+2026-10-27 10:53:47;muca;alerta;Varredura BitDefender;2;3;25.2;3
+2026-10-27 10:53:56;muca;alerta;Abrir Chamado (SOC);6;3;34.0;12
+2026-10-27 10:54:06;muca;alerta;Isolar da Rede;10;3;43.7;25
+2026-10-27 10:54:26;muca;contido;Registrar Linha do Tempo;10;3;20.0;38
+2026-10-27 10:57:18;muca;fase2_interrogatorio;Pergunta: s1/edr;-25;0;162.6;975
+2026-10-27 10:57:40;muca;fase2_interrogatorio;Pergunta: s1/trafego;-25;0;185.0;950
+2026-10-27 10:58:34;muca;fase2_interrogatorio;Pergunta: s1/logs;-25;0;238.8;925
+2026-10-27 10:58:53;muca;fase2_interrogatorio;Pergunta: s1/portas;-25;0;258.2;900
+2026-10-27 10:59:22;muca;fase2_interrogatorio;Pergunta: s2/logs;-25;0;287.2;875
+2026-10-27 10:59:28;muca;fase2_interrogatorio;Pergunta: s2/cpu;-25;0;293.5;850
+2026-10-27 11:00:00;muca;fase2_interrogatorio;Pergunta: s2/edr;-25;0;325.1;825
+2026-10-27 11:00:21;muca;fase2_interrogatorio;Pergunta: s3/logins;-25;0;345.6;800
+2026-10-27 11:00:36;muca;fase2_interrogatorio;Pergunta: s3/requisicoes;-25;0;360.9;775
+2026-10-27 11:01:14;muca;fase2_interrogatorio;Pergunta: s3/logs;-25;0;398.8;750
+2026-10-27 11:02:31;muca;fase2_resultado;Acusação: s1;545;0;475.7;1295
+2026-10-27 11:04:32;muca;fase2_interrogatorio;Pergunta: s1/trafego;-25;0;18.3;975
+2026-10-27 11:04:41;muca;fase2_interrogatorio;Pergunta: s2/trafego;-25;0;27.0;950
+2026-10-27 11:04:45;muca;fase2_interrogatorio;Pergunta: s3/trafego;-25;0;31.1;925
+2026-10-27 11:04:56;muca;fase2_resultado;Acusação: s3;500;0;42.1;1425
+2026-10-27 11:07:36;muca;fase2_interrogatorio;Pergunta: s1/intervalo;-25;0;18.6;975
+2026-10-27 11:08:41;muca;fase2_interrogatorio;Pergunta: s1/cpu;-25;0;83.5;950
+2026-10-27 11:08:44;muca;fase2_interrogatorio;Pergunta: s1/edr;-25;0;86.3;925
+2026-10-27 11:08:46;muca;fase2_interrogatorio;Pergunta: s1/logs;-25;0;88.3;900
+2026-10-27 11:08:49;muca;fase2_interrogatorio;Pergunta: s1/trafego;-25;0;90.8;875
+2026-10-27 11:08:52;muca;fase2_interrogatorio;Pergunta: s1/arquivos;-25;0;93.8;850
+2026-10-27 11:12:04;muca;fase2_resultado;Acusação: s1;500;0;286.1;1350
+2026-10-27 11:13:36;muca;fase2_resultado;Acusação: s2;0;0;7.6;1000
+2026-10-27 11:13:47;muca;fase2_resultado;Acusação: s3;500;0;8.3;1500
+2026-10-27 11:15:10;ELi;alerta;Formatar Máquina;-10;0;1.7;-10
