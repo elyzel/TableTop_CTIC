@@ -259,3 +259,16 @@
 2026-10-26 17:08:33;Eli;fase2_interrogatorio;Pergunta: s2/trafego;-25;0;157.3;900
 2026-10-26 17:08:45;Eli;fase2_interrogatorio;Pergunta: s2/logs;-25;0;169.4;875
 2026-10-26 17:09:01;Eli;fase2_resultado;Acusação: s3;0;0;185.2;875
+2026-10-26 17:16:01;Eli;alerta;Formatar Máquina;-10;0;1.9;-10
+2026-10-26 17:18:06;Eli;alerta;Formatar Máquina;-10;0;1.9;-10
+2026-10-26 17:18:29;Eli;alerta;Isolar da Rede;10;3;2.0;13
+2026-10-26 17:18:34;Eli;contido;Varredura BitDefender;2;3;5.0;18
+2026-10-26 17:18:36;Eli;contido;Registrar Linha do Tempo;10;3;7.0;31
+2026-10-26 17:18:38;Eli;contido;Abrir Chamado (SOC);10;3;8.5;44
+2026-10-26 17:22:04;Eli;alerta;Isolar da Rede;10;3;6.6;13
+2026-10-26 17:22:09;Eli;contido;Registrar Linha do Tempo;10;3;4.8;26
+2026-10-26 17:22:15;Eli;contido;Abrir Chamado (SOC);10;3;10.9;39
+2026-10-26 17:23:12;Eli;fase2_interrogatorio;Pergunta: s1/destinos;-25;0;53.2;975
+2026-10-26 17:23:20;Eli;fase2_interrogatorio;Pergunta: s2/destinos;-25;0;60.8;950
+2026-10-26 17:23:27;Eli;fase2_interrogatorio;Pergunta: s3/destinos;-25;0;68.1;925
+2026-10-26 17:23:39;Eli;fase2_resultado;Acusação: s3;500;0;80.0;1425

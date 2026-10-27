@@ -1,0 +1,22 @@
+# OBJETIVO: iniciar o TableTop e preservar o CSV em um volume Docker.
+
+services:
+  tabletop:
+    image: tabletop-ctic:1.0.0
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "127.0.0.1:5000:5000"
+
+    volumes:
+      - tabletop_dados:/app/dados
+
+    restart: unless-stopped
+
+    init: true
+
+volumes:
+  tabletop_dados:

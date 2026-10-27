@@ -1,0 +1,4 @@
+# OBJETIVO: definir as dependências da aplicação dentro do contêiner.
+
+Flask==3.1.3
+gunicorn==26.2.0
