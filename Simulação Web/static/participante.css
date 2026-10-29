@@ -25,7 +25,11 @@ input{width:100%;padding:12px;background:#0b0f14;color:#fff;border:1px solid #2a
 #login-status{margin-top:18px;font-size:13px}
 #desk{position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,#2d6cdf,#0a1a4d 60%,#050a1f)}
 #area{position:absolute;inset:0 0 48px}
-#desktop-icons{position:absolute;left:28px;top:28px;z-index:6}
+#desktop-icons {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
 .deskicon{width:90px;text-align:center;padding:10px 5px;border-radius:8px;cursor:pointer;font-size:12px}
 .deskicon:hover,.deskicon.guia{background:#ffffff22;outline:2px solid #7fc4ff}
 .deskicon .img{font-size:46px;margin-bottom:4px}

@@ -323,3 +323,17 @@
 2026-10-27 11:13:36;muca;fase2_resultado;Acusação: s2;0;0;7.6;1000
 2026-10-27 11:13:47;muca;fase2_resultado;Acusação: s3;500;0;8.3;1500
 2026-10-27 11:15:10;ELi;alerta;Formatar Máquina;-10;0;1.7;-10
+2026-10-29 15:07:01;Eli;alerta;Formatar Máquina;-10;0;3.2;-10
+2026-10-29 15:35:27;Eli;alerta;Isolar da Rede;10;3;3.1;13
+2026-10-29 15:35:30;Eli;contido;Abrir Chamado (SOC);10;3;2.6;26
+2026-10-29 15:35:33;Eli;preservar;Registrar Linha do Tempo;10;3;3.0;39
+2026-10-29 15:36:34;Eli;fase2_interrogatorio;Pergunta: s1/destinos;-25;0;57.1;975
+2026-10-29 15:36:40;Eli;fase2_interrogatorio;Pergunta: s1/conexoes;-25;0;63.4;950
+2026-10-29 15:36:50;Eli;fase2_interrogatorio;Pergunta: s1/logs;-25;0;72.9;925
+2026-10-29 16:03:45;Eli;alerta;Registrar Linha do Tempo;6;3;1.6;9
+2026-10-29 16:03:50;Eli;alerta;Isolar da Rede;10;3;6.3;22
+2026-10-29 16:03:51;Eli;contido;Abrir Chamado (SOC);10;3;1.8;35
+2026-10-29 16:04:57;Eli;fase2_interrogatorio;Pergunta: s1/destinos;-25;0;61.2;975
+2026-10-29 16:05:03;Eli;fase2_interrogatorio;Pergunta: s1/portas;-25;0;68.0;950
+2026-10-29 16:06:19;Eli;fase2_interrogatorio;Pergunta: s2/requisicoes;-25;0;144.0;925
+2026-10-29 16:06:25;Eli;fase2_interrogatorio;Pergunta: s2/logs;-25;0;149.4;900

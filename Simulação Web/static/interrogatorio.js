@@ -1,8 +1,8 @@
 /*
-OBJETIVO: apresentar as respostas no prontuário na sequência das
-perguntas realizadas, de cima para baixo, com rolagem vertical.
-Preserva a posição de leitura e acompanha novas respostas quando
-o usuário está próximo do final do prontuário.
+OBJETIVO: reorganizar o Caderno de evidências em três áreas:
+Manual (referência saudável), Caderno de cada servidor e Geral
+(cruzamento dos três servidores e de todas as anotações), com
+marcação em um clique e nova leitura de Frio, Morno e Quente.
 ARQUIVO: static/interrogatorio.js
 SUBSTITUA TODO O CONTEÚDO.
 */
@@ -93,14 +93,30 @@ SUBSTITUA TODO O CONTEÚDO.
       '(prefers-reduced-motion: reduce)'
     ).matches;
 
-    const marcas = ['', 'frio', 'morno', 'quente'];
-
     const labels = {
-      '': 'Sem marca — clique para classificar',
-      frio: '❄ Frio — normal',
-      morno: '🌡 Morno — estranho',
-      quente: '🔥 Quente — suspeito'
+      '': 'Sem marca',
+      frio: '❄ Frio — dentro da referência',
+      morno: '🌡 Morno — fora da referência, com justificativa',
+      quente: '🔥 Quente — fora da referência, sem justificativa'
     };
+
+    const CURTOS = {
+      frio: '❄ Frio',
+      morno: '🌡 Morno',
+      quente: '🔥 Quente'
+    };
+
+    const ICONES = {frio: '❄', morno: '🌡', quente: '🔥'};
+
+    const REGRA = {
+      frio: 'Dentro da referência saudável.',
+      morno: 'Fugiu da referência, mas a observação traz um motivo registrado.',
+      quente: 'Fugiu da referência e nada explica.'
+    };
+
+    // true: o Manual lista os 12 exames desde o início.
+    // false: o Manual cresce conforme os exames são consultados.
+    const MANUAL_COMPLETO = false;
 
     let d;
     let ocupado = false;
@@ -108,6 +124,10 @@ SUBSTITUA TODO O CONTEÚDO.
     let cancelarIntro = null;
 
     const notificados = new Set();
+    const rascunhos = new Map();
+
+    let abaCaderno = null;
+    let celulaGeral = null;
     const posicoesProntuario = new Map();
 
     function criar(tag, texto, classe) {
@@ -339,9 +359,9 @@ SUBSTITUA TODO O CONTEÚDO.
       painel.setAttribute('role', 'region');
 
       painel.setAttribute(
-        'aria-label',
-        `Respostas de ${s.apelido}, em ordem de consulta`
-      );
+  'aria-label',
+  `Respostas de ${s.apelido}, da mais recente para a mais antiga`
+);
 
       Object.assign(painel.style, {
         maxHeight: '52vh',
@@ -361,9 +381,9 @@ SUBSTITUA TODO O CONTEÚDO.
       );
 
       const ordem = [...new Set([
-        ...(d.ordem_respostas?.[sid] || []),
-        ...Object.keys(respostas)
-      ])];
+  ...(d.ordem_respostas?.[sid] || []),
+  ...Object.keys(respostas)
+])].reverse();
 
       if (!ordem.length) {
         painel.append(
@@ -407,10 +427,7 @@ SUBSTITUA TODO O CONTEÚDO.
           painel.dataset.chave
         );
 
-        painel.scrollTop =
-          !posicao || posicao.seguir
-            ? painel.scrollHeight
-            : posicao.top;
+        painel.scrollTop = 0;
 
         salvarRolagemProntuario();
       });
@@ -488,23 +505,493 @@ SUBSTITUA TODO O CONTEÚDO.
       area.append(menu);
     }
 
-    function caderno(corrigido = false, destino = null) {
-      const box = destino || abrir(
-        corrigido
-          ? 'Caderno corrigido'
-          : 'Caderno de evidências'
+    /*
+    CADERNO DE EVIDÊNCIAS — três áreas:
+    Manual   → referência saudável de cada exame (igual para todos).
+    Servidor → respostas de um servidor comparadas com o manual.
+    Geral    → cruzamento dos três servidores e das anotações.
+    */
+
+    const examesVisiveis = () => d.perguntas.filter(q =>
+      MANUAL_COMPLETO
+      || d.suspeitos.some(s => d.respostas[s.id]?.[q.id])
+    );
+
+    const nomeCurto = s => s.apelido.replace(/^(O|A) /, '');
+
+    function legenda() {
+      const box = criar('div', undefined, 'interrog-legenda');
+
+      ['frio', 'morno', 'quente'].forEach(m => {
+        const item = criar(
+          'div',
+          undefined,
+          'interrog-legenda-item ' + m
+        );
+
+        item.append(
+          criar('strong', CURTOS[m]),
+          criar('span', REGRA[m])
+        );
+
+        box.append(item);
+      });
+
+      return box;
+    }
+
+    function controleMarcas(sid, q, redesenhar) {
+      const s = d.suspeitos.find(x => x.id === sid);
+      const chave = sid + ':' + q.id;
+      const atual = d.marcas[chave] || '';
+
+      const grupo = criar('div', undefined, 'interrog-marcas');
+      grupo.setAttribute('role', 'group');
+
+      grupo.setAttribute(
+        'aria-label',
+        `Classificar ${q.exame} de ${s.apelido}`
       );
+
+      ['frio', 'morno', 'quente'].forEach(m => {
+        const b = botao(CURTOS[m], async () => {
+          const nova = atual === m ? '' : m;
+
+          if (await transacao('marcar', {
+            suspeito: sid,
+            pergunta: q.id,
+            marca: nova
+          })) {
+            redesenhar(chave + ':' + m);
+          }
+        });
+
+        b.className = 'interrog-marca ' + m;
+        b.title = REGRA[m];
+        b.dataset.foco = chave + ':' + m;
+        b.disabled = d.finalizado;
+
+        b.setAttribute('aria-pressed', String(atual === m));
+        grupo.append(b);
+      });
+
+      return grupo;
+    }
+
+    function resumoOutros(sid, q) {
+      const outros = d.suspeitos
+        .filter(s => s.id !== sid)
+        .map(s => {
+          const feita = !!d.respostas[s.id]?.[q.id];
+          const m = d.marcas[s.id + ':' + q.id];
+
+          return `${nomeCurto(s)} ${
+            m ? ICONES[m] : (feita ? '·' : '?')
+          }`;
+        });
+
+      return criar(
+        'small',
+        'Outros servidores: ' + outros.join(' · '),
+        'interrog-outros'
+      );
+    }
+
+    function campoNota(s) {
+      const chave = d.tentativa + ':' + s.id;
+      const caixa = criar('div', undefined, 'interrog-nota');
+      const label = criar('label', 'Anotações: ' + s.apelido);
+      const txt = criar('textarea');
+
+      txt.maxLength = 1000;
+      txt.value = rascunhos.get(chave) ?? d.notas[s.id] ?? '';
+
+      txt.setAttribute(
+        'aria-label',
+        'Anotações sobre ' + s.apelido
+      );
+
+      const salvar = botao('Salvar anotação', async () => {
+        if (await transacao(
+          'anotar',
+          {suspeito: s.id, texto: txt.value}
+        )) {
+          rascunhos.delete(chave);
+          salvar.textContent = 'Anotação salva';
+        }
+      });
+
+      txt.addEventListener('input', () => {
+        rascunhos.set(chave, txt.value);
+        salvar.textContent = 'Salvar anotação';
+      });
+
+      label.append(txt);
+      caixa.append(label, salvar);
+
+      return caixa;
+    }
+
+    function paginaManual() {
+      const sec = criar('section');
+      const linhas = examesVisiveis();
+
+      sec.append(
+        criar('h3', '📗 Manual de referência saudável'),
+        criar(
+          'p',
+          'É o comportamento esperado de um servidor deste cluster, igual para os três. Compare cada resposta com ele. O manual cresce conforme você consulta.',
+          'interrog-dica'
+        ),
+        legenda()
+      );
+
+      if (!linhas.length) {
+        sec.append(criar(
+          'p',
+          'Nenhum exame consultado ainda. As linhas aparecerão conforme você interrogar os servidores.'
+        ));
+
+        return sec;
+      }
+
+      const scroll = criar('div', undefined, 'interrog-scroll');
+      const table = criar('table');
+      const tr = criar('tr');
+
+      [
+        'Exame',
+        'Pergunta feita',
+        'Referência saudável',
+        'Consultado em'
+      ].forEach(t => tr.append(criar('th', t)));
+
+      const head = criar('thead');
+      head.append(tr);
+      table.append(head);
+
+      const body = criar('tbody');
+
+      linhas.forEach(q => {
+        const n = d.suspeitos.filter(
+          s => d.respostas[s.id]?.[q.id]
+        ).length;
+
+        const row = criar('tr');
+
+        row.append(
+          criar('th', q.exame),
+          criar('td', q.pergunta),
+          criar('td', q.referencia),
+          criar('td', `${n} de ${d.suspeitos.length}`)
+        );
+
+        body.append(row);
+      });
+
+      table.append(body);
+      scroll.append(table);
+      sec.append(scroll);
+
+      return sec;
+    }
+
+    function paginaServidor(sid, redesenhar) {
+      const s = d.suspeitos.find(x => x.id === sid);
+      const sec = criar('section');
+
+      sec.append(
+        criar('h3', `📒 Caderno — ${s.apelido}`),
+        criar('p', `${s.hostname} · ${s.ip}`, 'interrog-dica')
+      );
+
+      const scroll = criar('div', undefined, 'interrog-scroll');
+      const linhas = examesVisiveis();
+
+      if (!linhas.length) {
+        scroll.append(criar(
+          'p',
+          'Nenhum exame consultado ainda. Interrogue um servidor para começar o caderno.'
+        ));
+      }
+
+      linhas.forEach(q => {
+        const r = d.respostas[sid]?.[q.id];
+        const linha = criar('div', undefined, 'interrog-linha');
+        const ref = criar('div');
+
+        ref.append(
+          criar('strong', q.exame),
+          criar('small', 'Referência: ' + q.referencia)
+        );
+
+        const resp = criar('div');
+
+        if (r) {
+          resp.append(
+            criar(
+              'div',
+              `${r.valor} ${r.unidade}`.trim(),
+              'interrog-valor'
+            ),
+            criar('small', '“' + r.fala + '”'),
+            criar('small', r.observacao),
+            controleMarcas(sid, q, redesenhar)
+          );
+        } else {
+          resp.append(
+            criar('span', '? — Ainda não consultado neste servidor')
+          );
+        }
+
+        resp.append(resumoOutros(sid, q));
+        linha.append(ref, resp);
+        scroll.append(linha);
+      });
+
+      sec.append(scroll);
+
+      if (!d.finalizado) {
+        sec.append(campoNota(s));
+      }
+
+      return sec;
+    }
+
+    function paginaGeral(redesenhar) {
+      const sec = criar('section');
+
+      sec.append(
+        criar('h3', '🗂️ Visão geral dos três servidores'),
+        criar(
+          'p',
+          'Cruze as marcas. Toque em uma célula para ver o detalhe e classificar.',
+          'interrog-dica'
+        )
+      );
+
+      const linhas = examesVisiveis();
+      const scroll = criar('div', undefined, 'interrog-scroll');
+
+      if (!linhas.length) {
+        scroll.append(criar(
+          'p',
+          'As linhas aparecerão conforme você consultar os servidores.'
+        ));
+      } else {
+        const table = criar('table', undefined, 'interrog-matriz');
+        const tr = criar('tr');
+
+        [
+          'Exame',
+          'Referência',
+          ...d.suspeitos.map(s => s.apelido),
+          'Padrão'
+        ].forEach(t => tr.append(criar('th', t)));
+
+        const head = criar('thead');
+        head.append(tr);
+        table.append(head);
+
+        const body = criar('tbody');
+
+        linhas.forEach(q => {
+          const row = criar('tr');
+
+          row.append(
+            criar('th', q.exame),
+            criar('td', q.referencia)
+          );
+
+          const quentes = [];
+
+          d.suspeitos.forEach(s => {
+            const r = d.respostas[s.id]?.[q.id];
+            const m = d.marcas[s.id + ':' + q.id] || '';
+            const cel = criar('td');
+
+            if (!r) {
+              cel.append(criar('span', '?'));
+              row.append(cel);
+              return;
+            }
+
+            if (m === 'quente') quentes.push(s);
+
+            const b = botao(
+              `${m ? ICONES[m] : '·'} ${r.valor} ${r.unidade}`.trim(),
+              () => {
+                celulaGeral = {sid: s.id, qid: q.id};
+                redesenhar();
+              }
+            );
+
+            b.className = 'interrog-celula' + (m ? ' ' + m : '');
+
+            b.setAttribute(
+              'aria-label',
+              `${s.apelido}, ${q.exame}: ${r.valor} ${r.unidade}. ${
+                m ? labels[m] : 'Sem marca'
+              }. Ver detalhe.`
+            );
+
+            b.setAttribute('aria-pressed', String(
+              celulaGeral?.sid === s.id && celulaGeral?.qid === q.id
+            ));
+
+            cel.append(b);
+            row.append(cel);
+          });
+
+          row.append(criar(
+            'td',
+            quentes.length === 1
+              ? `Só ${nomeCurto(quentes[0])} destoa`
+              : quentes.length > 1
+                ? `${quentes.length} servidores em 🔥`
+                : ''
+          ));
+
+          body.append(row);
+        });
+
+        const total = criar('tr');
+        total.append(criar('th', '🔥 Total por servidor'), criar('td'));
+
+        d.suspeitos.forEach(s => {
+          const n = Object.entries(d.marcas).filter(
+            ([k, v]) => k.startsWith(s.id + ':') && v === 'quente'
+          ).length;
+
+          total.append(criar('td', String(n)));
+        });
+
+        total.append(criar('td'));
+        body.append(total);
+
+        table.append(body);
+        scroll.append(table);
+      }
+
+      sec.append(scroll);
+
+      if (celulaGeral) {
+        const s = d.suspeitos.find(x => x.id === celulaGeral.sid);
+        const q = d.perguntas.find(x => x.id === celulaGeral.qid);
+        const r = d.respostas[celulaGeral.sid]?.[celulaGeral.qid];
+
+        if (s && q && r) {
+          const det = criar('div', undefined, 'interrog-detalhe');
+
+          det.append(
+            criar('strong', `${s.apelido} · ${q.exame}`),
+            criar('small', 'Referência: ' + q.referencia),
+            criar('div', `${r.valor} ${r.unidade}`.trim(), 'interrog-valor'),
+            criar('small', '“' + r.fala + '”'),
+            criar('small', r.observacao),
+            controleMarcas(s.id, q, redesenhar)
+          );
+
+          sec.append(det);
+        }
+      }
+
+      if (!d.finalizado) {
+        const grade = criar('div', undefined, 'interrog-notas-grid');
+
+        grade.append(...d.suspeitos.map(campoNota));
+        sec.append(
+          criar('h3', '📝 Anotações de todos os servidores'),
+          grade
+        );
+      }
+
+      return sec;
+    }
+
+    function caderno(corrigido = false, destino = null) {
+      if (corrigido) {
+        cadernoCorrigido(destino);
+        return;
+      }
+
+      const box = abrir('Caderno de evidências');
+      box.append(botao('Fechar caderno', fechar));
+
+      const secoes = [
+        {id: 'manual', rotulo: '📗 Manual'},
+        ...d.suspeitos.map(s => ({
+          id: s.id,
+          rotulo: '📒 ' + s.apelido
+        })),
+        {id: 'geral', rotulo: '🗂️ Geral'}
+      ];
+
+      if (!secoes.some(x => x.id === abaCaderno)) {
+        abaCaderno = d.suspeitos[0].id;
+      }
+
+      const abas = criar('div', undefined, 'interrog-abas');
+      abas.setAttribute('role', 'tablist');
+      abas.setAttribute('aria-label', 'Áreas do caderno');
+
+      const corpo = criar('div');
+      box.append(abas, corpo);
+
+      function desenhar(manterRolagem = false, foco = null) {
+        const antigo = corpo.querySelector('.interrog-scroll');
+        const topo = antigo ? antigo.scrollTop : 0;
+
+        abas.replaceChildren(...secoes.map(sec => {
+          const ativa = sec.id === abaCaderno;
+
+          const b = botao(sec.rotulo, () => {
+            abaCaderno = sec.id;
+            desenhar();
+          });
+
+          b.className = 'interrog-aba' + (ativa ? ' ativa' : '');
+          b.setAttribute('role', 'tab');
+          b.setAttribute('aria-selected', String(ativa));
+
+          return b;
+        }));
+
+        const redesenhar = f => desenhar(true, f);
+
+        corpo.replaceChildren(
+          abaCaderno === 'manual'
+            ? paginaManual()
+            : abaCaderno === 'geral'
+              ? paginaGeral(redesenhar)
+              : paginaServidor(abaCaderno, redesenhar)
+        );
+
+        const novo = corpo.querySelector('.interrog-scroll');
+        if (manterRolagem && novo) novo.scrollTop = topo;
+
+        if (foco) {
+          corpo.querySelector(
+            `[data-foco="${foco}"]`
+          )?.focus();
+        }
+      }
+
+      desenhar();
+
+      if (!d.finalizado) {
+        box.append(botao('Escolher acusação', acusacao));
+      }
+    }
+
+    function cadernoCorrigido(destino = null) {
+      const box = destino || abrir('Caderno corrigido');
 
       if (!destino) {
         box.append(botao('Fechar caderno', fechar));
       }
 
-      const scroll = criar(
-        'div',
-        undefined,
-        'interrog-scroll'
-      );
-
+      const scroll = criar('div', undefined, 'interrog-scroll');
       const table = criar('table');
       const head = criar('thead');
       const tr = criar('tr');
@@ -520,21 +1007,19 @@ SUBSTITUA TODO O CONTEÚDO.
 
       const body = criar('tbody');
 
-      const linhas = d.perguntas.filter(q =>
-        corrigido
-        || d.suspeitos.some(s => d.respostas[s.id]?.[q.id])
-      );
+      const descricao = {
+        anomalia: 'Desvio real do infectado',
+        justificada: 'Pista falsa com justificativa',
+        normal: 'Sem desvio relevante'
+      };
 
-      if (!linhas.length) {
-        box.append(
-          criar(
-            'p',
-            'As linhas aparecerão conforme você consultar os servidores.'
-          )
-        );
-      }
+      const esperada = {
+        anomalia: 'quente',
+        justificada: 'morno',
+        normal: 'frio'
+      };
 
-      linhas.forEach(q => {
+      d.perguntas.forEach(q => {
         const row = criar('tr');
 
         row.append(
@@ -545,74 +1030,37 @@ SUBSTITUA TODO O CONTEÚDO.
         d.suspeitos.forEach(s => {
           const cel = criar('td');
           const r = d.respostas[s.id]?.[q.id];
+          const verdade = d.gabarito[s.id][q.id];
+          const marca = d.marcas[s.id + ':' + q.id] || '';
+          const ex = r || verdade;
 
-          const verdade = corrigido
-            ? d.gabarito[s.id][q.id]
-            : null;
+          cel.append(
+            criar('div', `${ex.valor} ${ex.unidade}`),
+            criar('small', ex.observacao),
+            criar('strong', descricao[verdade.tipo])
+          );
 
-          const chave = s.id + ':' + q.id;
-
-          if (r || verdade) {
-            const ex = r || verdade;
+          if (r) {
+            const certa = marca === esperada[verdade.tipo];
 
             cel.append(
-              criar('div', `${ex.valor} ${ex.unidade}`),
-              criar('small', ex.observacao)
+              criar(
+                'small',
+                'Sua marca: ' + labels[marca]
+              ),
+              criar(
+                'small',
+                certa
+                  ? '✔ Marca coerente com a regra.'
+                  : 'Pela regra, o esperado era: '
+                    + labels[esperada[verdade.tipo]]
+              )
             );
-
-            if (corrigido) {
-              const descricao = {
-                anomalia: 'Desvio real do infectado',
-                justificada: 'Pista falsa com justificativa',
-                normal: 'Sem desvio relevante'
-              };
-
-              cel.append(
-                criar('strong', descricao[verdade.tipo]),
-                criar(
-                  'small',
-                  r
-                    ? 'Sua marca: ' + labels[d.marcas[chave] || '']
-                    : 'Não consultado durante a investigação.'
-                )
-              );
-            } else {
-              const b = botao(
-                labels[d.marcas[chave] || ''],
-                async () => {
-                  const proxima = marcas[
-                    (marcas.indexOf(d.marcas[chave] || '') + 1)
-                    % marcas.length
-                  ];
-
-                  if (await transacao('marcar', {
-                    suspeito: s.id,
-                    pergunta: q.id,
-                    marca: proxima
-                  })) {
-                    b.textContent = labels[proxima];
-
-                    b.setAttribute(
-                      'aria-label',
-                      `${s.apelido}, ${q.exame}: ${labels[proxima]}. Alterar marcação.`
-                    );
-                  }
-                }
-              );
-
-              b.disabled = d.finalizado;
-
-              b.setAttribute(
-                'aria-label',
-                `${s.apelido}, ${q.exame}: ${labels[d.marcas[chave] || '']}. Alterar marcação.`
-              );
-
-              cel.append(b);
-            }
           } else {
-            cel.append(
-              criar('span', '? — Não consultado')
-            );
+            cel.append(criar(
+              'small',
+              'Não consultado durante a investigação.'
+            ));
           }
 
           row.append(cel);
@@ -624,47 +1072,6 @@ SUBSTITUA TODO O CONTEÚDO.
       table.append(body);
       scroll.append(table);
       box.append(scroll);
-
-      if (!corrigido && !d.finalizado) {
-        d.suspeitos.forEach(s => {
-          const label = criar(
-            'label',
-            'Anotações: ' + s.apelido
-          );
-
-          const txt = criar('textarea');
-          txt.maxLength = 1000;
-          txt.value = d.notas[s.id] || '';
-
-          txt.setAttribute(
-            'aria-label',
-            'Anotações sobre ' + s.apelido
-          );
-
-          label.append(txt);
-          box.append(label);
-
-          const salvar = botao(
-            'Salvar anotação',
-            async () => {
-              if (await transacao(
-                'anotar',
-                {suspeito: s.id, texto: txt.value}
-              )) {
-                salvar.textContent = 'Anotação salva';
-              }
-            }
-          );
-
-          box.append(salvar);
-        });
-      }
-
-      if (!destino && !d.finalizado) {
-        box.append(
-          botao('Escolher acusação', acusacao)
-        );
-      }
     }
 
     function acusacao() {

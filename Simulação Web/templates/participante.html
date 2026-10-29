@@ -1,17 +1,36 @@
 <!--
-OBJETIVO: informar a reprovação após executar Formatar Máquina,
-ocultar o avanço para a Fase 2 e manter o reinício disponível.
-Preserva o histórico, a música triste e os ajustes anteriores.
+OBJETIVO:
+Garantir a presença do ícone do navegador, centralizá-lo na área de
+trabalho e ocultá-lo quando começar a escolha das ações.
 
 ARQUIVO: templates/participante.html
-SUBSTITUA TODO O CONTEÚDO.
+SUBSTITUA TODO O CONTEÚDO POR ESTE BLOCO.
 
-Os arquivos de áudio, bloqueio e tempos de leitura não precisam
-ser alterados. O cursor demonstrativo permanece conforme sua
-última configuração.
+REVISÃO:
+- O ícone é criado neste HTML.
+- A aparência e a visibilidade também dependem de CSS e JavaScript.
+- Este arquivo reforça a centralização e sincroniza a visibilidade
+  com a etapa atual da Fase 1.
+- O ícone usa SVG embutido, sem depender de emoji ou download.
+- O aviso "Clique no navegador" continua sob controle de apoio_ui.js.
+- As correções anteriores de digitação e iluminação devem permanecer
+  nos respectivos arquivos.
 
-VALIDAÇÃO: comportamento do resultado verificado com DOM e áudio
-simulados; confira a apresentação no navegador.
+RECOMENDAÇÃO:
+Teste usando Reiniciar Fase 1. Ao retomar uma tentativa que já está
+na escolha das ações, o navegador permanece oculto, como solicitado.
+
+VALIDAÇÃO:
+Estrutura, IDs e sintaxe do script conferidos.
+Visibilidade verificada em simulação de estados.
+A apresentação final deve ser conferida no navegador.
+
+APÓS SALVAR:
+Na pasta do compose.yaml, execute:
+docker compose build tabletop
+docker compose up -d --force-recreate tabletop
+
+Depois atualize o navegador com Ctrl + F5.
 -->
 <!doctype html>
 <html lang="pt-BR">
@@ -20,19 +39,100 @@ simulados; confira a apresentação no navegador.
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Estação de Trabalho</title>
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='participante.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='cinematica.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='apoio_ui.css') }}">
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='participante.css') }}"
+  >
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='cinematica.css') }}"
+  >
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='apoio_ui.css') }}"
+  >
+
+  <style>
+    /*
+    OBJETIVO: centralizar o navegador na área de trabalho,
+    respeitando a ocultação controlada pelo jogo.
+    */
+    #desktop-icons {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 6;
+    }
+
+    #desktop-icons[hidden],
+    #desktop-browser[hidden] {
+      display: none !important;
+    }
+
+    #desktop-browser {
+      appearance: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 120px;
+      min-height: 116px;
+      padding: 12px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: transparent;
+      color: #fff;
+      font: 600 15px/1.3 "Segoe UI", system-ui, sans-serif;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    #desktop-browser:hover,
+    #desktop-browser.guia {
+      background: #ffffff22;
+      outline: 2px solid #8bd9ff;
+      outline-offset: 3px;
+    }
+
+    #desktop-browser:focus-visible {
+      outline: 3px solid #fff;
+      outline-offset: 4px;
+    }
+
+    #desktop-browser .img {
+      display: block;
+      width: 58px;
+      height: 58px;
+      margin: 0;
+    }
+
+    #desktop-browser svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
 </head>
+
 <body>
   <section id="inicio">
     <div class="caixa" style="max-width:440px">
       <h1>Exercício TableTop</h1>
       <p>Identifique-se e clique em Começar.</p>
 
-      <input id="nome" placeholder="Seu nome" maxlength="40">
+      <input
+        id="nome"
+        placeholder="Seu nome"
+        maxlength="40"
+      >
 
-      <button class="btn" onclick="comecar()">
+      <button
+        class="btn"
+        type="button"
+        onclick="comecar()"
+      >
         Começar
       </button>
     </div>
@@ -66,14 +166,46 @@ simulados; confira a apresentação no navegador.
   <section id="desk" hidden>
     <div id="area">
       <div id="desktop-icons">
-        <div
+        <button
           id="desktop-browser"
           class="deskicon"
+          type="button"
+          aria-label="Abrir navegador"
           onclick="abrirNavegadorParticipante()"
         >
-          <div class="img">🌐</div>
-          Navegador
-        </div>
+          <span class="img" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none">
+              <circle
+                cx="32"
+                cy="32"
+                r="28"
+                fill="#176cc2"
+              />
+              <circle
+                cx="32"
+                cy="32"
+                r="26"
+                stroke="#b6e5ff"
+                stroke-width="2"
+              />
+              <ellipse
+                cx="32"
+                cy="32"
+                rx="12"
+                ry="26"
+                stroke="#e4f6ff"
+                stroke-width="2"
+              />
+              <path
+                d="M7 22H57M6 32H58M7 42H57M32 6V58"
+                stroke="#e4f6ff"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+
+          <span>Navegador</span>
+        </button>
       </div>
 
       <div class="grade" id="grade" hidden></div>
@@ -91,7 +223,9 @@ simulados; confira a apresentação no navegador.
         </div>
 
         <div class="browser-line2">
-          <span class="fav" id="fav-portal">Portal</span>
+          <span class="fav" id="fav-portal">
+            Portal
+          </span>
 
           <span
             class="fav"
@@ -123,11 +257,15 @@ simulados; confira a apresentação no navegador.
 
       <div id="mail-app">
         <div class="mail-sidebar">
-          <div class="mail-title">Caixa de Entrada</div>
+          <div class="mail-title">
+            Caixa de Entrada
+          </div>
 
           <div class="mail-list">
             <div class="mail-row" id="email-novo">
-              <div class="from">Financeiro - Cobranças</div>
+              <div class="from">
+                Financeiro - Cobranças
+              </div>
 
               <div class="subject">
                 POSSÍVEL DÍVIDA EM ABERTO - REGULARIZE AGORA
@@ -151,7 +289,9 @@ simulados; confira a apresentação no navegador.
             </div>
 
             <div class="mail-row lido">
-              <div class="from">Infraestrutura</div>
+              <div class="from">
+                Infraestrutura
+              </div>
 
               <div class="subject">
                 Janela de manutenção programada
@@ -163,7 +303,9 @@ simulados; confira a apresentação no navegador.
             </div>
 
             <div class="mail-row lido">
-              <div class="from">Compras</div>
+              <div class="from">
+                Compras
+              </div>
 
               <div class="subject">
                 Pedido de cotação - material de escritório
@@ -175,7 +317,9 @@ simulados; confira a apresentação no navegador.
             </div>
 
             <div class="mail-row lido">
-              <div class="from">Projetos</div>
+              <div class="from">
+                Projetos
+              </div>
 
               <div class="subject">
                 Reunião de acompanhamento
@@ -255,7 +399,9 @@ simulados; confira a apresentação no navegador.
     </div>
 
     <div id="bd" class="win">
-      <div class="tb">🛡 BitDefender</div>
+      <div class="tb">
+        🛡 BitDefender
+      </div>
 
       <div>
         <b>Ameaça detectada</b><br><br>
@@ -268,7 +414,9 @@ simulados; confira a apresentação no navegador.
     </div>
 
     <div id="detalhe" class="win">
-      <div class="tb">Detalhes da ação</div>
+      <div class="tb">
+        Detalhes da ação
+      </div>
 
       <div class="corpo">
         <div id="d-ic"></div>
@@ -276,11 +424,19 @@ simulados; confira a apresentação no navegador.
         <div id="d-desc"></div>
 
         <div class="btns">
-          <button class="btn canc" onclick="fechar()">
+          <button
+            class="btn canc"
+            type="button"
+            onclick="fechar()"
+          >
             Cancelar
           </button>
 
-          <button class="btn exec" onclick="executar()">
+          <button
+            class="btn exec"
+            type="button"
+            onclick="executar()"
+          >
             ▶ Executar
           </button>
         </div>
@@ -311,7 +467,11 @@ simulados; confira a apresentação no navegador.
         ⏱ <b id="tempo">--:--</b>
       </span>
 
-      <button id="mudo" onclick="alternarSom()">
+      <button
+        id="mudo"
+        type="button"
+        onclick="alternarSom()"
+      >
         🔊
       </button>
 
@@ -344,7 +504,9 @@ simulados; confira a apresentação no navegador.
         Pontuação da Fase 1: <b id="f-p"></b>
       </p>
 
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin:20px 0">
+      <div
+        style="display:flex;gap:12px;flex-wrap:wrap;margin:20px 0"
+      >
         <button
           id="reiniciar-fase1"
           class="btn"
@@ -378,7 +540,7 @@ simulados; confira a apresentação no navegador.
 
   <script>
     /*
-    OBJETIVO: aplicar a reprovação à tela final, preservando
+    OBJETIVO: preservar a reprovação após Formatar Máquina,
     o histórico e a música de resultado de apoio_ui.js.
     */
     (() => {
@@ -425,7 +587,6 @@ simulados; confira a apresentação no navegador.
       }
 
       function instalar() {
-        // Executa depois da integração de apoio_ui.js.
         const finalAnterior = mostrarFinal;
 
         mostrarFinal = () => {
@@ -459,6 +620,85 @@ simulados; confira a apresentação no navegador.
         );
       } else {
         instalar();
+      }
+    })();
+
+    /*
+    OBJETIVO:
+    Sincronizar a visibilidade do navegador com a etapa do jogo,
+    inclusive quando outros scripts alterarem seu atributo hidden.
+
+    O ícone pode aparecer nas etapas:
+    - aguarda_browser: participante deve abrir o navegador;
+    - aguarda_email: navegador aberto, antes de consultar o e-mail;
+    - automatico: sequência automática do phishing.
+
+    A janela do navegador fica acima do ícone enquanto está aberta.
+    O ícone é ocultado na orientação, nas ações e no resultado.
+    */
+    (() => {
+      function instalarControleNavegador() {
+        const mesa = document.getElementById('desk');
+        const grupo = document.getElementById('desktop-icons');
+        const navegador = document.getElementById('desktop-browser');
+        const grade = document.getElementById('grade');
+        const final = document.getElementById('final');
+
+        if (!mesa || !grupo || !navegador || !grade || !final) {
+          return;
+        }
+
+        function sincronizarNavegador() {
+          if (typeof pregame === 'undefined') return;
+
+          const etapaNavegador = [
+            'aguarda_browser',
+            'aguarda_email',
+            'automatico'
+          ].includes(pregame);
+
+          const ocultar =
+            mesa.hidden
+            || !final.hidden
+            || !grade.hidden
+            || !etapaNavegador;
+
+          // Só altera o DOM quando necessário, evitando ciclos.
+          if (grupo.hidden !== ocultar) {
+            grupo.hidden = ocultar;
+          }
+
+          if (navegador.hidden !== ocultar) {
+            navegador.hidden = ocultar;
+          }
+        }
+
+        const observador = new MutationObserver(
+          sincronizarNavegador
+        );
+
+        observador.observe(mesa, {
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['hidden', 'class']
+        });
+
+        observador.observe(final, {
+          attributes: true,
+          attributeFilter: ['hidden', 'class']
+        });
+
+        sincronizarNavegador();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener(
+          'DOMContentLoaded',
+          instalarControleNavegador,
+          {once: true}
+        );
+      } else {
+        instalarControleNavegador();
       }
     })();
   </script>

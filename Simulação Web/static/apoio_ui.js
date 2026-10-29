@@ -1,15 +1,28 @@
 /*
-OBJETIVO: aguardar a narração e uma pausa de 800 ms antes da digitação
-do login; adicionar trilha de suspense e pulsação lenta ao título da
-Fase 1; remover as instruções para abrir navegador/e-mail, preservando
-a notificação de nova mensagem; manter os ajustes anteriores.
+OBJETIVO:
+- Centralizar o ícone do navegador na área de trabalho.
+- Mostrar "Clique no navegador" por 4 segundos.
+- Ocultar o ícone quando começar a etapa de escolha das ações.
+- Explicar que as respostas aparecem no prontuário, com a mais recente no topo.
+- Preservar áudio, trilha de suspense, tutoriais e tela de resultados.
+- Manter 6 segundos de leitura após a narração inicial do login.
 
 ARQUIVO: static/apoio_ui.js
-SUBSTITUA TODO O CONTEÚDO.
+SUBSTITUA TODO O CONTEÚDO POR ESTE BLOCO.
 
-VALIDAÇÃO: sintaxe e comportamentos verificados com DOM, áudio e
-rotas simulados. Confira a aparência e o áudio real no navegador.
+REVISÃO:
+A ordem efetiva das respostas continua sendo controlada por interrogatorio.js.
+Mantenha nesse arquivo a alteração anterior que coloca a resposta mais recente
+no topo. Aqui são atualizadas as orientações sobre esse comportamento.
+
+RECOMENDAÇÃO:
+Mantenha as correções anteriores de digitação e iluminação nos demais arquivos.
+
+VALIDAÇÃO:
+Sintaxe e duração do aviso verificadas.
+Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Docker.
 */
+
 (() => {
   'use strict';
 
@@ -45,6 +58,16 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
     const estilo = document.createElement('style');
 
     estilo.textContent = `
+      #desktop-icons {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      #desktop-browser[hidden] {
+        display: none !important;
+      }
+
       .tt-som {
         display: none !important;
       }
@@ -264,6 +287,8 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
 
     document.head.append(estilo);
 
+    /* ---------- Controle de áudio ---------- */
+
     function rotuloSom() {
       const label = som ? 'Silenciar áudio' : 'Ativar áudio';
 
@@ -282,7 +307,6 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
           aria-hidden="true"
         >
           <path d="M11 5 6 9H3v6h3l5 4Z"/>
-
           ${
             som
               ? '<path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>'
@@ -403,6 +427,8 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
       encerrarVozes(musicaVozes, suave);
     }
 
+    /* ---------- Trilha de suspense ---------- */
+
     function acompanharAbertura() {
       const intro = document.querySelector('.interrog-intro');
       const titulo1 = document.getElementById('faseintro');
@@ -456,8 +482,7 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
         const indice =
           [0, 1, 2, 3, 2, 1, 3, 1][musicaPasso % 8];
 
-        const intensidade =
-          musicaVermelha ? .035 : .021;
+        const intensidade = musicaVermelha ? .035 : .021;
 
         nota(
           acorde[indice] * 2,
@@ -566,6 +591,8 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
       nota(520, .035, .018);
     }
 
+    /* ---------- Sons de conclusão ---------- */
+
     function celebrar() {
       if (vitoriaTocada || derrotaTocada) return;
 
@@ -617,6 +644,8 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
       }
     );
 
+    /* ---------- Modos de apresentação e avisos ---------- */
+
     let modo = 'neutro';
     let avisoVezTimer = null;
 
@@ -631,7 +660,7 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
 
     document.body.append(cinema, suaVez);
 
-    function definirModo(novo, mensagem = '') {
+    function definirModo(novo, mensagem = '', duracao = 2400) {
       if (modo === novo && !mensagem) return;
 
       modo = novo;
@@ -655,11 +684,13 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
         avisoVezTimer = setTimeout(() => {
           suaVez.classList.remove('on');
           suaVez.textContent = '';
-        }, 2400);
+        }, duracao);
       }
 
       posicionarSom();
     }
+
+    /* ---------- Integração cinematográfica da Fase 1 ---------- */
 
     function integrarCinemaFase1() {
       const faseAnterior = introFase;
@@ -691,15 +722,14 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
 
         narrar(texto);
 
-        // Aguarda a conclusão real da narração.
-        // O clique para completar o texto também é respeitado.
+        // Aguarda a conclusão da digitação antes da pausa de leitura.
         while (
           document.getElementById('narr').textContent !== texto
         ) {
           await sleep(30);
         }
 
-        // Separa os dois sons de digitação.
+        // Pausa de leitura após a narração completa.
         await sleep(6000);
         pararNarracao();
 
@@ -751,10 +781,16 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
 
         pararNarracao();
 
-        document.getElementById('desktop-browser')
-          .classList.add('guia');
+        const navegador = document.getElementById('desktop-browser');
 
-        definirModo('interacao');
+        navegador.hidden = false;
+        navegador.classList.add('guia');
+
+        definirModo(
+          'interacao',
+          'Clique no navegador',
+          4000
+        );
 
         mostrarNotice(
           'Uma nova mensagem acaba de chegar.',
@@ -792,6 +828,12 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
       const jogoAnterior = iniciarJogo;
 
       iniciarJogo = async () => {
+        const navegador = document.getElementById('desktop-browser');
+
+        // Oculta o ícone antes das orientações e da escolha das ações.
+        navegador.hidden = true;
+        navegador.classList.remove('guia');
+
         pararNarracao();
         definirModo('interacao');
 
@@ -820,6 +862,8 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
         }
       };
     }
+
+    /* ---------- Motor dos tutoriais interativos ---------- */
 
     async function tutorial(etapas, raiz = document) {
       if (guiaAtivo) return;
@@ -970,31 +1014,51 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
           proximo.hidden = etapa.modo !== 'continuar';
 
           if (etapa.exemploMarcas) {
-            const exemplo = document.createElement('button');
-            exemplo.type = 'button';
+            const grupo = document.createElement('div');
 
-            const labels = [
-              'Sem marca',
-              '❄ Frio — normal',
-              '🌡 Morno — estranho',
-              '🔥 Quente — suspeito'
+            grupo.style.cssText =
+              'display:flex;gap:6px;flex-wrap:wrap;margin:8px 0';
+
+            const dica = document.createElement('small');
+
+            dica.textContent =
+              'Toque em uma marca para ver o que ela significa.';
+
+            const marcas = [
+              ['❄ Frio', 'Dentro da referência saudável.'],
+              [
+                '🌡 Morno',
+                'Fugiu da referência, mas a observação traz um motivo registrado.'
+              ],
+              ['🔥 Quente', 'Fugiu da referência e nada explica.']
             ];
 
-            let m = 0;
+            const botoes = marcas.map(([rotulo, explicacao]) => {
+              const b = document.createElement('button');
 
-            exemplo.textContent = labels[0];
+              b.type = 'button';
+              b.textContent = rotulo;
+              b.setAttribute('aria-pressed', 'false');
 
-            exemplo.onclick = () => {
-              m = (m + 1) % labels.length;
-              exemplo.textContent = labels[m];
-            };
+              b.onclick = () => {
+                botoes.forEach(x => x.setAttribute(
+                  'aria-pressed',
+                  String(x === b)
+                ));
+
+                dica.textContent = explicacao;
+              };
+
+              grupo.append(b);
+              return b;
+            });
 
             const aviso = document.createElement('small');
 
             aviso.textContent =
               'Exemplo demonstrativo: não altera suas evidências.';
 
-            extra.append(exemplo, aviso);
+            extra.append(grupo, dica, aviso);
           }
 
           posicionar();
@@ -1124,6 +1188,8 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
       });
     }
 
+    /* ---------- API de apoio e orientações das fases ---------- */
+
     window.TTUI = {
       toque,
 
@@ -1165,8 +1231,16 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
           modo: 'continuar',
           texto:
             'Aqui você escolhe as perguntas. Cada consulta inédita ' +
-            'custa pontos. Perguntas já feitas permanecem no prontuário ' +
-            'e ficam bloqueadas para esse servidor.'
+            'custa pontos. A resposta aparece no prontuário do servidor. ' +
+            'A mais recente fica no topo e as anteriores ficam abaixo. ' +
+            'Perguntas já feitas ficam bloqueadas para esse servidor.'
+        },
+        {
+          alvo: '.interrog-prontuario-scroll',
+          modo: 'continuar',
+          texto:
+            'Este é o prontuário. Cada nova resposta é acrescentada no topo. ' +
+            'Use a rolagem para consultar as respostas anteriores.'
         },
         {
           alvo: '[data-el="caderno"]',
@@ -1180,9 +1254,10 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
           modo: 'continuar',
           exemploMarcas: true,
           texto:
-            'Após uma consulta, o resultado aparece nesta tabela. ' +
-            'Em cada célula preenchida, clique em Sem marca para ' +
-            'alternar entre Frio, Morno e Quente. Experimente o exemplo abaixo.'
+            'O caderno tem três áreas: o Manual, com a referência saudável; ' +
+            'uma aba para cada servidor; e a aba Geral, que cruza os três. ' +
+            'Compare cada resposta com a referência e marque Frio, Morno ' +
+            'ou Quente com um clique. Experimente o exemplo abaixo.'
         },
         {
           alvo: '.interrog-dialog textarea',
@@ -1194,6 +1269,8 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
         }
       ], raiz)
     };
+
+    /* ---------- Posicionamento do controle de áudio ---------- */
 
     function posicionarSom() {
       const inicio = document.getElementById('inicio');
@@ -1249,6 +1326,8 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
 
       acompanharAbertura();
     }
+
+    /* ---------- Integração da Fase 1 e tela de resultados ---------- */
 
     function integrarFase1() {
       const antigo = document.getElementById('mudo');
@@ -1519,6 +1598,8 @@ rotas simulados. Confira a aparência e o áudio real no navegador.
         mostrarFinal();
       }
     }
+
+    /* ---------- Inicialização ---------- */
 
     function integrar() {
       integrarFase1();

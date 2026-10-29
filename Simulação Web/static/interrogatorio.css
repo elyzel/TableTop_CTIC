@@ -395,6 +395,200 @@ COLE TODO O CONTEÚDO.
   }
 }
 
+/*
+CADERNO — abas (Manual · Servidores · Geral), marcação em um clique,
+matriz de comparação e anotações.
+*/
+
+.interrog-app .interrog-abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.interrog-app .interrog-dialog .interrog-aba {
+  background: #f7ecd2;
+  color: #26231d;
+  border: 1px solid #a38a5e;
+}
+
+.interrog-app .interrog-dialog .interrog-aba:hover {
+  background: #eadcb9;
+}
+
+.interrog-app .interrog-dialog .interrog-aba.ativa {
+  background: #32332d;
+  color: #fff;
+  border-color: #32332d;
+}
+
+.interrog-app .interrog-dialog h3 {
+  margin: 8px 0 4px;
+}
+
+.interrog-app .interrog-dica {
+  margin: 0 0 10px;
+  color: #5b5239;
+}
+
+.interrog-app .interrog-legenda {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+
+.interrog-app .interrog-legenda-item {
+  border-left: 6px solid #a38a5e;
+  background: #f7ecd2;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.interrog-app .interrog-legenda-item strong,
+.interrog-app .interrog-legenda-item span {
+  display: block;
+}
+
+.interrog-app .interrog-legenda-item.frio {
+  border-color: #1f5f9e;
+}
+
+.interrog-app .interrog-legenda-item.morno {
+  border-color: #b9791a;
+}
+
+.interrog-app .interrog-legenda-item.quente {
+  border-color: #a32a1e;
+}
+
+.interrog-app .interrog-linha {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 14px;
+  border-top: 1px dashed #ae9c7a;
+  padding: 12px 0;
+}
+
+.interrog-app .interrog-linha small,
+.interrog-app .interrog-detalhe small,
+.interrog-app .interrog-matriz td small {
+  display: block;
+  margin: 4px 0;
+  color: #4a4231;
+}
+
+.interrog-app .interrog-valor {
+  font: 700 18px/1.4 Consolas, monospace;
+}
+
+.interrog-app .interrog-outros {
+  font-size: 13px;
+  color: #5b5239;
+}
+
+.interrog-app .interrog-marcas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.interrog-app .interrog-dialog .interrog-marca {
+  background: #f7ecd2;
+  color: #26231d;
+  border: 1px solid #a38a5e;
+  padding: 7px 11px;
+  font-size: 14px;
+}
+
+.interrog-app .interrog-dialog .interrog-marca:hover {
+  background: #eadcb9;
+}
+
+.interrog-app .interrog-dialog .interrog-marca[aria-pressed="true"] {
+  font-weight: 700;
+  border-width: 2px;
+}
+
+.interrog-app .interrog-dialog .interrog-marca.frio[aria-pressed="true"] {
+  background: #dcebf8;
+  color: #1f5f9e;
+  border-color: #1f5f9e;
+}
+
+.interrog-app .interrog-dialog .interrog-marca.morno[aria-pressed="true"] {
+  background: #fbeccb;
+  color: #8a5a0b;
+  border-color: #b9791a;
+}
+
+.interrog-app .interrog-dialog .interrog-marca.quente[aria-pressed="true"] {
+  background: #f8d9d3;
+  color: #a32a1e;
+  border-color: #a32a1e;
+}
+
+.interrog-app table.interrog-matriz {
+  min-width: 640px;
+}
+
+.interrog-app .interrog-dialog .interrog-celula {
+  width: 100%;
+  background: #f7ecd2;
+  color: #26231d;
+  border: 1px solid #a38a5e;
+  padding: 8px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.interrog-app .interrog-dialog .interrog-celula.frio {
+  background: #dcebf8;
+}
+
+.interrog-app .interrog-dialog .interrog-celula.morno {
+  background: #fbeccb;
+}
+
+.interrog-app .interrog-dialog .interrog-celula.quente {
+  background: #f8d9d3;
+}
+
+.interrog-app .interrog-dialog .interrog-celula[aria-pressed="true"] {
+  outline: 3px solid #32332d;
+  outline-offset: -3px;
+}
+
+.interrog-app .interrog-detalhe {
+  background: #f7ecd2;
+  border: 1px solid #a38a5e;
+  padding: 12px 14px;
+  margin: 14px 0;
+}
+
+.interrog-app .interrog-notas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.interrog-app .interrog-nota label {
+  display: block;
+  font-weight: 700;
+}
+
+.interrog-app .interrog-nota button {
+  margin-top: 6px;
+}
+
+@media (max-width: 760px) {
+  .interrog-app .interrog-linha {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 760px) {
   .interrog-app .interrog-wall,
   .interrog-app .interrog-columns,
