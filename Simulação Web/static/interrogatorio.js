@@ -920,40 +920,33 @@ SUBSTITUA TODO O CONTEÚDO.
       }
 
       try {
-        await espera(80);
+        // OBJETIVO: preservar a sequência de iluminação da Fase 2,
+// mantendo os tempos definidos em CINEMA em todos os computadores.
+await espera(80);
 
-        intro.classList.add('titulo');
+intro.classList.add('titulo');
 
-        await espera(
-          (reduz ? 0 : CINEMA.FADE_MS)
-          + CINEMA.TITULO_LEITURA_MS
-        );
+await espera(
+  CINEMA.FADE_MS + CINEMA.TITULO_LEITURA_MS
+);
 
-        intro.classList.remove('titulo');
+intro.classList.remove('titulo');
 
-        await espera(
-          reduz
-            ? 0
-            : CINEMA.FADE_MS + CINEMA.ESCURO_MS
-        );
+await espera(
+  CINEMA.FADE_MS + CINEMA.ESCURO_MS
+);
 
-        intro.classList.add('azul');
+// Apresenta a luz azul pulsando no ambiente escuro.
+intro.classList.add('azul');
+await espera(CINEMA.LUZ_AZUL_MS);
 
-        await espera(
-          reduz ? 0 : CINEMA.LUZ_AZUL_MS
-        );
+// Revela gradualmente o ambiente e os servidores.
+intro.classList.add('revelar');
+await espera(CINEMA.REVELACAO_MS);
 
-        intro.classList.add('revelar');
-
-        await espera(
-          reduz ? 0 : CINEMA.REVELACAO_MS
-        );
-
-        intro.classList.add('vermelho');
-
-        await espera(
-          reduz ? 0 : CINEMA.VERMELHO_MS
-        );
+// Muda a luz para vermelho após a revelação.
+intro.classList.add('vermelho');
+await espera(CINEMA.VERMELHO_MS);
 
         await fala(
           'A máquina inicial foi apenas o primeiro sinal...'

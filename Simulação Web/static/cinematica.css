@@ -80,3 +80,26 @@ Este arquivo padroniza títulos e legendas das duas fases.
     transition: none !important;
   }
 }
+
+/*
+OBJETIVO: preservar as transições e a pulsação da abertura
+da Fase 2 mesmo quando o navegador solicita movimento reduzido.
+As alterações ficam restritas aos elementos dessa abertura.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .interrog-app .interrog-intro .interrog-title {
+    transition: opacity 1.6s ease !important;
+  }
+
+  .interrog-app .interrog-intro .interrog-room {
+    transition: opacity 6s ease !important;
+  }
+
+  .interrog-app .interrog-intro.azul .interrog-led {
+    animation: interrog-pulse 2s infinite !important;
+  }
+
+  .interrog-app .interrog-intro.vermelho .interrog-led {
+    animation: none !important;
+  }
+}
