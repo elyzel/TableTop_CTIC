@@ -161,10 +161,17 @@ def instalar_fase2(app, participantes, lock, gravar_log):
         }
 
     def pontuacao(f):
-        base = max(
+        saldo = max(
             0,
             BASE - CUSTO * len(f["feitas"]),
         )
+
+        return {
+            "pontos": saldo,
+            "base": saldo,
+            "bonus_acerto": 0,
+            "bonus_marcas": 0,
+        }
 
         if not f["finalizado"]:
             return {

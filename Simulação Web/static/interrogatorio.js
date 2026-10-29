@@ -1,11 +1,40 @@
 /*
-OBJETIVO: reorganizar o Caderno de evidências em três áreas:
-Manual (referência saudável), Caderno de cada servidor e Geral
-(cruzamento dos três servidores e de todas as anotações), com
-marcação em um clique e nova leitura de Frio, Morno e Quente.
+OBJETIVO:
+Consolidar a Fase 2 e integrar a animação final, os créditos
+e o relatório das duas fases.
+
 ARQUIVO: static/interrogatorio.js
-SUBSTITUA TODO O CONTEÚDO.
+SUBSTITUA TODO O CONTEÚDO POR ESTE BLOCO.
+
+REVISÃO:
+- Mantém a abertura azul → servidores → vermelho.
+- Mantém digitação e som.
+- Mostra a resposta mais recente no topo do prontuário.
+- Preserva Manual, Caderno por servidor e visão Geral.
+- Preserva perguntas, marcações, anotações e acusação.
+- Após acertar, permite avançar para animação, créditos e relatório.
+
+DEPENDÊNCIAS:
+Mantenha os arquivos CSS existentes.
+Em templates/fase2.html, carregue os scripts nesta ordem:
+
+apoio_ui.js
+relatorio_final.js
+encerramento.js
+interrogatorio.js
+bloqueio_animacoes.js
+
+O arquivo relatorio_final.js é o fornecido na resposta anterior.
+
+PONTUAÇÃO:
+Este JavaScript apresenta os pontos recebidos do servidor.
+A regra de desconto por pergunta permanece em fase2.py.
+
+VALIDAÇÃO:
+Sintaxe e integração do pós-créditos verificadas em simulação.
+Confira os efeitos, o áudio e a aparência no navegador.
 */
+
 (() => {
   'use strict';
 
@@ -17,8 +46,8 @@ SUBSTITUA TODO O CONTEÚDO.
     LUZ_AZUL_MS: 2500,
     REVELACAO_MS: 6000,
     VERMELHO_MS: 2200,
-    LEITURA_MINIMA_MS: 5500,
-    LEITURA_POR_PALAVRA_MS: 300
+    LEITURA_MINIMA_MS: 8000,
+    LEITURA_POR_PALAVRA_MS: 450
   };
 
   let svgId = 0;
@@ -29,13 +58,120 @@ SUBSTITUA TODO O CONTEÚDO.
     const unidades = Array.from({length: 8}, (_, i) => {
       const y = 48 + i * 37;
 
-      return `<g transform="translate(32 ${y})"><rect width="166" height="31" rx="3" fill="#26303b" stroke="#66717d"/><rect x="8" y="6" width="81" height="18" rx="2" fill="#12181e"/><path d="M12 10h70m-70 4h70m-70 4h70" stroke="#48525d" stroke-width="2"/><rect x="99" y="5" width="40" height="21" fill="#3b4652" stroke="#83909c"/><path d="M109 7v17m10-17v17m10-17v17" stroke="#10181f" stroke-width="3"/><circle cx="150" cy="10" r="2" fill="#7cb6bc"/><circle cx="150" cy="20" r="2" fill="#78946c"/><circle cx="4" cy="15" r="1.5" fill="#b6bdc4"/></g>`;
+      return `
+        <g transform="translate(32 ${y})">
+          <rect
+            width="166" height="31" rx="3"
+            fill="#26303b" stroke="#66717d"
+          />
+          <rect
+            x="8" y="6" width="81" height="18" rx="2"
+            fill="#12181e"
+          />
+          <path
+            d="M12 10h70m-70 4h70m-70 4h70"
+            stroke="#48525d" stroke-width="2"
+          />
+          <rect
+            x="99" y="5" width="40" height="21"
+            fill="#3b4652" stroke="#83909c"
+          />
+          <path
+            d="M109 7v17m10-17v17m10-17v17"
+            stroke="#10181f" stroke-width="3"
+          />
+          <circle cx="150" cy="10" r="2" fill="#7cb6bc"/>
+          <circle cx="150" cy="20" r="2" fill="#78946c"/>
+          <circle cx="4" cy="15" r="1.5" fill="#b6bdc4"/>
+        </g>
+      `;
     }).join('');
 
-    return `<svg viewBox="0 0 260 410" aria-hidden="true" focusable="false"><defs><linearGradient id="${id}"><stop stop-color="#586673"/><stop offset=".4" stop-color="#202a34"/><stop offset="1" stop-color="#070e15"/></linearGradient></defs><ellipse cx="135" cy="389" rx="110" ry="14" fill="#000" opacity=".7"/><path d="M25 32L52 11H235L212 32Z" fill="#6a737b" stroke="#9da6ac"/><path d="M212 32L235 11V355L212 384Z" fill="#121a23" stroke="#46515d"/><rect x="20" y="30" width="194" height="350" rx="4" fill="url(#${id})" stroke="#a0aab1" stroke-width="3"/><rect x="28" y="40" width="176" height="321" fill="#10161e" stroke="#637180"/>${unidades}<rect x="29" y="42" width="175" height="317" fill="#b7d0e0" opacity=".055"/><path d="M36 45L194 45L36 344" fill="#c6e2f0" opacity=".045"/><rect x="201" y="163" width="6" height="50" rx="2" fill="#bac2c8"/><path d="M221 60q25 35 0 70t0 70t0 70" fill="none" stroke="#456985" stroke-width="3"/><rect x="39" y="370" width="20" height="17" fill="#101214"/><rect x="173" y="370" width="20" height="17" fill="#101214"/><text x="75" y="354" fill="#b8c3ce" font-family="monospace" font-size="9">CLUSTER • NODE</text></svg>`;
+    return `
+      <svg
+        viewBox="0 0 260 410"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <defs>
+          <linearGradient id="${id}">
+            <stop stop-color="#586673"/>
+            <stop offset=".4" stop-color="#202a34"/>
+            <stop offset="1" stop-color="#070e15"/>
+          </linearGradient>
+        </defs>
+
+        <ellipse
+          cx="135" cy="389" rx="110" ry="14"
+          fill="#000" opacity=".7"
+        />
+
+        <path
+          d="M25 32L52 11H235L212 32Z"
+          fill="#6a737b" stroke="#9da6ac"
+        />
+
+        <path
+          d="M212 32L235 11V355L212 384Z"
+          fill="#121a23" stroke="#46515d"
+        />
+
+        <rect
+          x="20" y="30" width="194" height="350" rx="4"
+          fill="url(#${id})" stroke="#a0aab1" stroke-width="3"
+        />
+
+        <rect
+          x="28" y="40" width="176" height="321"
+          fill="#10161e" stroke="#637180"
+        />
+
+        ${unidades}
+
+        <rect
+          x="29" y="42" width="175" height="317"
+          fill="#b7d0e0" opacity=".055"
+        />
+
+        <path
+          d="M36 45L194 45L36 344"
+          fill="#c6e2f0" opacity=".045"
+        />
+
+        <rect
+          x="201" y="163" width="6" height="50" rx="2"
+          fill="#bac2c8"
+        />
+
+        <path
+          d="M221 60q25 35 0 70t0 70t0 70"
+          fill="none" stroke="#456985" stroke-width="3"
+        />
+
+        <rect
+          x="39" y="370" width="20" height="17"
+          fill="#101214"
+        />
+
+        <rect
+          x="173" y="370" width="20" height="17"
+          fill="#101214"
+        />
+
+        <text
+          x="75" y="354" fill="#b8c3ce"
+          font-family="monospace" font-size="9"
+        >
+          CLUSTER • NODE
+        </text>
+      </svg>
+    `;
   }
 
-  window.iniciarInterrogatorio = async (container, opcoes = {}) => {
+  window.iniciarInterrogatorio = async (
+    container,
+    opcoes = {}
+  ) => {
     container.classList.add('interrog-app');
 
     container.innerHTML = `
@@ -45,10 +181,17 @@ SUBSTITUA TODO O CONTEÚDO.
           <span data-el="contador"></span>
           <div class="interrog-tokens" data-el="tokens"></div>
         </div>
+
         <div class="interrog-row">
-          <button data-el="ajuda" disabled>Como jogar</button>
-          <button data-el="caderno" disabled>Caderno</button>
-          <button data-el="acusar" disabled>Acusar</button>
+          <button type="button" data-el="ajuda" disabled>
+            Como jogar
+          </button>
+          <button type="button" data-el="caderno" disabled>
+            Caderno
+          </button>
+          <button type="button" data-el="acusar" disabled>
+            Acusar
+          </button>
           <a href="/">Fase 1</a>
         </div>
       </header>
@@ -69,12 +212,21 @@ SUBSTITUA TODO O CONTEÚDO.
 
         <div class="interrog-led"></div>
 
-        <button class="interrog-skip" data-el="pular" hidden>
+        <button
+          type="button"
+          class="interrog-skip"
+          data-el="pular"
+          hidden
+        >
           Pular animação
         </button>
       </section>
 
-      <div class="interrog-narr" data-el="narracao" hidden></div>
+      <div
+        class="interrog-narr"
+        data-el="narracao"
+        hidden
+      ></div>
 
       <dialog
         class="interrog-dialog"
@@ -89,10 +241,6 @@ SUBSTITUA TODO O CONTEÚDO.
       `[data-el="${nome}"]`
     );
 
-    const reduz = matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches;
-
     const labels = {
       '': 'Sem marca',
       frio: '❄ Frio — dentro da referência',
@@ -106,15 +254,20 @@ SUBSTITUA TODO O CONTEÚDO.
       quente: '🔥 Quente'
     };
 
-    const ICONES = {frio: '❄', morno: '🌡', quente: '🔥'};
+    const ICONES = {
+      frio: '❄',
+      morno: '🌡',
+      quente: '🔥'
+    };
 
     const REGRA = {
       frio: 'Dentro da referência saudável.',
-      morno: 'Fugiu da referência, mas a observação traz um motivo registrado.',
-      quente: 'Fugiu da referência e nada explica.'
+      morno:
+        'Fugiu da referência, mas a observação traz um motivo registrado.',
+      quente:
+        'Fugiu da referência e nada explica.'
     };
 
-    // true: o Manual lista os 12 exames desde o início.
     // false: o Manual cresce conforme os exames são consultados.
     const MANUAL_COMPLETO = false;
 
@@ -122,19 +275,24 @@ SUBSTITUA TODO O CONTEÚDO.
     let ocupado = false;
     let terminarTexto = null;
     let cancelarIntro = null;
+    let abaCaderno = null;
+    let celulaGeral = null;
 
     const notificados = new Set();
     const rascunhos = new Map();
 
-    let abaCaderno = null;
-    let celulaGeral = null;
-    const posicoesProntuario = new Map();
+    /* ---------- Utilitários e comunicação com o servidor ---------- */
 
     function criar(tag, texto, classe) {
       const n = document.createElement(tag);
 
-      if (texto !== undefined) n.textContent = texto;
-      if (classe) n.className = classe;
+      if (texto !== undefined) {
+        n.textContent = texto;
+      }
+
+      if (classe) {
+        n.className = classe;
+      }
 
       return n;
     }
@@ -152,9 +310,11 @@ SUBSTITUA TODO O CONTEÚDO.
     }
 
     async function api(acao = 'estado', extra = {}) {
-      const r = await fetch('/api/fase2', {
+      const resposta = await fetch('/api/fase2', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
           pid: opcoes.pid,
           acao,
@@ -163,9 +323,9 @@ SUBSTITUA TODO O CONTEÚDO.
         })
       });
 
-      const dado = await r.json();
+      const dado = await resposta.json();
 
-      if (!r.ok) {
+      if (!resposta.ok) {
         throw new Error(
           dado.erro || 'Não foi possível concluir.'
         );
@@ -199,10 +359,16 @@ SUBSTITUA TODO O CONTEÚDO.
       el('tokens').textContent =
         'Você decide quando acusar. Cada nova consulta custa pontos.';
 
-      el('acusar').disabled = d.finalizado || !d.intro;
+      el('acusar').disabled =
+        d.finalizado || !d.intro;
+
       el('caderno').disabled = !d.intro;
-      el('ajuda').disabled = !d.intro || d.finalizado;
+
+      el('ajuda').disabled =
+        !d.intro || d.finalizado;
     }
+
+    /* ---------- Narração ---------- */
 
     function digitar(texto, alvo = null) {
       terminarTexto?.();
@@ -212,7 +378,9 @@ SUBSTITUA TODO O CONTEÚDO.
       n.hidden = false;
       n.textContent = '';
 
-      if (alvo) alvo.textContent = '';
+      if (alvo) {
+        alvo.textContent = '';
+      }
 
       return new Promise(resolve => {
         let i = 0;
@@ -222,7 +390,10 @@ SUBSTITUA TODO O CONTEÚDO.
           clearInterval(timer);
 
           n.textContent = texto;
-          if (alvo) alvo.textContent = texto;
+
+          if (alvo) {
+            alvo.textContent = texto;
+          }
 
           terminarTexto = null;
           resolve();
@@ -230,39 +401,48 @@ SUBSTITUA TODO O CONTEÚDO.
 
         terminarTexto = fim;
 
-
-
         timer = setInterval(() => {
           n.textContent = texto.slice(0, ++i);
+
           window.TTUI?.toque(texto[i - 1]);
 
-          if (alvo) alvo.textContent = n.textContent;
-          if (i >= texto.length) fim();
+          if (alvo) {
+            alvo.textContent = n.textContent;
+          }
+
+          if (i >= texto.length) {
+            fim();
+          }
         }, CINEMA.DIGITACAO_MS);
       });
     }
 
-    el('narracao').onclick = () => terminarTexto?.();
+    el('narracao').onclick = () => {
+      terminarTexto?.();
+    };
 
     function foto(grande = false) {
       const n = criar(
         'div',
         undefined,
-        'interrog-photo' + (
-          grande ? ' interrog-portrait' : ''
-        )
+        'interrog-photo'
+          + (grande ? ' interrog-portrait' : '')
       );
 
       n.innerHTML = rack();
       return n;
     }
 
+    /* ---------- Janelas ---------- */
+
     function fechar() {
       el('dialogo').close();
     }
 
     function abrir(titulo) {
-      if (el('dialogo').open) fechar();
+      if (el('dialogo').open) {
+        fechar();
+      }
 
       el('modal').replaceChildren();
 
@@ -275,29 +455,42 @@ SUBSTITUA TODO O CONTEÚDO.
       return el('modal');
     }
 
-    function parede() {
-      salvarRolagemProntuario();
+    /* ---------- Parede dos servidores ---------- */
 
+    function parede() {
       const area = el('conteudo');
       area.replaceChildren();
 
       area.append(
         criar('div', '◒', 'interrog-lamp'),
-        criar('h1', 'Três servidores. Um canal para fora.'),
+        criar(
+          'h1',
+          'Três servidores. Um canal para fora.'
+        ),
         criar(
           'p',
-          'Escolha quem interrogar. Compare as evidências e faça uma acusação quando estiver pronto. Menos consultas com uma conclusão correta preservam mais pontos.'
+          'Escolha quem interrogar. Compare as evidências e faça ' +
+          'uma acusação quando estiver pronto. Menos consultas ' +
+          'com uma conclusão correta preservam mais pontos.'
         )
       );
 
-      const wall = criar('div', undefined, 'interrog-wall');
+      const wall = criar(
+        'div',
+        undefined,
+        'interrog-wall'
+      );
 
       d.suspeitos.forEach((s, i) => {
         const qtd = Object.keys(
           d.respostas[s.id] || {}
         ).length;
 
-        const card = botao('', () => interrogar(s.id));
+        const card = botao(
+          '',
+          () => interrogar(s.id)
+        );
+
         card.className = 'interrog-card';
 
         card.append(
@@ -321,27 +514,18 @@ SUBSTITUA TODO O CONTEÚDO.
       area.append(wall);
     }
 
-    function salvarRolagemProntuario() {
-      const painel = container.querySelector(
-        '.interrog-prontuario-scroll'
-      );
-
-      if (!painel) return;
-
-      const pertoDoFim =
-        painel.scrollHeight
-        - painel.clientHeight
-        - painel.scrollTop <= 64;
-
-      posicoesProntuario.set(painel.dataset.chave, {
-        top: painel.scrollTop,
-        seguir: pertoDoFim
-      });
-    }
+    /* ---------- Prontuário: resposta mais recente no topo ---------- */
 
     function prontuario(sid) {
-      const n = criar('section', undefined, 'interrog-paper');
-      const s = d.suspeitos.find(s => s.id === sid);
+      const n = criar(
+        'section',
+        undefined,
+        'interrog-paper'
+      );
+
+      const s = d.suspeitos.find(
+        item => item.id === sid
+      );
 
       n.append(
         criar('h2', 'Prontuário do paciente'),
@@ -354,14 +538,13 @@ SUBSTITUA TODO O CONTEÚDO.
         'interrog-prontuario-scroll'
       );
 
-      painel.dataset.chave = `${d.tentativa}:${sid}`;
       painel.tabIndex = 0;
       painel.setAttribute('role', 'region');
 
       painel.setAttribute(
-  'aria-label',
-  `Respostas de ${s.apelido}, da mais recente para a mais antiga`
-);
+        'aria-label',
+        `Respostas de ${s.apelido}, da mais recente para a mais antiga`
+      );
 
       Object.assign(painel.style, {
         maxHeight: '52vh',
@@ -381,9 +564,9 @@ SUBSTITUA TODO O CONTEÚDO.
       );
 
       const ordem = [...new Set([
-  ...(d.ordem_respostas?.[sid] || []),
-  ...Object.keys(respostas)
-])].reverse();
+        ...(d.ordem_respostas?.[sid] || []),
+        ...Object.keys(respostas)
+      ])].reverse();
 
       if (!ordem.length) {
         painel.append(
@@ -406,41 +589,34 @@ SUBSTITUA TODO O CONTEÚDO.
         linha.append(
           criar('strong', q.exame),
           criar('code', `${r.valor} ${r.unidade}`),
-          criar('p', 'Observação clínica: ' + r.observacao)
+          criar(
+            'p',
+            'Observação clínica: ' + r.observacao
+          )
         );
 
         painel.append(linha);
       });
 
-      painel.addEventListener(
-        'scroll',
-        salvarRolagemProntuario,
-        {passive: true}
-      );
-
       n.append(painel);
 
       requestAnimationFrame(() => {
-        if (!painel.isConnected) return;
-
-        const posicao = posicoesProntuario.get(
-          painel.dataset.chave
-        );
-
-        painel.scrollTop = 0;
-
-        salvarRolagemProntuario();
+        if (painel.isConnected) {
+          painel.scrollTop = 0;
+        }
       });
 
       return n;
     }
 
+    /* ---------- Perguntas ---------- */
+
     function interrogar(sid) {
-      salvarRolagemProntuario();
+      const s = d.suspeitos.find(
+        item => item.id === sid
+      );
 
-      const s = d.suspeitos.find(s => s.id === sid);
       const area = el('conteudo');
-
       area.replaceChildren();
 
       area.append(
@@ -460,7 +636,10 @@ SUBSTITUA TODO O CONTEÚDO.
         foto(true),
         criar(
           'p',
-          `Você pode consultar todas as perguntas disponíveis. Cada pergunta inédita custa ${d.custo_pergunta} pontos. As respostas já consultadas continuam no prontuário.`,
+          'Você pode consultar todas as perguntas disponíveis. ' +
+          `Cada pergunta inédita custa ${d.custo_pergunta} pontos. ` +
+          'As respostas já consultadas continuam no prontuário, ' +
+          'com a mais recente no topo.',
           'interrog-message'
         )
       );
@@ -480,10 +659,10 @@ SUBSTITUA TODO O CONTEÚDO.
         const b = botao(
           (feita ? '✔ Perguntado · ' : '') + q.pergunta,
           async () => {
-            if (!(await transacao(
-              'perguntar',
-              {suspeito: sid, pergunta: q.id}
-            ))) return;
+            if (!(await transacao('perguntar', {
+              suspeito: sid,
+              pergunta: q.id
+            }))) return;
 
             interrogar(sid);
             ocupado = true;
@@ -505,22 +684,26 @@ SUBSTITUA TODO O CONTEÚDO.
       area.append(menu);
     }
 
-    /*
-    CADERNO DE EVIDÊNCIAS — três áreas:
-    Manual   → referência saudável de cada exame (igual para todos).
-    Servidor → respostas de um servidor comparadas com o manual.
-    Geral    → cruzamento dos três servidores e das anotações.
-    */
+    /* ---------- Caderno: referências e marcações ---------- */
 
     const examesVisiveis = () => d.perguntas.filter(q =>
       MANUAL_COMPLETO
-      || d.suspeitos.some(s => d.respostas[s.id]?.[q.id])
+      || d.suspeitos.some(
+        s => d.respostas[s.id]?.[q.id]
+      )
     );
 
-    const nomeCurto = s => s.apelido.replace(/^(O|A) /, '');
+    const nomeCurto = s => s.apelido.replace(
+      /^(O|A) /,
+      ''
+    );
 
     function legenda() {
-      const box = criar('div', undefined, 'interrog-legenda');
+      const box = criar(
+        'div',
+        undefined,
+        'interrog-legenda'
+      );
 
       ['frio', 'morno', 'quente'].forEach(m => {
         const item = criar(
@@ -541,11 +724,19 @@ SUBSTITUA TODO O CONTEÚDO.
     }
 
     function controleMarcas(sid, q, redesenhar) {
-      const s = d.suspeitos.find(x => x.id === sid);
+      const s = d.suspeitos.find(
+        item => item.id === sid
+      );
+
       const chave = sid + ':' + q.id;
       const atual = d.marcas[chave] || '';
 
-      const grupo = criar('div', undefined, 'interrog-marcas');
+      const grupo = criar(
+        'div',
+        undefined,
+        'interrog-marcas'
+      );
+
       grupo.setAttribute('role', 'group');
 
       grupo.setAttribute(
@@ -571,7 +762,11 @@ SUBSTITUA TODO O CONTEÚDO.
         b.dataset.foco = chave + ':' + m;
         b.disabled = d.finalizado;
 
-        b.setAttribute('aria-pressed', String(atual === m));
+        b.setAttribute(
+          'aria-pressed',
+          String(atual === m)
+        );
+
         grupo.append(b);
       });
 
@@ -583,10 +778,14 @@ SUBSTITUA TODO O CONTEÚDO.
         .filter(s => s.id !== sid)
         .map(s => {
           const feita = !!d.respostas[s.id]?.[q.id];
-          const m = d.marcas[s.id + ':' + q.id];
+          const marca = d.marcas[s.id + ':' + q.id];
 
           return `${nomeCurto(s)} ${
-            m ? ICONES[m] : (feita ? '·' : '?')
+            marca
+              ? ICONES[marca]
+              : feita
+                ? '·'
+                : '?'
           }`;
         });
 
@@ -599,27 +798,44 @@ SUBSTITUA TODO O CONTEÚDO.
 
     function campoNota(s) {
       const chave = d.tentativa + ':' + s.id;
-      const caixa = criar('div', undefined, 'interrog-nota');
-      const label = criar('label', 'Anotações: ' + s.apelido);
+
+      const caixa = criar(
+        'div',
+        undefined,
+        'interrog-nota'
+      );
+
+      const label = criar(
+        'label',
+        'Anotações: ' + s.apelido
+      );
+
       const txt = criar('textarea');
 
       txt.maxLength = 1000;
-      txt.value = rascunhos.get(chave) ?? d.notas[s.id] ?? '';
+
+      txt.value =
+        rascunhos.get(chave)
+        ?? d.notas[s.id]
+        ?? '';
 
       txt.setAttribute(
         'aria-label',
         'Anotações sobre ' + s.apelido
       );
 
-      const salvar = botao('Salvar anotação', async () => {
-        if (await transacao(
-          'anotar',
-          {suspeito: s.id, texto: txt.value}
-        )) {
-          rascunhos.delete(chave);
-          salvar.textContent = 'Anotação salva';
+      const salvar = botao(
+        'Salvar anotação',
+        async () => {
+          if (await transacao('anotar', {
+            suspeito: s.id,
+            texto: txt.value
+          })) {
+            rascunhos.delete(chave);
+            salvar.textContent = 'Anotação salva';
+          }
         }
-      });
+      );
 
       txt.addEventListener('input', () => {
         rascunhos.set(chave, txt.value);
@@ -632,6 +848,8 @@ SUBSTITUA TODO O CONTEÚDO.
       return caixa;
     }
 
+    /* ---------- Manual ---------- */
+
     function paginaManual() {
       const sec = criar('section');
       const linhas = examesVisiveis();
@@ -640,22 +858,32 @@ SUBSTITUA TODO O CONTEÚDO.
         criar('h3', '📗 Manual de referência saudável'),
         criar(
           'p',
-          'É o comportamento esperado de um servidor deste cluster, igual para os três. Compare cada resposta com ele. O manual cresce conforme você consulta.',
+          'É o comportamento esperado de um servidor deste cluster, ' +
+          'igual para os três. Compare cada resposta com ele. ' +
+          'O manual cresce conforme você consulta.',
           'interrog-dica'
         ),
         legenda()
       );
 
       if (!linhas.length) {
-        sec.append(criar(
-          'p',
-          'Nenhum exame consultado ainda. As linhas aparecerão conforme você interrogar os servidores.'
-        ));
+        sec.append(
+          criar(
+            'p',
+            'Nenhum exame consultado ainda. As linhas aparecerão ' +
+            'conforme você interrogar os servidores.'
+          )
+        );
 
         return sec;
       }
 
-      const scroll = criar('div', undefined, 'interrog-scroll');
+      const scroll = criar(
+        'div',
+        undefined,
+        'interrog-scroll'
+      );
+
       const table = criar('table');
       const tr = criar('tr');
 
@@ -673,7 +901,7 @@ SUBSTITUA TODO O CONTEÚDO.
       const body = criar('tbody');
 
       linhas.forEach(q => {
-        const n = d.suspeitos.filter(
+        const quantidade = d.suspeitos.filter(
           s => d.respostas[s.id]?.[q.id]
         ).length;
 
@@ -683,7 +911,10 @@ SUBSTITUA TODO O CONTEÚDO.
           criar('th', q.exame),
           criar('td', q.pergunta),
           criar('td', q.referencia),
-          criar('td', `${n} de ${d.suspeitos.length}`)
+          criar(
+            'td',
+            `${quantidade} de ${d.suspeitos.length}`
+          )
         );
 
         body.append(row);
@@ -696,33 +927,59 @@ SUBSTITUA TODO O CONTEÚDO.
       return sec;
     }
 
+    /* ---------- Caderno de um servidor ---------- */
+
     function paginaServidor(sid, redesenhar) {
-      const s = d.suspeitos.find(x => x.id === sid);
+      const s = d.suspeitos.find(
+        item => item.id === sid
+      );
+
       const sec = criar('section');
 
       sec.append(
         criar('h3', `📒 Caderno — ${s.apelido}`),
-        criar('p', `${s.hostname} · ${s.ip}`, 'interrog-dica')
+        criar(
+          'p',
+          `${s.hostname} · ${s.ip}`,
+          'interrog-dica'
+        )
       );
 
-      const scroll = criar('div', undefined, 'interrog-scroll');
+      const scroll = criar(
+        'div',
+        undefined,
+        'interrog-scroll'
+      );
+
       const linhas = examesVisiveis();
 
       if (!linhas.length) {
-        scroll.append(criar(
-          'p',
-          'Nenhum exame consultado ainda. Interrogue um servidor para começar o caderno.'
-        ));
+        scroll.append(
+          criar(
+            'p',
+            'Nenhum exame consultado ainda. ' +
+            'Interrogue um servidor para começar o caderno.'
+          )
+        );
       }
 
       linhas.forEach(q => {
         const r = d.respostas[sid]?.[q.id];
-        const linha = criar('div', undefined, 'interrog-linha');
+
+        const linha = criar(
+          'div',
+          undefined,
+          'interrog-linha'
+        );
+
         const ref = criar('div');
 
         ref.append(
           criar('strong', q.exame),
-          criar('small', 'Referência: ' + q.referencia)
+          criar(
+            'small',
+            'Referência: ' + q.referencia
+          )
         );
 
         const resp = criar('div');
@@ -740,7 +997,10 @@ SUBSTITUA TODO O CONTEÚDO.
           );
         } else {
           resp.append(
-            criar('span', '? — Ainda não consultado neste servidor')
+            criar(
+              'span',
+              '? — Ainda não consultado neste servidor'
+            )
           );
         }
 
@@ -758,28 +1018,46 @@ SUBSTITUA TODO O CONTEÚDO.
       return sec;
     }
 
+    /* ---------- Visão geral ---------- */
+
     function paginaGeral(redesenhar) {
       const sec = criar('section');
 
       sec.append(
-        criar('h3', '🗂️ Visão geral dos três servidores'),
+        criar(
+          'h3',
+          '🗂️ Visão geral dos três servidores'
+        ),
         criar(
           'p',
-          'Cruze as marcas. Toque em uma célula para ver o detalhe e classificar.',
+          'Cruze as marcas. Toque em uma célula para ' +
+          'ver o detalhe e classificar.',
           'interrog-dica'
         )
       );
 
       const linhas = examesVisiveis();
-      const scroll = criar('div', undefined, 'interrog-scroll');
+
+      const scroll = criar(
+        'div',
+        undefined,
+        'interrog-scroll'
+      );
 
       if (!linhas.length) {
-        scroll.append(criar(
-          'p',
-          'As linhas aparecerão conforme você consultar os servidores.'
-        ));
+        scroll.append(
+          criar(
+            'p',
+            'As linhas aparecerão conforme você consultar os servidores.'
+          )
+        );
       } else {
-        const table = criar('table', undefined, 'interrog-matriz');
+        const table = criar(
+          'table',
+          undefined,
+          'interrog-matriz'
+        );
+
         const tr = criar('tr');
 
         [
@@ -816,54 +1094,75 @@ SUBSTITUA TODO O CONTEÚDO.
               return;
             }
 
-            if (m === 'quente') quentes.push(s);
+            if (m === 'quente') {
+              quentes.push(s);
+            }
 
             const b = botao(
               `${m ? ICONES[m] : '·'} ${r.valor} ${r.unidade}`.trim(),
               () => {
-                celulaGeral = {sid: s.id, qid: q.id};
+                celulaGeral = {
+                  sid: s.id,
+                  qid: q.id
+                };
+
                 redesenhar();
               }
             );
 
-            b.className = 'interrog-celula' + (m ? ' ' + m : '');
+            b.className =
+              'interrog-celula'
+              + (m ? ' ' + m : '');
 
             b.setAttribute(
               'aria-label',
-              `${s.apelido}, ${q.exame}: ${r.valor} ${r.unidade}. ${
-                m ? labels[m] : 'Sem marca'
-              }. Ver detalhe.`
+              `${s.apelido}, ${q.exame}: ${r.valor} ${r.unidade}. ` +
+              `${m ? labels[m] : 'Sem marca'}. Ver detalhe.`
             );
 
-            b.setAttribute('aria-pressed', String(
-              celulaGeral?.sid === s.id && celulaGeral?.qid === q.id
-            ));
+            b.setAttribute(
+              'aria-pressed',
+              String(
+                celulaGeral?.sid === s.id
+                && celulaGeral?.qid === q.id
+              )
+            );
 
             cel.append(b);
             row.append(cel);
           });
 
-          row.append(criar(
-            'td',
-            quentes.length === 1
-              ? `Só ${nomeCurto(quentes[0])} destoa`
-              : quentes.length > 1
-                ? `${quentes.length} servidores em 🔥`
-                : ''
-          ));
+          row.append(
+            criar(
+              'td',
+              quentes.length === 1
+                ? `Só ${nomeCurto(quentes[0])} destoa`
+                : quentes.length > 1
+                  ? `${quentes.length} servidores em 🔥`
+                  : ''
+            )
+          );
 
           body.append(row);
         });
 
         const total = criar('tr');
-        total.append(criar('th', '🔥 Total por servidor'), criar('td'));
+
+        total.append(
+          criar('th', '🔥 Total por servidor'),
+          criar('td')
+        );
 
         d.suspeitos.forEach(s => {
-          const n = Object.entries(d.marcas).filter(
-            ([k, v]) => k.startsWith(s.id + ':') && v === 'quente'
-          ).length;
+          const quantidade = Object.entries(d.marcas)
+            .filter(([chave, valor]) =>
+              chave.startsWith(s.id + ':')
+              && valor === 'quente'
+            ).length;
 
-          total.append(criar('td', String(n)));
+          total.append(
+            criar('td', String(quantidade))
+          );
         });
 
         total.append(criar('td'));
@@ -876,17 +1175,33 @@ SUBSTITUA TODO O CONTEÚDO.
       sec.append(scroll);
 
       if (celulaGeral) {
-        const s = d.suspeitos.find(x => x.id === celulaGeral.sid);
-        const q = d.perguntas.find(x => x.id === celulaGeral.qid);
-        const r = d.respostas[celulaGeral.sid]?.[celulaGeral.qid];
+        const s = d.suspeitos.find(
+          item => item.id === celulaGeral.sid
+        );
+
+        const q = d.perguntas.find(
+          item => item.id === celulaGeral.qid
+        );
+
+        const r = d.respostas[
+          celulaGeral.sid
+        ]?.[celulaGeral.qid];
 
         if (s && q && r) {
-          const det = criar('div', undefined, 'interrog-detalhe');
+          const det = criar(
+            'div',
+            undefined,
+            'interrog-detalhe'
+          );
 
           det.append(
             criar('strong', `${s.apelido} · ${q.exame}`),
             criar('small', 'Referência: ' + q.referencia),
-            criar('div', `${r.valor} ${r.unidade}`.trim(), 'interrog-valor'),
+            criar(
+              'div',
+              `${r.valor} ${r.unidade}`.trim(),
+              'interrog-valor'
+            ),
             criar('small', '“' + r.fala + '”'),
             criar('small', r.observacao),
             controleMarcas(s.id, q, redesenhar)
@@ -897,17 +1212,29 @@ SUBSTITUA TODO O CONTEÚDO.
       }
 
       if (!d.finalizado) {
-        const grade = criar('div', undefined, 'interrog-notas-grid');
+        const grade = criar(
+          'div',
+          undefined,
+          'interrog-notas-grid'
+        );
 
-        grade.append(...d.suspeitos.map(campoNota));
+        grade.append(
+          ...d.suspeitos.map(campoNota)
+        );
+
         sec.append(
-          criar('h3', '📝 Anotações de todos os servidores'),
+          criar(
+            'h3',
+            '📝 Anotações de todos os servidores'
+          ),
           grade
         );
       }
 
       return sec;
     }
+
+    /* ---------- Janela do caderno ---------- */
 
     function caderno(corrigido = false, destino = null) {
       if (corrigido) {
@@ -916,7 +1243,10 @@ SUBSTITUA TODO O CONTEÚDO.
       }
 
       const box = abrir('Caderno de evidências');
-      box.append(botao('Fechar caderno', fechar));
+
+      box.append(
+        botao('Fechar caderno', fechar)
+      );
 
       const secoes = [
         {id: 'manual', rotulo: '📗 Manual'},
@@ -927,11 +1257,16 @@ SUBSTITUA TODO O CONTEÚDO.
         {id: 'geral', rotulo: '🗂️ Geral'}
       ];
 
-      if (!secoes.some(x => x.id === abaCaderno)) {
+      if (!secoes.some(item => item.id === abaCaderno)) {
         abaCaderno = d.suspeitos[0].id;
       }
 
-      const abas = criar('div', undefined, 'interrog-abas');
+      const abas = criar(
+        'div',
+        undefined,
+        'interrog-abas'
+      );
+
       abas.setAttribute('role', 'tablist');
       abas.setAttribute('aria-label', 'Áreas do caderno');
 
@@ -939,23 +1274,34 @@ SUBSTITUA TODO O CONTEÚDO.
       box.append(abas, corpo);
 
       function desenhar(manterRolagem = false, foco = null) {
-        const antigo = corpo.querySelector('.interrog-scroll');
+        const antigo = corpo.querySelector(
+          '.interrog-scroll'
+        );
+
         const topo = antigo ? antigo.scrollTop : 0;
 
-        abas.replaceChildren(...secoes.map(sec => {
-          const ativa = sec.id === abaCaderno;
+        abas.replaceChildren(
+          ...secoes.map(sec => {
+            const ativa = sec.id === abaCaderno;
 
-          const b = botao(sec.rotulo, () => {
-            abaCaderno = sec.id;
-            desenhar();
-          });
+            const b = botao(sec.rotulo, () => {
+              abaCaderno = sec.id;
+              desenhar();
+            });
 
-          b.className = 'interrog-aba' + (ativa ? ' ativa' : '');
-          b.setAttribute('role', 'tab');
-          b.setAttribute('aria-selected', String(ativa));
+            b.className =
+              'interrog-aba'
+              + (ativa ? ' ativa' : '');
 
-          return b;
-        }));
+            b.setAttribute('role', 'tab');
+            b.setAttribute(
+              'aria-selected',
+              String(ativa)
+            );
+
+            return b;
+          })
+        );
 
         const redesenhar = f => desenhar(true, f);
 
@@ -964,11 +1310,19 @@ SUBSTITUA TODO O CONTEÚDO.
             ? paginaManual()
             : abaCaderno === 'geral'
               ? paginaGeral(redesenhar)
-              : paginaServidor(abaCaderno, redesenhar)
+              : paginaServidor(
+                abaCaderno,
+                redesenhar
+              )
         );
 
-        const novo = corpo.querySelector('.interrog-scroll');
-        if (manterRolagem && novo) novo.scrollTop = topo;
+        const novo = corpo.querySelector(
+          '.interrog-scroll'
+        );
+
+        if (manterRolagem && novo) {
+          novo.scrollTop = topo;
+        }
 
         if (foco) {
           corpo.querySelector(
@@ -980,18 +1334,29 @@ SUBSTITUA TODO O CONTEÚDO.
       desenhar();
 
       if (!d.finalizado) {
-        box.append(botao('Escolher acusação', acusacao));
+        box.append(
+          botao('Escolher acusação', acusacao)
+        );
       }
     }
+
+    /* ---------- Caderno corrigido ---------- */
 
     function cadernoCorrigido(destino = null) {
       const box = destino || abrir('Caderno corrigido');
 
       if (!destino) {
-        box.append(botao('Fechar caderno', fechar));
+        box.append(
+          botao('Fechar caderno', fechar)
+        );
       }
 
-      const scroll = criar('div', undefined, 'interrog-scroll');
+      const scroll = criar(
+        'div',
+        undefined,
+        'interrog-scroll'
+      );
+
       const table = criar('table');
       const head = criar('thead');
       const tr = criar('tr');
@@ -1041,7 +1406,8 @@ SUBSTITUA TODO O CONTEÚDO.
           );
 
           if (r) {
-            const certa = marca === esperada[verdade.tipo];
+            const certa =
+              marca === esperada[verdade.tipo];
 
             cel.append(
               criar(
@@ -1057,10 +1423,12 @@ SUBSTITUA TODO O CONTEÚDO.
               )
             );
           } else {
-            cel.append(criar(
-              'small',
-              'Não consultado durante a investigação.'
-            ));
+            cel.append(
+              criar(
+                'small',
+                'Não consultado durante a investigação.'
+              )
+            );
           }
 
           row.append(cel);
@@ -1074,6 +1442,8 @@ SUBSTITUA TODO O CONTEÚDO.
       box.append(scroll);
     }
 
+    /* ---------- Acusação ---------- */
+
     function acusacao() {
       if (d.finalizado || !d.intro) return;
 
@@ -1086,7 +1456,9 @@ SUBSTITUA TODO O CONTEÚDO.
       box.append(
         criar(
           'p',
-          `Você fez ${d.perguntas_usadas} consultas. Pode continuar investigando ou confirmar agora. A acusação é definitiva nesta tentativa.`
+          `Você fez ${d.perguntas_usadas} consultas. ` +
+          'Pode continuar investigando ou confirmar agora. ' +
+          'A acusação é definitiva nesta tentativa.'
         )
       );
 
@@ -1122,10 +1494,9 @@ SUBSTITUA TODO O CONTEÚDO.
         async () => {
           if (!select.value) return;
 
-          if (await transacao(
-            'acusar',
-            {suspeito: select.value}
-          )) {
+          if (await transacao('acusar', {
+            suspeito: select.value
+          })) {
             fechar();
             resultado();
           }
@@ -1146,15 +1517,21 @@ SUBSTITUA TODO O CONTEÚDO.
 
       botoes.append(
         confirmar,
-        botao('Consultar caderno', () => caderno()),
+        botao(
+          'Consultar caderno',
+          () => caderno()
+        ),
         botao('Voltar sem acusar', fechar)
       );
 
       box.append(botoes);
     }
 
+    /* ---------- Resultado técnico e acesso ao encerramento ---------- */
+
     function resultado() {
       hud();
+
       el('narracao').hidden = true;
 
       const r = d.resultado;
@@ -1171,7 +1548,9 @@ SUBSTITUA TODO O CONTEÚDO.
       box.append(
         criar(
           'h1',
-          r.vitoria ? 'Caso resolvido' : 'Acusação incorreta'
+          r.vitoria
+            ? 'Caso resolvido'
+            : 'Acusação incorreta'
         ),
         criar(
           'h2',
@@ -1179,19 +1558,31 @@ SUBSTITUA TODO O CONTEÚDO.
         ),
         criar(
           'p',
-          `${d.infectado.hostname} mantinha um bot/RAT em comunicação com o C2 fictício 203.0.113.77 — atualizacao-cdn.example.`
+          `${d.infectado.hostname} mantinha um bot/RAT em ` +
+          'comunicação com o C2 fictício 203.0.113.77 — ' +
+          'atualizacao-cdn.example.'
         ),
         criar(
           'p',
-          'Linha do tempo do caso: ontem, 03:09 — credencial de serviço utilizada; 03:12 — reinício não autorizado; a partir de 03:14 — comunicações a cada 60 segundos; 02:50 a 04:50 — lacuna nos logs. Os logins administrativos interativos permaneceram habituais.'
+          'Linha do tempo do caso: ontem, 03:09 — credencial ' +
+          'de serviço utilizada; 03:12 — reinício não autorizado; ' +
+          'a partir de 03:14 — comunicações a cada 60 segundos; ' +
+          '02:50 a 04:50 — lacuna nos logs. Os logins administrativos ' +
+          'interativos permaneceram habituais.'
         ),
         criar(
           'p',
-          `Pontuação: ${r.pontos} = saldo das consultas (${r.base}) + acerto (${r.bonus_acerto}) + marcações (${r.bonus_marcas}). Perguntas feitas: ${r.perguntas_usadas}.`
+          `Pontuação da Fase 2: ${r.pontos} pontos. ` +
+          `Saldo após as consultas: ${r.base}. ` +
+          `Ajuste por acusação: ${r.bonus_acerto}. ` +
+          `Ajuste por marcações: ${r.bonus_marcas}. ` +
+          `Perguntas realizadas: ${r.perguntas_usadas}.`
         ),
         criar(
           'p',
-          `Fase 1: ${d.pontos_fase1} pts · Fase 2: ${r.pontos} pts · Total: ${d.pontos_fase1 + r.pontos} pts.`
+          `Fase 1: ${d.pontos_fase1} pts · ` +
+          `Fase 2: ${r.pontos} pts · ` +
+          `Total: ${d.pontos_fase1 + r.pontos} pts.`
         )
       );
 
@@ -1215,11 +1606,16 @@ SUBSTITUA TODO O CONTEÚDO.
 
       [
         'Suspeito é o que foge do padrão, para cima ou para baixo.',
-        'Beaconing é uma comunicação repetida em intervalos regulares entre um agente e um destino de controle; precisa ser contextualizada.',
+        'Beaconing é uma comunicação repetida em intervalos regulares ' +
+          'entre um agente e um destino de controle; precisa ser contextualizada.',
         'Ausência de atividade e lacunas sem justificativa também merecem investigação.',
-        'Uma anomalia com justificativa legítima não comprova contaminação; ausência de alerta do EDR também não comprova limpeza.',
-        'RAT permite controle remoto de uma máquina. Botnet reúne dispositivos sob controle coordenado, frequentemente por uma infraestrutura C2.'
-      ].forEach(t => ul.append(criar('li', t)));
+        'Uma anomalia com justificativa legítima não comprova contaminação; ' +
+          'ausência de alerta do EDR também não comprova limpeza.',
+        'RAT permite controle remoto de uma máquina. Botnet reúne dispositivos ' +
+          'sob controle coordenado, frequentemente por uma infraestrutura C2.'
+      ].forEach(texto => {
+        ul.append(criar('li', texto));
+      });
 
       box.append(ul);
 
@@ -1232,6 +1628,7 @@ SUBSTITUA TODO O CONTEÚDO.
       acoes.append(
         botao('Tentar novamente', async () => {
           if (!(await transacao('reiniciar'))) return;
+
           await abertura();
         })
       );
@@ -1239,14 +1636,35 @@ SUBSTITUA TODO O CONTEÚDO.
       if (r.vitoria) {
         acoes.append(
           botao('Avançar para o encerramento', () => {
-            area.replaceChildren(
-              criar('h1', 'Fase 2 concluída'),
-              criar(
-                'p',
-                `Caso resolvido. Total das duas fases: ${d.pontos_fase1 + r.pontos} pontos.`
-              ),
-              botao('Rever relatório', resultado)
+            if (
+              typeof window.iniciarEncerramento !== 'function'
+              || typeof window.mostrarRelatorioFinal !== 'function'
+            ) {
+              erro(new Error(
+                'Confira o carregamento de encerramento.js ' +
+                'e relatorio_final.js e atualize a página.'
+              ));
+
+              return;
+            }
+
+            const resumoFinal = JSON.parse(
+              JSON.stringify(d)
             );
+
+            window.iniciarEncerramento({
+              pontos:
+                resumoFinal.pontos_fase1
+                + resumoFinal.resultado.pontos,
+
+              onConcluir: ({destino, fechar}) =>
+                window.mostrarRelatorioFinal({
+                  destino,
+                  pid: opcoes.pid,
+                  fase2: resumoFinal,
+                  onVoltar: fechar
+                })
+            });
           })
         );
       }
@@ -1272,6 +1690,8 @@ SUBSTITUA TODO O CONTEÚDO.
         });
       }
     }
+
+    /* ---------- Abertura cinematográfica ---------- */
 
     async function abertura() {
       const intro = el('intro');
@@ -1327,43 +1747,42 @@ SUBSTITUA TODO O CONTEÚDO.
       }
 
       try {
-        // OBJETIVO: preservar a sequência de iluminação da Fase 2,
-// mantendo os tempos definidos em CINEMA em todos os computadores.
-await espera(80);
+        await espera(80);
 
-intro.classList.add('titulo');
+        intro.classList.add('titulo');
 
-await espera(
-  CINEMA.FADE_MS + CINEMA.TITULO_LEITURA_MS
-);
+        await espera(
+          CINEMA.FADE_MS + CINEMA.TITULO_LEITURA_MS
+        );
 
-intro.classList.remove('titulo');
+        intro.classList.remove('titulo');
 
-await espera(
-  CINEMA.FADE_MS + CINEMA.ESCURO_MS
-);
+        await espera(
+          CINEMA.FADE_MS + CINEMA.ESCURO_MS
+        );
 
-// Apresenta a luz azul pulsando no ambiente escuro.
-intro.classList.add('azul');
-await espera(CINEMA.LUZ_AZUL_MS);
+        intro.classList.add('azul');
+        await espera(CINEMA.LUZ_AZUL_MS);
 
-// Revela gradualmente o ambiente e os servidores.
-intro.classList.add('revelar');
-await espera(CINEMA.REVELACAO_MS);
+        intro.classList.add('revelar');
+        await espera(CINEMA.REVELACAO_MS);
 
-// Muda a luz para vermelho após a revelação.
-intro.classList.add('vermelho');
-await espera(CINEMA.VERMELHO_MS);
+        intro.classList.add('vermelho');
+        await espera(CINEMA.VERMELHO_MS);
 
         await fala(
           'A máquina inicial foi apenas o primeiro sinal...'
         );
 
         await fala(
-          'Alerta na rede. Três servidores, um canal aberto para fora. Um deles está infectado. Investigue com cuidado: cada consulta tem um custo, e as evidências precisam fazer sentido juntas.'
+          'Alerta na rede. Três servidores, um canal aberto para fora. ' +
+          'Um deles está infectado. Investigue com cuidado: cada consulta ' +
+          'tem um custo, e as evidências precisam fazer sentido juntas.'
         );
       } catch (e) {
-        if (!controle.signal.aborted) throw e;
+        if (!controle.signal.aborted) {
+          throw e;
+        }
       } finally {
         intro.hidden = true;
         cancelarIntro = null;
@@ -1375,6 +1794,8 @@ await espera(CINEMA.VERMELHO_MS);
         await mostrarOrientacao();
       }
     }
+
+    /* ---------- Orientações ---------- */
 
     async function mostrarOrientacao() {
       if (
@@ -1390,15 +1811,27 @@ await espera(CINEMA.VERMELHO_MS);
       try {
         await window.TTUI.tutorialFase2(container);
       } finally {
-        container.querySelector('dialog[open]')?.close();
+        container.querySelector(
+          'dialog[open]'
+        )?.close();
+
         ocupado = false;
         parede();
       }
     }
 
+    /* ---------- Eventos e inicialização ---------- */
+
     el('ajuda').onclick = mostrarOrientacao;
-    el('pular').onclick = () => cancelarIntro?.();
-    el('caderno').onclick = () => caderno(d.finalizado);
+
+    el('pular').onclick = () => {
+      cancelarIntro?.();
+    };
+
+    el('caderno').onclick = () => {
+      caderno(d.finalizado);
+    };
+
     el('acusar').onclick = acusacao;
 
     if (!opcoes.pid) {
@@ -1424,7 +1857,10 @@ await espera(CINEMA.VERMELHO_MS);
       erro(e);
 
       el('conteudo').append(
-        botao('Atualizar página', () => location.reload())
+        botao(
+          'Atualizar página',
+          () => location.reload()
+        )
       );
     }
   };
