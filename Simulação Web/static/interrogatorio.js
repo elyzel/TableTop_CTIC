@@ -1,38 +1,21 @@
 /*
 OBJETIVO:
-Consolidar a Fase 2 e integrar a animação final, os créditos
-e o relatório das duas fases.
+Apresentar uma bolinha azul brilhante por servidor.
+As bolinhas ficam vermelhas em sequência, mantendo as anteriores
+vermelhas durante a narração seguinte.
 
 ARQUIVO: static/interrogatorio.js
-SUBSTITUA TODO O CONTEÚDO POR ESTE BLOCO.
+SUBSTITUA TODO O CONTEÚDO.
 
-REVISÃO:
-- Mantém a abertura azul → servidores → vermelho.
-- Mantém digitação e som.
-- Mostra a resposta mais recente no topo do prontuário.
-- Preserva Manual, Caderno por servidor e visão Geral.
-- Preserva perguntas, marcações, anotações e acusação.
-- Após acertar, permite avançar para animação, créditos e relatório.
+Preserva:
+- Identidades: rack, torre e NAS.
+- Servidores alinhados.
+- Perguntas, pontuação e regras recebidas do servidor.
+- Prontuário com resposta mais recente no topo.
+- Caderno completo, marcações, rascunhos e foco.
+- Acusação, encerramento e relatório pós-créditos.
 
-DEPENDÊNCIAS:
-Mantenha os arquivos CSS existentes.
-Em templates/fase2.html, carregue os scripts nesta ordem:
-
-apoio_ui.js
-relatorio_final.js
-encerramento.js
-interrogatorio.js
-bloqueio_animacoes.js
-
-O arquivo relatorio_final.js é o fornecido na resposta anterior.
-
-PONTUAÇÃO:
-Este JavaScript apresenta os pontos recebidos do servidor.
-A regra de desconto por pergunta permanece em fase2.py.
-
-VALIDAÇÃO:
-Sintaxe e integração do pós-créditos verificadas em simulação.
-Confira os efeitos, o áudio e a aparência no navegador.
+A sequência das luzes é visual e não identifica o infectado sorteado.
 */
 
 (() => {
@@ -46,14 +29,206 @@ Confira os efeitos, o áudio e a aparência no navegador.
     LUZ_AZUL_MS: 2500,
     REVELACAO_MS: 6000,
     VERMELHO_MS: 2200,
+    ALERTA_POR_SERVIDOR_MS: 1200,
     LEITURA_MINIMA_MS: 8000,
     LEITURA_POR_PALAVRA_MS: 450
   };
 
   let svgId = 0;
 
-  function rack() {
-    const id = 'irack-' + (++svgId);
+  /* ---------- Desenhos dos servidores ---------- */
+
+  function maquina(tipo, rotulo, cor) {
+    const id = 'imaquina-' + (++svgId);
+
+    const modelo = ['rack', 'torre', 'nas'].includes(tipo)
+      ? tipo
+      : 'rack';
+
+    const led = /^#[0-9a-f]{6}$/i.test(String(cor))
+      ? cor
+      : '#aeb5bd';
+
+    const texto = String(rotulo ?? '').replace(
+      /[&<>"']/g,
+      ch => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[ch]
+    );
+
+    if (modelo !== 'rack') {
+      let corpo;
+
+      if (modelo === 'torre') {
+        const grades = Array.from({length: 13}, (_, i) => `
+          <path
+            d="M69 ${174 + i * 10}H170"
+            stroke="#596b78"
+            stroke-width="3"
+          />
+        `).join('');
+
+        corpo = `
+          <path
+            d="M47 43L76 20H221L193 43Z"
+            fill="#65727e" stroke="#a0aab1"
+          />
+          <path
+            d="M193 43L221 20V350L193 378Z"
+            fill="#111b25" stroke="#65727e"
+          />
+          <rect
+            x="44" y="43" width="150" height="335" rx="7"
+            fill="url(#${id})"
+            stroke="#a0aab1" stroke-width="3"
+          />
+          <rect
+            x="57" y="60" width="124" height="37" rx="3"
+            fill="#10161e" stroke="#637180"
+          />
+          <path
+            d="M66 77H157"
+            stroke="#6a7d89" stroke-width="3"
+          />
+          <rect
+            x="59" y="110" width="121" height="34" rx="3"
+            fill="#1a2631" stroke="#536675"
+          />
+          <circle cx="163" cy="127" r="6" fill="${led}"/>
+          <rect
+            x="68" y="120" width="9" height="12"
+            rx="1" fill="#8a9ca7"
+          />
+          <rect
+            x="87" y="120" width="9" height="12"
+            rx="1" fill="#8a9ca7"
+          />
+          <rect
+            x="58" y="160" width="123" height="160" rx="5"
+            fill="#0d151d" stroke="#526878"
+          />
+
+          ${grades}
+
+          <circle
+            cx="119" cy="238" r="38"
+            fill="none" stroke="#7e95a5" opacity=".35"
+          />
+          <rect
+            x="60" y="376" width="22" height="11"
+            fill="#101214"
+          />
+          <rect
+            x="158" y="376" width="22" height="11"
+            fill="#101214"
+          />
+          <text
+            x="119" y="351" text-anchor="middle"
+            fill="#d8e1e8"
+            font-family="monospace" font-size="10"
+          >${texto}</text>
+        `;
+      } else {
+        const baias = Array.from({length: 4}, (_, i) => {
+          const x = 36 + i * 45;
+
+          return `
+            <g>
+              <rect
+                x="${x}" y="164" width="37" height="139" rx="5"
+                fill="#101820" stroke="#718491"
+              />
+              <rect
+                x="${x + 7}" y="175"
+                width="23" height="93" rx="3"
+                fill="#263744"
+              />
+              <path
+                d="M${x + 11} 189h15m-15 12h15m-15 12h15m-15 12h15m-15 12h15m-15 12h15"
+                stroke="#596c79" stroke-width="2"
+              />
+              <rect
+                x="${x + 7}" y="275"
+                width="23" height="8" rx="2"
+                fill="#8a9ca7"
+              />
+              <circle
+                cx="${x + 18}" cy="293" r="3"
+                fill="${led}"
+              />
+            </g>
+          `;
+        }).join('');
+
+        corpo = `
+          <path
+            d="M20 143L44 119H253L230 143Z"
+            fill="#65727e" stroke="#a0aab1"
+          />
+          <path
+            d="M230 143L253 119V315L230 340Z"
+            fill="#111b25" stroke="#65727e"
+          />
+          <rect
+            x="20" y="143" width="210" height="197" rx="9"
+            fill="url(#${id})"
+            stroke="#a0aab1" stroke-width="3"
+          />
+
+          ${baias}
+
+          <circle cx="220" cy="158" r="3" fill="${led}"/>
+          <rect
+            x="36" y="337" width="29" height="13"
+            rx="2" fill="#101214"
+          />
+          <rect
+            x="187" y="337" width="29" height="13"
+            rx="2" fill="#101214"
+          />
+          <text
+            x="125" y="326" text-anchor="middle"
+            fill="#d8e1e8"
+            font-family="monospace" font-size="10"
+          >${texto}</text>
+        `;
+      }
+
+      return `
+        <svg
+          viewBox="0 0 260 410"
+          preserveAspectRatio="xMidYMid meet"
+          aria-hidden="true"
+          focusable="false"
+          data-maquina="${modelo}"
+        >
+          <defs>
+            <linearGradient id="${id}">
+              <stop stop-color="#586673"/>
+              <stop offset=".4" stop-color="#202a34"/>
+              <stop offset="1" stop-color="#070e15"/>
+            </linearGradient>
+          </defs>
+
+          <ellipse
+            cx="135" cy="389" rx="110" ry="14"
+            fill="#000" opacity=".7"
+          />
+
+          <g transform="${
+            modelo === 'nas'
+              ? 'translate(0 37)'
+              : 'translate(0 0)'
+          }">
+            ${corpo}
+          </g>
+        </svg>
+      `;
+    }
 
     const unidades = Array.from({length: 8}, (_, i) => {
       const y = 48 + i * 37;
@@ -65,8 +240,8 @@ Confira os efeitos, o áudio e a aparência no navegador.
             fill="#26303b" stroke="#66717d"
           />
           <rect
-            x="8" y="6" width="81" height="18" rx="2"
-            fill="#12181e"
+            x="8" y="6" width="81" height="18"
+            rx="2" fill="#12181e"
           />
           <path
             d="M12 10h70m-70 4h70m-70 4h70"
@@ -80,8 +255,8 @@ Confira os efeitos, o áudio e a aparência no navegador.
             d="M109 7v17m10-17v17m10-17v17"
             stroke="#10181f" stroke-width="3"
           />
-          <circle cx="150" cy="10" r="2" fill="#7cb6bc"/>
-          <circle cx="150" cy="20" r="2" fill="#78946c"/>
+          <circle cx="150" cy="10" r="2" fill="${led}"/>
+          <circle cx="150" cy="20" r="2" fill="${led}"/>
           <circle cx="4" cy="15" r="1.5" fill="#b6bdc4"/>
         </g>
       `;
@@ -90,6 +265,8 @@ Confira os efeitos, o áudio e a aparência no navegador.
     return `
       <svg
         viewBox="0 0 260 410"
+        preserveAspectRatio="xMidYMid meet"
+        data-maquina="rack"
         aria-hidden="true"
         focusable="false"
       >
@@ -110,7 +287,6 @@ Confira os efeitos, o áudio e a aparência no navegador.
           d="M25 32L52 11H235L212 32Z"
           fill="#6a737b" stroke="#9da6ac"
         />
-
         <path
           d="M212 32L235 11V355L212 384Z"
           fill="#121a23" stroke="#46515d"
@@ -118,9 +294,9 @@ Confira os efeitos, o áudio e a aparência no navegador.
 
         <rect
           x="20" y="30" width="194" height="350" rx="4"
-          fill="url(#${id})" stroke="#a0aab1" stroke-width="3"
+          fill="url(#${id})"
+          stroke="#a0aab1" stroke-width="3"
         />
-
         <rect
           x="28" y="40" width="176" height="321"
           fill="#10161e" stroke="#637180"
@@ -132,38 +308,30 @@ Confira os efeitos, o áudio e a aparência no navegador.
           x="29" y="42" width="175" height="317"
           fill="#b7d0e0" opacity=".055"
         />
-
         <path
           d="M36 45L194 45L36 344"
           fill="#c6e2f0" opacity=".045"
         />
-
         <rect
-          x="201" y="163" width="6" height="50" rx="2"
-          fill="#bac2c8"
+          x="201" y="163" width="6" height="50"
+          rx="2" fill="#bac2c8"
         />
-
         <path
           d="M221 60q25 35 0 70t0 70t0 70"
           fill="none" stroke="#456985" stroke-width="3"
         />
-
         <rect
           x="39" y="370" width="20" height="17"
           fill="#101214"
         />
-
         <rect
           x="173" y="370" width="20" height="17"
           fill="#101214"
         />
-
         <text
           x="75" y="354" fill="#b8c3ce"
           font-family="monospace" font-size="9"
-        >
-          CLUSTER • NODE
-        </text>
+        >${texto}</text>
       </svg>
     `;
   }
@@ -207,7 +375,19 @@ Confira os efeitos, o áudio e a aparência no navegador.
         </h1>
 
         <div class="interrog-room">
-          ${rack()}${rack()}${rack()}${rack()}${rack()}
+          ${maquina('rack', 'PORTAL-DMZ-01', '#aeb5bd')}
+          ${maquina('torre', 'FIN-API-02', '#aeb5bd')}
+          ${maquina('nas', 'DOCS-WEB-03', '#aeb5bd')}
+          ${maquina('rack', 'PORTAL-DMZ-01', '#aeb5bd')}
+          ${maquina('torre', 'FIN-API-02', '#aeb5bd')}
+        </div>
+
+        <div class="interrog-luzes" aria-hidden="true">
+          <span class="interrog-porta"></span>
+          <span class="interrog-porta"></span>
+          <span class="interrog-porta"></span>
+          <span class="interrog-porta"></span>
+          <span class="interrog-porta"></span>
         </div>
 
         <div class="interrog-led"></div>
@@ -264,11 +444,9 @@ Confira os efeitos, o áudio e a aparência no navegador.
       frio: 'Dentro da referência saudável.',
       morno:
         'Fugiu da referência, mas a observação traz um motivo registrado.',
-      quente:
-        'Fugiu da referência e nada explica.'
+      quente: 'Fugiu da referência e nada explica.'
     };
 
-    // false: o Manual cresce conforme os exames são consultados.
     const MANUAL_COMPLETO = false;
 
     let d;
@@ -281,18 +459,13 @@ Confira os efeitos, o áudio e a aparência no navegador.
     const notificados = new Set();
     const rascunhos = new Map();
 
-    /* ---------- Utilitários e comunicação com o servidor ---------- */
+    /* ---------- Utilitários e comunicação ---------- */
 
     function criar(tag, texto, classe) {
       const n = document.createElement(tag);
 
-      if (texto !== undefined) {
-        n.textContent = texto;
-      }
-
-      if (classe) {
-        n.className = classe;
-      }
+      if (texto !== undefined) n.textContent = texto;
+      if (classe) n.className = classe;
 
       return n;
     }
@@ -359,13 +532,9 @@ Confira os efeitos, o áudio e a aparência no navegador.
       el('tokens').textContent =
         'Você decide quando acusar. Cada nova consulta custa pontos.';
 
-      el('acusar').disabled =
-        d.finalizado || !d.intro;
-
+      el('acusar').disabled = d.finalizado || !d.intro;
       el('caderno').disabled = !d.intro;
-
-      el('ajuda').disabled =
-        !d.intro || d.finalizado;
+      el('ajuda').disabled = !d.intro || d.finalizado;
     }
 
     /* ---------- Narração ---------- */
@@ -378,22 +547,17 @@ Confira os efeitos, o áudio e a aparência no navegador.
       n.hidden = false;
       n.textContent = '';
 
-      if (alvo) {
-        alvo.textContent = '';
-      }
+      if (alvo) alvo.textContent = '';
 
       return new Promise(resolve => {
         let i = 0;
         let timer;
 
         const fim = () => {
-          clearInterval(timer);
+          TTAnimacao.cancelar(timer);
 
           n.textContent = texto;
-
-          if (alvo) {
-            alvo.textContent = texto;
-          }
+          if (alvo) alvo.textContent = texto;
 
           terminarTexto = null;
           resolve();
@@ -401,27 +565,19 @@ Confira os efeitos, o áudio e a aparência no navegador.
 
         terminarTexto = fim;
 
-        timer = setInterval(() => {
+        timer = TTAnimacao.intervalo(() => {
           n.textContent = texto.slice(0, ++i);
-
           window.TTUI?.toque(texto[i - 1]);
 
-          if (alvo) {
-            alvo.textContent = n.textContent;
-          }
-
-          if (i >= texto.length) {
-            fim();
-          }
+          if (alvo) alvo.textContent = n.textContent;
+          if (i >= texto.length) fim();
         }, CINEMA.DIGITACAO_MS);
       });
     }
 
-    el('narracao').onclick = () => {
-      terminarTexto?.();
-    };
+    el('narracao').onclick = () => terminarTexto?.();
 
-    function foto(grande = false) {
+    function foto(s, grande = false) {
       const n = criar(
         'div',
         undefined,
@@ -429,7 +585,12 @@ Confira os efeitos, o áudio e a aparência no navegador.
           + (grande ? ' interrog-portrait' : '')
       );
 
-      n.innerHTML = rack();
+      n.innerHTML = maquina(
+        s.visual,
+        s.hostname,
+        s.cor
+      );
+
       return n;
     }
 
@@ -440,9 +601,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
     }
 
     function abrir(titulo) {
-      if (el('dialogo').open) {
-        fechar();
-      }
+      if (el('dialogo').open) fechar();
 
       el('modal').replaceChildren();
 
@@ -455,7 +614,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
       return el('modal');
     }
 
-    /* ---------- Parede dos servidores ---------- */
+    /* ---------- Parede ---------- */
 
     function parede() {
       const area = el('conteudo');
@@ -463,10 +622,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
 
       area.append(
         criar('div', '◒', 'interrog-lamp'),
-        criar(
-          'h1',
-          'Três servidores. Um canal para fora.'
-        ),
+        criar('h1', 'Três servidores. Um canal para fora.'),
         criar(
           'p',
           'Escolha quem interrogar. Compare as evidências e faça ' +
@@ -494,10 +650,15 @@ Confira os efeitos, o áudio e a aparência no navegador.
         card.className = 'interrog-card';
 
         card.append(
-          foto(),
+          foto(s),
           criar('strong', s.apelido),
           criar('small', `${s.hostname} · ${s.ip}`),
           criar('small', s.funcao),
+          criar(
+            'small',
+            `${s.so} · ${s.setor}`,
+            'interrog-meta'
+          ),
           criar('small', `CASO 02 / FICHA ${i + 1}`),
           criar(
             'span',
@@ -514,7 +675,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
       area.append(wall);
     }
 
-    /* ---------- Prontuário: resposta mais recente no topo ---------- */
+    /* ---------- Prontuário ---------- */
 
     function prontuario(sid) {
       const n = criar(
@@ -609,6 +770,39 @@ Confira os efeitos, o áudio e a aparência no navegador.
       return n;
     }
 
+    function fichaTecnica(s) {
+      const ficha = criar(
+        'dl',
+        undefined,
+        'interrog-ficha'
+      );
+
+      ficha.setAttribute(
+        'aria-label',
+        'Ficha técnica de ' + s.apelido
+      );
+
+      [
+        ['Hostname', s.hostname],
+        ['IP', s.ip],
+        ['Função', s.funcao],
+        ['Sistema', s.so],
+        ['Setor', s.setor],
+        ['Criticidade', s.criticidade]
+      ].forEach(([rotulo, valor]) => {
+        const item = criar('div');
+
+        item.append(
+          criar('dt', rotulo),
+          criar('dd', valor)
+        );
+
+        ficha.append(item);
+      });
+
+      return ficha;
+    }
+
     /* ---------- Perguntas ---------- */
 
     function interrogar(sid) {
@@ -621,7 +815,8 @@ Confira os efeitos, o áudio e a aparência no navegador.
 
       area.append(
         botao('← Voltar à parede', parede),
-        criar('h1', s.apelido)
+        criar('h1', s.apelido),
+        fichaTecnica(s)
       );
 
       const cols = criar(
@@ -633,7 +828,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
       const retrato = criar('section');
 
       retrato.append(
-        foto(true),
+        foto(s, true),
         criar(
           'p',
           'Você pode consultar todas as perguntas disponíveis. ' +
@@ -684,7 +879,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
       area.append(menu);
     }
 
-    /* ---------- Caderno: referências e marcações ---------- */
+    /* ---------- Referências, marcações e rascunhos ---------- */
 
     const examesVisiveis = () => d.perguntas.filter(q =>
       MANUAL_COMPLETO
@@ -781,11 +976,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
           const marca = d.marcas[s.id + ':' + q.id];
 
           return `${nomeCurto(s)} ${
-            marca
-              ? ICONES[marca]
-              : feita
-                ? '·'
-                : '?'
+            marca ? ICONES[marca] : feita ? '·' : '?'
           }`;
         });
 
@@ -813,11 +1004,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
       const txt = criar('textarea');
 
       txt.maxLength = 1000;
-
-      txt.value =
-        rascunhos.get(chave)
-        ?? d.notas[s.id]
-        ?? '';
+      txt.value = rascunhos.get(chave) ?? d.notas[s.id] ?? '';
 
       txt.setAttribute(
         'aria-label',
@@ -867,13 +1054,11 @@ Confira os efeitos, o áudio e a aparência no navegador.
       );
 
       if (!linhas.length) {
-        sec.append(
-          criar(
-            'p',
-            'Nenhum exame consultado ainda. As linhas aparecerão ' +
-            'conforme você interrogar os servidores.'
-          )
-        );
+        sec.append(criar(
+          'p',
+          'Nenhum exame consultado ainda. As linhas aparecerão ' +
+          'conforme você interrogar os servidores.'
+        ));
 
         return sec;
       }
@@ -927,7 +1112,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
       return sec;
     }
 
-    /* ---------- Caderno de um servidor ---------- */
+    /* ---------- Caderno por servidor ---------- */
 
     function paginaServidor(sid, redesenhar) {
       const s = d.suspeitos.find(
@@ -940,7 +1125,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
         criar('h3', `📒 Caderno — ${s.apelido}`),
         criar(
           'p',
-          `${s.hostname} · ${s.ip}`,
+          `${s.hostname} · ${s.ip} · ${s.so}`,
           'interrog-dica'
         )
       );
@@ -954,13 +1139,11 @@ Confira os efeitos, o áudio e a aparência no navegador.
       const linhas = examesVisiveis();
 
       if (!linhas.length) {
-        scroll.append(
-          criar(
-            'p',
-            'Nenhum exame consultado ainda. ' +
-            'Interrogue um servidor para começar o caderno.'
-          )
-        );
+        scroll.append(criar(
+          'p',
+          'Nenhum exame consultado ainda. ' +
+          'Interrogue um servidor para começar o caderno.'
+        ));
       }
 
       linhas.forEach(q => {
@@ -976,10 +1159,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
 
         ref.append(
           criar('strong', q.exame),
-          criar(
-            'small',
-            'Referência: ' + q.referencia
-          )
+          criar('small', 'Referência: ' + q.referencia)
         );
 
         const resp = criar('div');
@@ -996,12 +1176,10 @@ Confira os efeitos, o áudio e a aparência no navegador.
             controleMarcas(sid, q, redesenhar)
           );
         } else {
-          resp.append(
-            criar(
-              'span',
-              '? — Ainda não consultado neste servidor'
-            )
-          );
+          resp.append(criar(
+            'span',
+            '? — Ainda não consultado neste servidor'
+          ));
         }
 
         resp.append(resumoOutros(sid, q));
@@ -1018,16 +1196,13 @@ Confira os efeitos, o áudio e a aparência no navegador.
       return sec;
     }
 
-    /* ---------- Visão geral ---------- */
+    /* ---------- Visão Geral ---------- */
 
     function paginaGeral(redesenhar) {
       const sec = criar('section');
 
       sec.append(
-        criar(
-          'h3',
-          '🗂️ Visão geral dos três servidores'
-        ),
+        criar('h3', '🗂️ Visão geral dos três servidores'),
         criar(
           'p',
           'Cruze as marcas. Toque em uma célula para ' +
@@ -1045,12 +1220,10 @@ Confira os efeitos, o áudio e a aparência no navegador.
       );
 
       if (!linhas.length) {
-        scroll.append(
-          criar(
-            'p',
-            'As linhas aparecerão conforme você consultar os servidores.'
-          )
-        );
+        scroll.append(criar(
+          'p',
+          'As linhas aparecerão conforme você consultar os servidores.'
+        ));
       } else {
         const table = criar(
           'table',
@@ -1132,16 +1305,14 @@ Confira os efeitos, o áudio e a aparência no navegador.
             row.append(cel);
           });
 
-          row.append(
-            criar(
-              'td',
-              quentes.length === 1
-                ? `Só ${nomeCurto(quentes[0])} destoa`
-                : quentes.length > 1
-                  ? `${quentes.length} servidores em 🔥`
-                  : ''
-            )
-          );
+          row.append(criar(
+            'td',
+            quentes.length === 1
+              ? `Só ${nomeCurto(quentes[0])} destoa`
+              : quentes.length > 1
+                ? `${quentes.length} servidores em 🔥`
+                : ''
+          ));
 
           body.append(row);
         });
@@ -1154,11 +1325,11 @@ Confira os efeitos, o áudio e a aparência no navegador.
         );
 
         d.suspeitos.forEach(s => {
-          const quantidade = Object.entries(d.marcas)
-            .filter(([chave, valor]) =>
+          const quantidade = Object.entries(d.marcas).filter(
+            ([chave, valor]) =>
               chave.startsWith(s.id + ':')
               && valor === 'quente'
-            ).length;
+          ).length;
 
           total.append(
             criar('td', String(quantidade))
@@ -1223,10 +1394,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
         );
 
         sec.append(
-          criar(
-            'h3',
-            '📝 Anotações de todos os servidores'
-          ),
+          criar('h3', '📝 Anotações de todos os servidores'),
           grade
         );
       }
@@ -1423,12 +1591,10 @@ Confira os efeitos, o áudio e a aparência no navegador.
               )
             );
           } else {
-            cel.append(
-              criar(
-                'small',
-                'Não consultado durante a investigação.'
-              )
-            );
+            cel.append(criar(
+              'small',
+              'Não consultado durante a investigação.'
+            ));
           }
 
           row.append(cel);
@@ -1453,14 +1619,12 @@ Confira os efeitos, o áudio e a aparência no navegador.
         'Uma acusação. Escolha com cuidado.'
       );
 
-      box.append(
-        criar(
-          'p',
-          `Você fez ${d.perguntas_usadas} consultas. ` +
-          'Pode continuar investigando ou confirmar agora. ' +
-          'A acusação é definitiva nesta tentativa.'
-        )
-      );
+      box.append(criar(
+        'p',
+        `Você fez ${d.perguntas_usadas} consultas. ` +
+        'Pode continuar investigando ou confirmar agora. ' +
+        'A acusação é definitiva nesta tentativa.'
+      ));
 
       const select = criar('select');
 
@@ -1517,21 +1681,17 @@ Confira os efeitos, o áudio e a aparência no navegador.
 
       botoes.append(
         confirmar,
-        botao(
-          'Consultar caderno',
-          () => caderno()
-        ),
+        botao('Consultar caderno', () => caderno()),
         botao('Voltar sem acusar', fechar)
       );
 
       box.append(botoes);
     }
 
-    /* ---------- Resultado técnico e acesso ao encerramento ---------- */
+    /* ---------- Resultado técnico e encerramento ---------- */
 
     function resultado() {
       hud();
-
       el('narracao').hidden = true;
 
       const r = d.resultado;
@@ -1554,7 +1714,9 @@ Confira os efeitos, o áudio e a aparência no navegador.
         ),
         criar(
           'h2',
-          'Servidor infectado: ' + d.infectado.apelido
+          'Servidor infectado: ' +
+          d.infectado.apelido + ' · ' +
+          d.infectado.hostname
         ),
         criar(
           'p',
@@ -1628,7 +1790,6 @@ Confira os efeitos, o áudio e a aparência no navegador.
       acoes.append(
         botao('Tentar novamente', async () => {
           if (!(await transacao('reiniciar'))) return;
-
           await abertura();
         })
       );
@@ -1691,14 +1852,64 @@ Confira os efeitos, o áudio e a aparência no navegador.
       }
     }
 
-    /* ---------- Abertura cinematográfica ---------- */
+    /* ---------- Abertura com portas luminosas ---------- */
+
+    function posicionarPortas(intro) {
+      const svgs = [
+        ...intro.querySelectorAll('.interrog-room > svg')
+      ];
+
+      const portas = [
+        ...intro.querySelectorAll('.interrog-porta')
+      ];
+
+      const base = intro.getBoundingClientRect();
+
+      // Coordenadas relativas ao desenho de cada servidor.
+      // No NAS, y: 220 coloca a luz sobre a frente da caixa.
+      const pontos = {
+        rack: {x: 117, y: 145},
+        torre: {x: 119, y: 127},
+        nas: {x: 125, y: 220}
+      };
+
+      svgs.forEach((svg, i) => {
+        if (!portas[i]) return;
+
+        const matriz = svg.getScreenCTM();
+
+        if (!matriz) return;
+
+        const ancora =
+          pontos[svg.dataset.maquina] || pontos.rack;
+
+        const ponto = svg.createSVGPoint();
+
+        ponto.x = ancora.x;
+        ponto.y = ancora.y;
+
+        const tela = ponto.matrixTransform(matriz);
+
+        portas[i].style.left =
+          (tela.x - base.left) + 'px';
+
+        portas[i].style.top =
+          (tela.y - base.top) + 'px';
+      });
+    }
 
     async function abertura() {
+      await TTAnimacao.iniciar('Abertura da Fase 2');
       const intro = el('intro');
       const controle = new AbortController();
 
       intro.className = 'interrog-intro';
       intro.hidden = false;
+
+      const reposicionar = () => posicionarPortas(intro);
+
+      reposicionar();
+      window.addEventListener('resize', reposicionar);
 
       el('conteudo').replaceChildren();
       el('pular').hidden = !d.pode_pular;
@@ -1708,32 +1919,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
         controle.abort();
       };
 
-      const espera = ms => new Promise((resolve, reject) => {
-        if (controle.signal.aborted) {
-          reject(new Error('pular'));
-          return;
-        }
-
-        const id = setTimeout(() => {
-          controle.signal.removeEventListener(
-            'abort',
-            abort
-          );
-
-          resolve();
-        }, ms);
-
-        function abort() {
-          clearTimeout(id);
-          reject(new Error('pular'));
-        }
-
-        controle.signal.addEventListener(
-          'abort',
-          abort,
-          {once: true}
-        );
-      });
+      const espera = ms => TTAnimacao.esperar(ms, controle.signal);
 
       async function fala(texto) {
         await digitar(texto);
@@ -1761,14 +1947,32 @@ Confira os efeitos, o áudio e a aparência no navegador.
           CINEMA.FADE_MS + CINEMA.ESCURO_MS
         );
 
+        // As cinco bolinhas aparecem azuis.
         intro.classList.add('azul');
         await espera(CINEMA.LUZ_AZUL_MS);
 
+        // O ambiente clareia mostrando os servidores.
         intro.classList.add('revelar');
         await espera(CINEMA.REVELACAO_MS);
 
         intro.classList.add('vermelho');
-        await espera(CINEMA.VERMELHO_MS);
+
+        const portas = [
+          ...intro.querySelectorAll('.interrog-porta')
+        ];
+
+        portas.forEach(porta => {
+          porta.classList.remove('interrog-alerta');
+        });
+
+        // Cada porta permanece vermelha após a sua vez.
+        for (const porta of portas) {
+          porta.classList.add('interrog-alerta');
+
+          await espera(
+            CINEMA.ALERTA_POR_SERVIDOR_MS
+          );
+        }
 
         await fala(
           'A máquina inicial foi apenas o primeiro sinal...'
@@ -1780,10 +1984,14 @@ Confira os efeitos, o áudio e a aparência no navegador.
           'tem um custo, e as evidências precisam fazer sentido juntas.'
         );
       } catch (e) {
-        if (!controle.signal.aborted) {
-          throw e;
-        }
+        if (!controle.signal.aborted) throw e;
       } finally {
+        window.removeEventListener('resize', reposicionar);
+        TTAnimacao.encerrar();
+        intro.querySelectorAll('.interrog-alerta').forEach(n => {
+          n.classList.remove('interrog-alerta');
+        });
+
         intro.hidden = true;
         cancelarIntro = null;
         el('narracao').hidden = true;
@@ -1795,7 +2003,7 @@ Confira os efeitos, o áudio e a aparência no navegador.
       }
     }
 
-    /* ---------- Orientações ---------- */
+    /* ---------- Orientações e inicialização ---------- */
 
     async function mostrarOrientacao() {
       if (
@@ -1820,18 +2028,9 @@ Confira os efeitos, o áudio e a aparência no navegador.
       }
     }
 
-    /* ---------- Eventos e inicialização ---------- */
-
     el('ajuda').onclick = mostrarOrientacao;
-
-    el('pular').onclick = () => {
-      cancelarIntro?.();
-    };
-
-    el('caderno').onclick = () => {
-      caderno(d.finalizado);
-    };
-
+    el('pular').onclick = () => cancelarIntro?.();
+    el('caderno').onclick = () => caderno(d.finalizado);
     el('acusar').onclick = acusacao;
 
     if (!opcoes.pid) {
@@ -1865,3 +2064,4 @@ Confira os efeitos, o áudio e a aparência no navegador.
     }
   };
 })();
+/* TT_CONTROLE_ANIMACAO_V1 */

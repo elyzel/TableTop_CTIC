@@ -533,6 +533,7 @@ Depois atualize o navegador com Ctrl + F5.
     </div>
   </section>
 
+  <script src="{{ url_for('static', filename='controle_animacao.js') }}"></script>
   <script src="{{ url_for('static', filename='apoio_ui.js') }}"></script>
   <script src="{{ url_for('static', filename='participante.js') }}"></script>
   <script src="{{ url_for('static', filename='fase1_ajustes.js') }}"></script>
@@ -702,5 +703,18 @@ Depois atualize o navegador com Ctrl + F5.
       }
     })();
   </script>
+  <script>
+    // Integra depois dos demais ajustes da Fase 1.
+    if (document.readyState === 'loading') {
+      document.addEventListener(
+        'DOMContentLoaded',
+        () => TTAnimacao.integrarFase1(),
+        {once: true}
+      );
+    } else {
+      TTAnimacao.integrarFase1();
+    }
+  </script>
 </body>
 </html>
+<!-- TT_CONTROLE_ANIMACAO_V1 -->

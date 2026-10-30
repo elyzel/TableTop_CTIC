@@ -1,18 +1,22 @@
 /*
-BLOCO 4
-ARQUIVO NOVO: static/interrogatorio.css
-COLE TODO O CONTEÚDO.
+OBJETIVO:
+Manter o visual completo da Fase 2, os servidores alinhados
+e uma bolinha azul luminosa por posição na abertura.
+
+As bolinhas tornam-se vermelhas sequencialmente.
+O brilho dos gabinetes permanece constante.
+
+ARQUIVO: static/interrogatorio.css
+SUBSTITUA TODO O CONTEÚDO.
 */
 
 .interrog-app {
   --papel: #e9dcc0;
   --tinta: #25221b;
   --ouro: #dbc28f;
-
   color: #f2e9d9;
   min-height: 100vh;
   font: 16px/1.5 Georgia, serif;
-
   background:
     radial-gradient(
       ellipse at 50% 0,
@@ -24,7 +28,6 @@ COLE TODO O CONTEÚDO.
       #201c16 0 2px,
       #242018 2px 5px
     );
-
   padding-bottom: 145px;
 }
 
@@ -65,17 +68,17 @@ COLE TODO O CONTEÚDO.
   outline-offset: 4px;
 }
 
+/* Cabeçalho */
+
 .interrog-app .interrog-hud {
   position: sticky;
   top: 0;
   z-index: 10;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-
   background: #0b0b0bef;
   padding: 15px 5vw;
   border-bottom: 1px solid #8a7857;
@@ -99,6 +102,8 @@ COLE TODO O CONTEÚDO.
   margin: auto;
   padding: 30px 24px;
 }
+
+/* Parede */
 
 .interrog-app .interrog-lamp {
   height: 60px;
@@ -145,18 +150,31 @@ COLE TODO O CONTEÚDO.
   font: 14px/1.5 Consolas, monospace;
 }
 
+.interrog-app .interrog-card .interrog-meta {
+  margin-top: 6px;
+  font: 13px/1.5 Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+
+/* Imagens dos servidores */
+
 .interrog-app .interrog-photo {
   background: radial-gradient(#746953, #151614);
   height: 260px;
   padding: 10px;
   overflow: hidden;
-  filter: sepia(.35) grayscale(.65);
+  filter: none;
 }
 
 .interrog-app .interrog-photo svg {
   width: 100%;
   height: 100%;
   display: block;
+  object-fit: contain;
+}
+
+.interrog-app .interrog-portrait {
+  height: 330px;
 }
 
 .interrog-app .interrog-stamp {
@@ -167,14 +185,46 @@ COLE TODO O CONTEÚDO.
   font: 13px Consolas, monospace;
 }
 
+/* Ficha técnica */
+
+.interrog-app .interrog-ficha {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 20px;
+  margin: 12px 0 24px;
+  padding: 18px 20px;
+  background: #131a20;
+  color: #f2e9d9;
+  border: 1px solid #817358;
+  border-radius: 6px;
+  font: 14px/1.5 Consolas, monospace;
+}
+
+.interrog-app .interrog-ficha > div {
+  min-width: 0;
+}
+
+.interrog-app .interrog-ficha dt {
+  color: #cbbb98;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.interrog-app .interrog-ficha dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Prontuário e perguntas */
+
 .interrog-app .interrog-columns {
   display: grid;
   grid-template-columns: 1fr 1.25fr;
   gap: 28px;
 }
 
-.interrog-app .interrog-portrait {
-  height: 330px;
+.interrog-app .interrog-columns > * {
+  min-width: 0;
 }
 
 .interrog-app .interrog-paper {
@@ -230,6 +280,8 @@ COLE TODO O CONTEÚDO.
   cursor: pointer;
 }
 
+/* Janelas */
+
 .interrog-app .interrog-dialog {
   background: #eee1c5;
   color: #26231d;
@@ -253,6 +305,8 @@ COLE TODO O CONTEÚDO.
   overflow: auto;
   max-height: 58vh;
 }
+
+/* Tabelas e campos */
 
 .interrog-app table {
   width: 100%;
@@ -306,6 +360,8 @@ COLE TODO O CONTEÚDO.
   padding: 25px;
 }
 
+/* Abertura cinematográfica */
+
 .interrog-app .interrog-intro {
   position: fixed;
   inset: 0;
@@ -327,13 +383,16 @@ COLE TODO O CONTEÚDO.
   opacity: 1;
 }
 
+/* Os cinco desenhos usam a mesma altura e a mesma base. */
+
 .interrog-app .interrog-room {
   position: absolute;
   inset: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   gap: 1vw;
+  padding-bottom: 5vh;
   background: radial-gradient(
     ellipse at 50% 45%,
     #2f4058,
@@ -345,41 +404,86 @@ COLE TODO O CONTEÚDO.
 
 .interrog-app .interrog-room svg {
   width: 20%;
+  min-width: 0;
+  flex: 0 1 20%;
   height: 65vh;
-  filter: brightness(.6);
+  object-fit: contain;
+  filter: brightness(.85);
 }
 
 .interrog-app .interrog-room svg:nth-child(3) {
-  height: 78vh;
-  filter: brightness(.95);
+  height: 65vh;
+  filter: brightness(.85);
 }
 
 .interrog-app .interrog-intro.revelar .interrog-room {
   opacity: 1;
 }
 
-.interrog-app .interrog-led {
+/* A bolinha central antiga é substituída pelas cinco portas. */
+
+.interrog-app .interrog-intro .interrog-led {
+  display: none;
+}
+
+/* Uma bolinha alinhada horizontalmente a cada servidor. */
+
+.interrog-app .interrog-luzes {
   position: absolute;
-  left: 50%;
-  top: 49%;
+  inset: 49% 0 auto;
+  height: 16px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: center;
+  justify-items: center;
+  gap: 1vw;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .8s ease;
+}
+
+.interrog-app .interrog-intro.azul .interrog-luzes {
+  opacity: 1;
+}
+
+/* Azul: porta saudável. */
+
+.interrog-app .interrog-porta {
+  display: block;
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background: #5fbaff;
-  box-shadow: 0 0 40px 14px #188cff;
-  opacity: 0;
-  animation: interrog-pulse 2s infinite;
+  color: #188cff;
+  background: #75caff;
+  box-shadow:
+    0 0 10px 3px #b8e8ff,
+    0 0 30px 10px currentColor;
+  transition:
+    background-color .6s ease,
+    color .6s ease,
+    box-shadow .6s ease;
+  animation: interrog-porta-brilho 1.8s ease-in-out infinite;
 }
 
-.interrog-app .interrog-intro.azul .interrog-led {
-  opacity: 1;
+/* Vermelho: permanece em alerta após a sua vez. */
+
+.interrog-app .interrog-porta.interrog-alerta {
+  color: #ed2525;
+  background: #ff6969;
+  box-shadow:
+    0 0 10px 3px #ffc1c1,
+    0 0 35px 12px currentColor;
 }
 
-.interrog-app .interrog-intro.vermelho .interrog-led {
-  background: #ff4848;
-  box-shadow: 0 0 75px 25px #b61616;
-  animation: none;
-  opacity: 1;
+@keyframes interrog-porta-brilho {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.12);
+  }
 }
 
 .interrog-app .interrog-skip {
@@ -389,16 +493,7 @@ COLE TODO O CONTEÚDO.
   z-index: 2;
 }
 
-@keyframes interrog-pulse {
-  50% {
-    box-shadow: 0 0 85px 25px #218bff;
-  }
-}
-
-/*
-CADERNO — abas (Manual · Servidores · Geral), marcação em um clique,
-matriz de comparação e anotações.
-*/
+/* Abas do Caderno */
 
 .interrog-app .interrog-abas {
   display: flex;
@@ -432,6 +527,8 @@ matriz de comparação e anotações.
   color: #5b5239;
 }
 
+/* Legenda das marcações */
+
 .interrog-app .interrog-legenda {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -463,6 +560,8 @@ matriz de comparação e anotações.
   border-color: #a32a1e;
 }
 
+/* Linhas de evidência */
+
 .interrog-app .interrog-linha {
   display: grid;
   grid-template-columns: 1fr 1.6fr;
@@ -487,6 +586,8 @@ matriz de comparação e anotações.
   font-size: 13px;
   color: #5b5239;
 }
+
+/* Botões de marcação */
 
 .interrog-app .interrog-marcas {
   display: flex;
@@ -530,6 +631,8 @@ matriz de comparação e anotações.
   border-color: #a32a1e;
 }
 
+/* Matriz Geral */
+
 .interrog-app table.interrog-matriz {
   min-width: 640px;
 }
@@ -568,6 +671,8 @@ matriz de comparação e anotações.
   margin: 14px 0;
 }
 
+/* Anotações */
+
 .interrog-app .interrog-notas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -583,16 +688,16 @@ matriz de comparação e anotações.
   margin-top: 6px;
 }
 
-@media (max-width: 760px) {
-  .interrog-app .interrog-linha {
-    grid-template-columns: 1fr;
-  }
-}
+/* Responsividade */
 
 @media (max-width: 760px) {
   .interrog-app .interrog-wall,
   .interrog-app .interrog-columns,
-  .interrog-app .interrog-menu {
+  .interrog-app .interrog-menu,
+  .interrog-app .interrog-linha,
+  .interrog-app .interrog-ficha,
+  .interrog-app .interrog-notas-grid,
+  .interrog-app .interrog-legenda {
     grid-template-columns: 1fr;
   }
 
@@ -613,9 +718,45 @@ matriz de comparação e anotações.
   }
 }
 
+/* Acessibilidade */
+
 @media (prefers-reduced-motion: reduce) {
   .interrog-app * {
     animation: none !important;
     transition: none !important;
   }
 }
+/* Portas posicionadas sobre cada modelo de SVG. */
+.interrog-app .interrog-luzes {
+  inset: 0;
+  height: auto;
+  display: block;
+}
+
+.interrog-app .interrog-porta {
+  position: absolute;
+  margin: -7.5px 0 0 -7.5px;
+  top: 49%;
+}
+
+.interrog-app .interrog-porta:nth-child(1) {
+  left: 10%;
+}
+
+.interrog-app .interrog-porta:nth-child(2) {
+  left: 30%;
+}
+
+.interrog-app .interrog-porta:nth-child(3) {
+  left: 50%;
+  top: 65%;
+}
+
+.interrog-app .interrog-porta:nth-child(4) {
+  left: 70%;
+}
+
+.interrog-app .interrog-porta:nth-child(5) {
+  left: 90%;
+}
+/* TT_CONTROLE_ANIMACAO_V1 */

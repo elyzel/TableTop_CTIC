@@ -1,17 +1,12 @@
-# OBJETIVO: reprovar quem executar Formatar Máquina na Fase 1 e
-# impedir o acesso à página e à API da Fase 2 nessa tentativa.
-# Mantém o reinício disponível e preserva as demais regras.
+# OBJETIVO: diferenciar as identidades dos três servidores sem alterar
+# referências, sorteio, pistas falsas, pontuação ou regras da Fase 2.
 #
 # ARQUIVO: fase2.py
 # SUBSTITUA TODO O CONTEÚDO.
 #
-# Depois de substituir os dois arquivos desta resposta:
-# 1. Reinicie o servidor Python.
-# 2. Atualize o navegador com Ctrl + F5.
-# Reiniciar o servidor limpa as partidas que estão em memória.
-#
-# VALIDAÇÃO: bloqueios, reinício, identificação, pontuação e ordem
-# do prontuário verificados com o cliente de testes do Flask.
+# publico() envia SUSPEITOS completos, incluindo os novos campos.
+# A regra ativa permanece: 1000 - 25 por pergunta, sem bônus final.
+# Salve em UTF-8 com finais de linha CRLF.
 
 import copy
 import json
@@ -37,30 +32,44 @@ SUSPEITOS = [
     {
         "id": "s1",
         "apelido": "O Porteiro",
-        "hostname": "SRV-WEB-01",
+        "hostname": "PORTAL-DMZ-01",
         "ip": "203.0.113.11",
-        "funcao": "Nó web do cluster",
+        "funcao": "Portal público e atendimento",
+        "so": "Ubuntu 22.04",
+        "setor": "Atendimento",
+        "criticidade": "Alta",
+        "visual": "rack",
+        "cor": "#5fa8d3",
     },
     {
         "id": "s2",
         "apelido": "O Contador",
-        "hostname": "SRV-WEB-02",
-        "ip": "203.0.113.12",
-        "funcao": "Nó web do cluster",
+        "hostname": "FIN-API-02",
+        "ip": "198.51.100.12",
+        "funcao": "API de cobrança e notas fiscais",
+        "so": "Debian 12",
+        "setor": "Financeiro",
+        "criticidade": "Crítica",
+        "visual": "torre",
+        "cor": "#d9a441",
     },
     {
         "id": "s3",
         "apelido": "O Arquivista",
-        "hostname": "SRV-WEB-03",
-        "ip": "203.0.113.13",
-        "funcao": "Nó web do cluster",
+        "hostname": "DOCS-WEB-03",
+        "ip": "192.0.2.13",
+        "funcao": "Portal de documentos e downloads",
+        "so": "Rocky Linux 9",
+        "setor": "Jurídico",
+        "criticidade": "Média",
+        "visual": "nas",
+        "cor": "#7fb069",
     },
 ]
 
 
 def instalar_fase2(app, participantes, lock, gravar_log):
     bp = Blueprint("fase2", __name__)
-
     vistos = {}
     rng = random.SystemRandom()
 
@@ -173,6 +182,8 @@ def instalar_fase2(app, participantes, lock, gravar_log):
             "bonus_marcas": 0,
         }
 
+        # Trecho legado já inacessível no arquivo recebido.
+        # Preservado sem modificar a regra ativa acima.
         if not f["finalizado"]:
             return {
                 "pontos": base,
@@ -193,17 +204,14 @@ def instalar_fase2(app, participantes, lock, gravar_log):
 
             if marca == "quente" and tipo == "anomalia":
                 bonus += QUENTE_CORRETO
-
             elif (
                 marca == "quente"
                 and sid != f["infectado"]
                 and tipo == "normal"
             ):
                 bonus += QUENTE_INOCENTE
-
             elif marca == "frio" and tipo == "normal":
                 bonus += FRIO_CORRETO
-
             elif marca == "morno" and tipo == "justificada":
                 bonus += MORNO_JUSTIFICADO
 
@@ -367,7 +375,6 @@ def instalar_fase2(app, participantes, lock, gravar_log):
                 request.method == "GET"
                 and request.path.startswith("/api/estado/")
             ):
-                # Restaura a identificação ao reabrir a partida.
                 pid = (request.view_args or {}).get("pid")
 
                 with lock:
@@ -457,10 +464,10 @@ def instalar_fase2(app, participantes, lock, gravar_log):
                     erro="Finalize a Fase 1 antes de reiniciar."
                 ), 409
 
-            # Apaga a tentativa, mantendo o histórico de animações.
             del participantes[dados["pid"]]
 
         resposta = jsonify(ok=True)
+
         resposta.delete_cookie(
             "tt_participante",
             path="/",
@@ -517,7 +524,6 @@ def instalar_fase2(app, participantes, lock, gravar_log):
                     erro="Finalize a Fase 1 antes de avançar."
                 ), 409
 
-            # A verificação ocorre antes de criar ou consultar a Fase 2.
             if reprovado_por_formatacao(p):
                 return jsonify(
                     erro=(

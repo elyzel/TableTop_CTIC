@@ -74,48 +74,9 @@ Carregue-o depois do script principal de participante.html.
 
   // Esperas canceláveis durante a abertura.
   // Evita que a animação continue alterando a tela após pular.
-  window.ttEsperar = ms => new Promise(
-    (resolve, reject) => {
-      const sinal = emIntro
-        ? controle?.signal
-        : null;
-
-      if (sinal?.aborted) {
-        reject(
-          new DOMException(
-            'Abertura pulada',
-            'AbortError'
-          )
-        );
-        return;
-      }
-
-      const id = setTimeout(() => {
-        sinal?.removeEventListener(
-          'abort',
-          cancelar
-        );
-
-        resolve();
-      }, ms);
-
-      function cancelar() {
-        clearTimeout(id);
-
-        reject(
-          new DOMException(
-            'Abertura pulada',
-            'AbortError'
-          )
-        );
-      }
-
-      sinal?.addEventListener(
-        'abort',
-        cancelar,
-        { once: true }
-      );
-    }
+  window.ttEsperar = ms => TTAnimacao.esperar(
+    ms,
+    emIntro ? controle?.signal : null
   );
 
   const original = {
@@ -126,7 +87,7 @@ Carregue-o depois do script principal de participante.html.
   };
 
   narrar = texto => {
-    clearInterval(timer);
+    TTAnimacao.cancelar(timer);
     falaAtual = texto;
 
     const n = document.getElementById('narr');
@@ -138,19 +99,19 @@ Carregue-o depois do script principal de participante.html.
     
     let i = 0;
 
-    timer = setInterval(() => {
+    timer = TTAnimacao.intervalo(() => {
       n.textContent = texto.slice(0, ++i);
 
       window.TTUI?.toque(texto[i - 1]);
 
       if (i >= texto.length) {
-        clearInterval(timer);
+        TTAnimacao.cancelar(timer);
       }
     }, 18);
   };
 
   pararNarracao = () => {
-    clearInterval(timer);
+    TTAnimacao.cancelar(timer);
 
     document.getElementById('narr')
       .classList.remove('on');
@@ -158,7 +119,7 @@ Carregue-o depois do script principal de participante.html.
 
   document.getElementById('narr')
     .addEventListener('click', () => {
-      clearInterval(timer);
+      TTAnimacao.cancelar(timer);
 
       document.getElementById('narr')
         .textContent = falaAtual;
@@ -318,3 +279,4 @@ Carregue-o depois do script principal de participante.html.
     }
   };
 })();
+/* TT_CONTROLE_ANIMACAO_V1 */

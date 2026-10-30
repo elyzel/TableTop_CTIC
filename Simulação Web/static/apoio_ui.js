@@ -1,26 +1,23 @@
 /*
 OBJETIVO:
-- Centralizar o ícone do navegador na área de trabalho.
-- Mostrar "Clique no navegador" por 4 segundos.
-- Ocultar o ícone quando começar a etapa de escolha das ações.
-- Explicar que as respostas aparecem no prontuário, com a mais recente no topo.
-- Preservar áudio, trilha de suspense, tutoriais e tela de resultados.
-- Manter 6 segundos de leitura após a narração inicial do login.
+- Manter "Clique no navegador" por 10 segundos, com pulsação.
+- Centralizar e controlar a visibilidade do navegador.
+- Priorizar Próximo nas orientações das duas fases.
+- Posicionar Pular orientação no topo direito.
+- Apontar uma seta para o Caderno.
+- Preservar áudio, tutoriais e resultados.
 
 ARQUIVO: static/apoio_ui.js
-SUBSTITUA TODO O CONTEÚDO POR ESTE BLOCO.
+SUBSTITUA TODO O CONTEÚDO.
 
-REVISÃO:
-A ordem efetiva das respostas continua sendo controlada por interrogatorio.js.
-Mantenha nesse arquivo a alteração anterior que coloca a resposta mais recente
-no topo. Aqui são atualizadas as orientações sobre esse comportamento.
-
-RECOMENDAÇÃO:
-Mantenha as correções anteriores de digitação e iluminação nos demais arquivos.
+IMPORTANTE:
+Os estilos deste arquivo foram reunidos em apoio_ui.css.
+Substitua também o CSS completo fornecido nesta resposta.
+O controle completo de iniciar/pausar permanece como etapa separada.
 
 VALIDAÇÃO:
-Sintaxe e duração do aviso verificadas.
-Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Docker.
+Sintaxe, aviso de 10 segundos e fluxo do tutorial conferidos em simulação.
+Confira aparência e áudio no navegador.
 */
 
 (() => {
@@ -55,239 +52,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
     somBotao.type = 'button';
     somBotao.className = 'tt-volume tt-volume-flutuante';
 
-    const estilo = document.createElement('style');
-
-    estilo.textContent = `
-      #desktop-icons {
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-      }
-
-      #desktop-browser[hidden] {
-        display: none !important;
-      }
-
-      .tt-som {
-        display: none !important;
-      }
-
-      #faseintro.on h1 {
-        animation: tt-titulo-suspense 2.8s ease-in-out infinite;
-      }
-
-      @keyframes tt-titulo-suspense {
-        0%, 100% {
-          opacity: 1;
-          filter: brightness(1);
-          text-shadow: 0 0 12px #86aaff33;
-        }
-
-        50% {
-          opacity: .62;
-          filter: brightness(.8);
-          text-shadow: 0 0 2px #86aaff11;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        #faseintro.on h1 {
-          animation: none;
-        }
-      }
-
-      button:not(:disabled),
-      a[href] {
-        touch-action: manipulation;
-      }
-
-      button:not(:disabled) {
-        cursor: pointer;
-      }
-
-      button > * {
-        pointer-events: none;
-      }
-
-      #final {
-        z-index: 700 !important;
-      }
-
-      #final button,
-      .interrog-result button {
-        position: relative;
-        pointer-events: auto;
-        min-height: 44px;
-      }
-
-      body[data-tt-modo="resultado"] #narr,
-      body[data-tt-modo="resultado"] #notice,
-      body[data-tt-modo="resultado"] #dica {
-        display: none !important;
-        pointer-events: none !important;
-      }
-
-      .tt-cinema {
-        position: fixed;
-        inset: 0;
-        z-index: 90;
-        pointer-events: none;
-        opacity: 0;
-        background: radial-gradient(
-          ellipse at center,
-          #0001 25%,
-          #0009 100%
-        );
-        transition: opacity .55s ease;
-        box-shadow:
-          inset 0 32px 0 #000,
-          inset 0 -32px 0 #000;
-      }
-
-      body[data-tt-modo="historia"] .tt-cinema {
-        opacity: 1;
-      }
-
-      #desk {
-        transition: transform .65s ease;
-        transform-origin: center;
-      }
-
-      body[data-tt-modo="historia"] #desk {
-        transform: scale(1.015);
-      }
-
-      .tt-sua-vez {
-        position: fixed;
-        left: 50%;
-        top: 16px;
-        transform: translate(-50%, -8px);
-        z-index: 95;
-        width: max-content;
-        max-width: calc(100vw - 128px);
-        box-sizing: border-box;
-        padding: 12px 20px;
-        border-radius: 10px;
-        background: #102236;
-        border: 1px solid #8bd9ff;
-        color: #fff;
-        font: 600 16px/1.4 "Segoe UI", sans-serif;
-        text-align: center;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity .3s, transform .3s;
-      }
-
-      .tt-sua-vez.on {
-        opacity: 1;
-        transform: translate(-50%, 0);
-      }
-
-      body[data-tt-modo="interacao"] #desktop-browser.guia {
-        outline: 2px solid #8bd9ff;
-        outline-offset: 3px;
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .tt-cinema,
-        .tt-sua-vez,
-        #desk {
-          transition: none !important;
-        }
-
-        body[data-tt-modo="historia"] #desk {
-          transform: none;
-        }
-      }
-
-      .tt-volume {
-        box-sizing: border-box;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex: 0 0 44px;
-        width: 44px;
-        height: 44px;
-        padding: 9px;
-        border: 1px solid #73829a;
-        border-radius: 8px;
-        background: #151b25;
-        color: #fff;
-        cursor: pointer;
-      }
-
-      .tt-volume svg {
-        width: 24px;
-        height: 24px;
-        pointer-events: none;
-      }
-
-      .tt-volume:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 3px;
-      }
-
-      .tt-volume-flutuante {
-        position: fixed;
-        top: 12px;
-        left: 12px;
-        z-index: 800;
-      }
-
-      #taskbar .tt-volume {
-        height: 40px;
-      }
-
-      .interrog-hud .interrog-row {
-        flex-wrap: wrap;
-      }
-
-      #final .tt-tabela-area {
-        overflow-x: auto;
-      }
-
-      #final table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14px;
-      }
-
-      #final th,
-      #final td {
-        padding: 10px 8px;
-        border-bottom: 1px solid #344151;
-        text-align: left;
-      }
-
-      #final th:not(:first-child),
-      #final td:not(:first-child) {
-        text-align: right;
-        white-space: nowrap;
-      }
-
-      #final .tt-feedback td {
-        text-align: left;
-        white-space: normal;
-        color: #c9d3e3;
-      }
-
-      #final .tt-objetivos {
-        padding-left: 22px;
-        line-height: 1.8;
-      }
-
-      #final .tt-neutro {
-        color: #c9d3e3;
-      }
-
-      #final .tt-acoes-final {
-        margin-top: 24px !important;
-      }
-    `;
-
-    document.head.append(estilo);
-
-    /* ---------- Controle de áudio ---------- */
+    /* ---------- Áudio ---------- */
 
     function rotuloSom() {
       const label = som ? 'Silenciar áudio' : 'Ativar áudio';
@@ -317,7 +82,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
     }
 
     async function ativarAudio() {
-      if (!som) return;
+      if (!som || TTAnimacao.pausada) return;
 
       try {
         const Contexto =
@@ -327,7 +92,8 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
 
         if (!audio) {
           audio = new Contexto();
-
+          TTAnimacao.registrarAudio(audio);
+          audio.addEventListener('statechange', acompanharAbertura);
           saida = audio.createGain();
           saida.gain.value = 1;
           saida.connect(audio.destination);
@@ -349,7 +115,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
       tipo = 'sine',
       musical = false
     ) {
-      if (!som || !audio || audio.state !== 'running') return;
+      if (!som || TTAnimacao.pausada || !audio || audio.state !== 'running') return;
 
       const inicio = audio.currentTime + atraso;
       const o = audio.createOscillator();
@@ -360,7 +126,6 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
 
       g.gain.setValueAtTime(0, inicio);
       g.gain.linearRampToValueAtTime(volume, inicio + .015);
-
       g.gain.exponentialRampToValueAtTime(
         .0001,
         inicio + duracao
@@ -370,12 +135,9 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
       g.connect(saida);
 
       const voz = {o, g};
-
       vozes.add(voz);
 
-      if (musical) {
-        musicaVozes.add(voz);
-      }
+      if (musical) musicaVozes.add(voz);
 
       o.onended = () => {
         vozes.delete(voz);
@@ -396,40 +158,30 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
 
         try {
           voz.g.gain.cancelScheduledValues(agora);
-
           voz.g.gain.setValueAtTime(
             suave ? voz.g.gain.value : 0,
             agora
           );
-
           voz.g.gain.linearRampToValueAtTime(
             0,
             agora + (suave ? .3 : .01)
           );
-
-          voz.o.stop(
-            agora + (suave ? .32 : .02)
-          );
-        } catch {
-          // Uma nota pode já ter terminado.
-        }
+          voz.o.stop(agora + (suave ? .32 : .02));
+        } catch {}
       }
 
       conjunto.clear();
     }
 
     function pararMusica(suave = true) {
-      clearInterval(musicaTimer);
-
+      TTAnimacao.cancelar(musicaTimer);
       musicaTimer = null;
       musicaCena = null;
-
       encerrarVozes(musicaVozes, suave);
     }
 
-    /* ---------- Trilha de suspense ---------- */
-
     function acompanharAbertura() {
+      if (TTAnimacao.pausada) return;
       const intro = document.querySelector('.interrog-intro');
       const titulo1 = document.getElementById('faseintro');
 
@@ -459,16 +211,13 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
       }
 
       if (audio?.state !== 'running') return;
-
       if (musicaTimer && musicaCena === cena) return;
 
       pararMusica();
-
       musicaCena = cena;
       musicaPasso = 0;
 
       const tocar = () => {
-        // Trilha original sintetizada em ré menor.
         const acordes = [
           [146.83, 174.61, 220, 293.66],
           [116.54, 146.83, 174.61, 233.08],
@@ -530,7 +279,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
       };
 
       tocar();
-      musicaTimer = setInterval(tocar, 360);
+      musicaTimer = TTAnimacao.intervalo(tocar, 360);
     }
 
     function alternarAudio() {
@@ -591,11 +340,10 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
       nota(520, .035, .018);
     }
 
-    /* ---------- Sons de conclusão ---------- */
+    /* ---------- Sons de resultado ---------- */
 
     function celebrar() {
       if (vitoriaTocada || derrotaTocada) return;
-
       vitoriaTocada = true;
       vinheta(true);
     }
@@ -644,7 +392,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
       }
     );
 
-    /* ---------- Modos de apresentação e avisos ---------- */
+    /* ---------- Estados e avisos ---------- */
 
     let modo = 'neutro';
     let avisoVezTimer = null;
@@ -668,14 +416,18 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
 
       const mesa = document.getElementById('desk');
 
-      if (mesa) {
-        mesa.inert = novo === 'historia';
-      }
+      if (mesa) mesa.inert = novo === 'historia';
 
       clearTimeout(avisoVezTimer);
 
       suaVez.classList.remove('on');
       suaVez.textContent = '';
+
+      suaVez.classList.toggle(
+        'tt-convite',
+        novo === 'interacao'
+          && /clique no navegador/i.test(mensagem)
+      );
 
       if (novo === 'interacao' && mensagem) {
         suaVez.textContent = mensagem;
@@ -690,7 +442,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
       posicionarSom();
     }
 
-    /* ---------- Integração cinematográfica da Fase 1 ---------- */
+    /* ---------- Integração da abertura da Fase 1 ---------- */
 
     function integrarCinemaFase1() {
       const faseAnterior = introFase;
@@ -704,7 +456,6 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
         definirModo('historia');
 
         const login = document.getElementById('winlogin');
-
         login.hidden = false;
 
         document.getElementById('login-user').textContent = '';
@@ -714,7 +465,6 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
           'Iniciando sessão do usuário...';
 
         await sleep(50);
-
         login.classList.add('on');
 
         const texto =
@@ -722,14 +472,12 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
 
         narrar(texto);
 
-        // Aguarda a conclusão da digitação antes da pausa de leitura.
         while (
           document.getElementById('narr').textContent !== texto
         ) {
           await sleep(30);
         }
 
-        // Pausa de leitura após a narração completa.
         await sleep(6000);
         pararNarracao();
 
@@ -755,41 +503,32 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
 
         await sleep(3000);
 
-        document.getElementById('preto')
-          .classList.add('on');
-
+        document.getElementById('preto').classList.add('on');
         await sleep(700);
 
         login.classList.remove('on');
-
         await sleep(350);
 
         login.hidden = true;
-
         document.getElementById('desk').hidden = false;
 
         await sleep(250);
-
-        document.getElementById('preto')
-          .classList.remove('on');
-
+        document.getElementById('preto').classList.remove('on');
         await sleep(700);
       };
 
       prepararInteracaoPosLogin = async () => {
         pregame = 'aguarda_browser';
-
         pararNarracao();
 
         const navegador = document.getElementById('desktop-browser');
-
         navegador.hidden = false;
         navegador.classList.add('guia');
 
         definirModo(
           'interacao',
           'Clique no navegador',
-          4000
+          10000
         );
 
         mostrarNotice(
@@ -830,7 +569,6 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
       iniciarJogo = async () => {
         const navegador = document.getElementById('desktop-browser');
 
-        // Oculta o ícone antes das orientações e da escolha das ações.
         navegador.hidden = true;
         navegador.classList.remove('guia');
 
@@ -863,7 +601,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
       };
     }
 
-    /* ---------- Motor dos tutoriais interativos ---------- */
+    /* ---------- Tutorial compartilhado pelas duas fases ---------- */
 
     async function tutorial(etapas, raiz = document) {
       if (guiaAtivo) return;
@@ -897,16 +635,29 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
 
         const proximo = document.createElement('button');
         proximo.type = 'button';
-        proximo.textContent = 'Entendi, continuar';
+        proximo.className = 'tt-guia-proximo';
 
         const sair = document.createElement('button');
         sair.type = 'button';
+        sair.className = 'tt-guia-pular';
         sair.textContent = 'Pular orientação';
 
-        acoes.append(proximo, sair);
+        const seta = document.createElement('div');
+        seta.className = 'tt-seta-caderno';
+        seta.setAttribute('aria-hidden', 'true');
+        seta.hidden = true;
+
+        const setaIcone = document.createElement('span');
+        const setaTexto = document.createElement('small');
+        setaTexto.textContent = 'Clique no Caderno';
+
+        seta.append(setaIcone, setaTexto);
+        acoes.append(proximo);
         painel.append(titulo, texto, extra, acoes);
 
         function removerAlvo() {
+          seta.hidden = true;
+
           if (!alvo) return;
 
           if (restaurarTab === null) {
@@ -925,10 +676,14 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
         }
 
         function posicionar() {
-          const atual = raiz.querySelector(etapas[indice].alvo);
+          if (fim) return;
+
+          const etapa = etapas[indice];
+          const atual = raiz.querySelector(etapa.alvo);
 
           if (!atual) {
             moldura.hidden = true;
+            seta.hidden = true;
             return;
           }
 
@@ -940,7 +695,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
             restaurarRole = alvo.getAttribute('role');
 
             if (
-              etapas[indice].modo !== 'continuar'
+              etapa.modo !== 'continuar'
               && !alvo.matches('button,a,input,select,textarea')
             ) {
               alvo.tabIndex = 0;
@@ -964,7 +719,31 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
 
           if (r.top > innerHeight * .55) {
             painel.style.bottom = 'auto';
-            painel.style.top = '16px';
+            painel.style.top = '76px';
+          }
+
+          seta.hidden = !alvo.matches('[data-el="caderno"]');
+
+          if (!seta.hidden) {
+            const abaixo = r.bottom + 115 < innerHeight;
+
+            setaIcone.textContent = abaixo ? '↑' : '↓';
+            seta.classList.toggle('tt-seta-acima', !abaixo);
+
+            Object.assign(seta.style, {
+              left: Math.max(
+                90,
+                Math.min(
+                  innerWidth - 90,
+                  r.left + r.width / 2
+                )
+              ) + 'px',
+              top: (
+                abaixo
+                  ? r.bottom + 8
+                  : Math.max(8, r.top - 108)
+              ) + 'px'
+            });
           }
         }
 
@@ -972,12 +751,13 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
           if (fim) return;
 
           fim = true;
-
           clearInterval(timer);
 
           removerAlvo();
           painel.remove();
           moldura.remove();
+          sair.remove();
+          seta.remove();
 
           document.removeEventListener('click', capturar, true);
           document.removeEventListener('keydown', teclado, true);
@@ -1003,7 +783,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
             document.querySelector('dialog[open]')
             || document.body;
 
-          hospedeiro.append(moldura, painel);
+          hospedeiro.append(moldura, painel, sair, seta);
 
           titulo.textContent =
             `Orientação ${indice + 1} de ${etapas.length}`;
@@ -1012,15 +792,17 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
           extra.replaceChildren();
 
           proximo.hidden = etapa.modo !== 'continuar';
+          proximo.textContent =
+            indice === etapas.length - 1
+              ? 'Concluir orientação'
+              : 'Próximo';
 
           if (etapa.exemploMarcas) {
             const grupo = document.createElement('div');
-
             grupo.style.cssText =
               'display:flex;gap:6px;flex-wrap:wrap;margin:8px 0';
 
             const dica = document.createElement('small');
-
             dica.textContent =
               'Toque em uma marca para ver o que ela significa.';
 
@@ -1041,10 +823,12 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
               b.setAttribute('aria-pressed', 'false');
 
               b.onclick = () => {
-                botoes.forEach(x => x.setAttribute(
-                  'aria-pressed',
-                  String(x === b)
-                ));
+                botoes.forEach(x => {
+                  x.setAttribute(
+                    'aria-pressed',
+                    String(x === b)
+                  );
+                });
 
                 dica.textContent = explicacao;
               };
@@ -1054,7 +838,6 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
             });
 
             const aviso = document.createElement('small');
-
             aviso.textContent =
               'Exemplo demonstrativo: não altera suas evidências.';
 
@@ -1081,10 +864,8 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
           if (fim) return;
 
           removerAlvo();
-
           indice++;
           transicao = false;
-
           mostrar();
         }
 
@@ -1092,6 +873,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
           if (
             fim
             || painel.contains(e.target)
+            || sair.contains(e.target)
             || somBotao.contains(e.target)
           ) return;
 
@@ -1114,7 +896,6 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
             }
 
             transicao = true;
-
             setTimeout(avancar, 0);
             return;
           }
@@ -1141,20 +922,19 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
               somBotao,
               ...painel.querySelectorAll(
                 'button:not([hidden])'
-              )
+              ),
+              sair
             ];
 
-            const atual =
-              itens.indexOf(document.activeElement);
-
-            const proximoIndice = (
+            const atual = itens.indexOf(document.activeElement);
+            const i = (
               atual
               + (e.shiftKey ? -1 : 1)
               + itens.length
             ) % itens.length;
 
             e.preventDefault();
-            itens[proximoIndice]?.focus();
+            itens[i]?.focus();
             return;
           }
 
@@ -1169,6 +949,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
             (e.key === 'Enter' || e.key === ' ')
             && !somBotao.contains(e.target)
             && !painel.contains(e.target)
+            && !sair.contains(e.target)
             && !alvo?.contains(e.target)
           ) {
             e.preventDefault();
@@ -1188,7 +969,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
       });
     }
 
-    /* ---------- API de apoio e orientações das fases ---------- */
+    /* ---------- Conteúdo das orientações ---------- */
 
     window.TTUI = {
       toque,
@@ -1270,18 +1051,16 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
       ], raiz)
     };
 
-    /* ---------- Posicionamento do controle de áudio ---------- */
+    /* ---------- Posicionamento do áudio ---------- */
 
     function posicionarSom() {
       const inicio = document.getElementById('inicio');
       const final = document.getElementById('final');
       const mesa = document.getElementById('desk');
       const intro = document.querySelector('.interrog-intro');
-
       const cabecalho = document.querySelector(
         '.interrog-hud .interrog-row'
       );
-
       const barra = document.getElementById('taskbar');
 
       let destino = document.body;
@@ -1327,11 +1106,10 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
       acompanharAbertura();
     }
 
-    /* ---------- Integração da Fase 1 e tela de resultados ---------- */
+    /* ---------- Resultado da Fase 1 ---------- */
 
     function integrarFase1() {
-      const antigo = document.getElementById('mudo');
-      antigo?.remove();
+      document.getElementById('mudo')?.remove();
 
       if (!document.getElementById('final')) return;
 
@@ -1344,14 +1122,9 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
       const avisoOriginal = mostrarNotice;
 
       const titulos = {
-        isolou:
-          '✅ OBJETIVO CONCLUÍDO — CONTENÇÃO REALIZADA',
-
-        comunicou_soc:
-          '✅ OBJETIVO CONCLUÍDO — SOC ACIONADO',
-
-        preservou:
-          '✅ OBJETIVO CONCLUÍDO — DOCUMENTAÇÃO REGISTRADA'
+        isolou: '✅ OBJETIVO CONCLUÍDO — CONTENÇÃO REALIZADA',
+        comunicou_soc: '✅ OBJETIVO CONCLUÍDO — SOC ACIONADO',
+        preservou: '✅ OBJETIVO CONCLUÍDO — DOCUMENTAÇÃO REGISTRADA'
       };
 
       mostrarNotice = (texto, tipo, titulo, ...extras) => {
@@ -1376,7 +1149,6 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
 
       mostrarFinal = () => {
         pregame = 'final';
-
         definirModo('resultado');
 
         clearInterval(poll);
@@ -1384,8 +1156,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
         pararNarracao();
 
         for (const id of ['notice', 'dica', 'bd', 'flash']) {
-          document.getElementById(id)
-            ?.classList.remove('on');
+          document.getElementById(id)?.classList.remove('on');
         }
 
         const tela = document.getElementById('final');
@@ -1393,11 +1164,8 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
         const resultado = est.final || {};
 
         const nomesFinais = {
-          'Contenção exemplar':
-            'Resposta exemplar',
-
-          'Contenção parcial':
-            'Resposta concluída com ressalvas'
+          'Contenção exemplar': 'Resposta exemplar',
+          'Contenção parcial': 'Resposta concluída com ressalvas'
         };
 
         const titulo = document.getElementById('f-t');
@@ -1419,8 +1187,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
           est.pontos;
 
         if (document.getElementById('pts')) {
-          document.getElementById('pts').textContent =
-            est.pontos;
+          document.getElementById('pts').textContent = est.pontos;
         }
 
         let objetivos = document.getElementById(
@@ -1430,7 +1197,6 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
         if (!objetivos) {
           objetivos = document.createElement('div');
           objetivos.id = 'tt-final-objetivos';
-
           document.getElementById('f-x').after(objetivos);
         }
 
@@ -1453,7 +1219,6 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
               ${esc(String(obj.concluidos))}/${esc(String(obj.total))}
             </strong>
           </p>
-
           <ul class="tt-objetivos">
             ${
               (obj.itens || []).map(item => `
@@ -1474,9 +1239,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
         }
 
         const numero = valor => (
-          Number.isFinite(Number(valor))
-            ? Number(valor)
-            : 0
+          Number.isFinite(Number(valor)) ? Number(valor) : 0
         );
 
         const pontos = valor => (
@@ -1484,11 +1247,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
         );
 
         const classe = valor => (
-          valor > 0
-            ? 'pos'
-            : valor < 0
-              ? 'neg'
-              : 'tt-neutro'
+          valor > 0 ? 'pos' : valor < 0 ? 'neg' : 'tt-neutro'
         );
 
         historico.className = 'tt-tabela-area';
@@ -1503,7 +1262,6 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
                 <th scope="col">Total</th>
               </tr>
             </thead>
-
             <tbody>
               ${
                 (est.historico || []).map(h => {
@@ -1513,30 +1271,16 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
 
                   return `
                     <tr>
-                      <th scope="row">
-                        ${esc(h.acao || '')}
-                      </th>
-
-                      <td class="${classe(base)}">
-                        ${pontos(base)}
-                      </td>
-
-                      <td class="${classe(bonus)}">
-                        ${pontos(bonus)}
-                      </td>
-
-                      <td class="${classe(total)}">
-                        ${pontos(total)}
-                      </td>
+                      <th scope="row">${esc(h.acao || '')}</th>
+                      <td class="${classe(base)}">${pontos(base)}</td>
+                      <td class="${classe(bonus)}">${pontos(bonus)}</td>
+                      <td class="${classe(total)}">${pontos(total)}</td>
                     </tr>
-
                     ${
                       h.feedback
                         ? `
                           <tr class="tt-feedback">
-                            <td colspan="4">
-                              ${esc(h.feedback)}
-                            </td>
+                            <td colspan="4">${esc(h.feedback)}</td>
                           </tr>
                         `
                         : ''
@@ -1545,9 +1289,7 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
                 }).join('')
                 || `
                   <tr>
-                    <td colspan="4">
-                      Nenhuma decisão registrada.
-                    </td>
+                    <td colspan="4">Nenhuma decisão registrada.</td>
                   </tr>
                 `
               }
@@ -1563,19 +1305,16 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
         historico.after(botoes);
 
         const erro = document.getElementById('erro-reinicio');
-
-        if (erro) {
-          botoes.after(erro);
-        }
+        if (erro) botoes.after(erro);
 
         tela.hidden = false;
         tela.classList.add('on');
 
         posicionarSom();
 
-        const formatou = (est.historico || []).some(h => (
-          h.acao === 'Formatar Máquina'
-        ));
+        const formatou = (est.historico || []).some(
+          h => h.acao === 'Formatar Máquina'
+        );
 
         if (
           formatou
@@ -1637,3 +1376,4 @@ Confira a aparência, os tutoriais e o áudio no navegador após atualizar o Doc
     );
   }
 })();
+/* TT_CONTROLE_ANIMACAO_V1 */

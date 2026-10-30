@@ -85,9 +85,10 @@ $('reiniciar-fase1')?.addEventListener('click', async () => {
 /* ---------- Áudio ---------- */
 
 function bip(f, d, t = 'sine') {
-  if (mudo) return;
+  if (mudo || TTAnimacao.pausada) return;
   try {
     ac = ac || new AudioContext();
+    TTAnimacao.registrarAudio(ac);
     if (ac.state === 'suspended') ac.resume();
     const o = ac.createOscillator();
     const g = ac.createGain();
@@ -103,7 +104,7 @@ function bip(f, d, t = 'sine') {
 
 function alarme() {
   [0, 250, 500, 750].forEach(t => {
-    setTimeout(() => bip(880, .18, 'square'), t);
+    TTAnimacao.agendar(() => bip(880, .18, 'square'), t);
   });
 }
 
@@ -144,16 +145,16 @@ function mostrarNotice(texto, tipo = 'alerta', titulo = null, duracao = 8000) {
 
   $('notice-text').textContent = texto;
   n.classList.add('on');
-  clearTimeout(noticeTimer);
-  noticeTimer = setTimeout(() => n.classList.remove('on'), duracao);
+  TTAnimacao.cancelar(noticeTimer);
+  noticeTimer = TTAnimacao.agendar(() => n.classList.remove('on'), duracao);
 }
 
 function mostrarDica(texto, duracao = 8500) {
   const d = $('dica');
   d.textContent = '💡 ' + texto;
   d.classList.add('on');
-  clearTimeout(dicaTimer);
-  dicaTimer = setTimeout(() => d.classList.remove('on'), duracao);
+  TTAnimacao.cancelar(dicaTimer);
+  dicaTimer = TTAnimacao.agendar(() => d.classList.remove('on'), duracao);
 }
 
 async function digitarTexto(el, texto, atraso = 80) {
@@ -771,3 +772,4 @@ $('nome')?.addEventListener('keydown', e => {
 });
 
 init();
+/* TT_CONTROLE_ANIMACAO_V1 */

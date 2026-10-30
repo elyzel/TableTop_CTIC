@@ -1,16 +1,195 @@
+/*
+OBJETIVO:
+Reunir os estilos completos de apoio, áudio, resultados,
+convite pulsante, orientação e seta do Caderno.
+
+ARQUIVO: static/apoio_ui.css
+SUBSTITUA TODO O CONTEÚDO.
+*/
+
+/* Elementos antigos substituídos pelo controle atual */
+
 .tt-som {
-  position: fixed;
-  top: 84px;
-  right: 12px;
-  z-index: 600;
-  font: 13px "Segoe UI", sans-serif;
-  padding: 8px 12px;
-  color: #fff;
-  background: #151b25;
-  border: 1px solid #73829a;
-  border-radius: 6px;
+  display: none !important;
+}
+
+/* Navegador */
+
+#desktop-icons {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#desktop-browser[hidden] {
+  display: none !important;
+}
+
+body[data-tt-modo="interacao"] #desktop-browser.guia {
+  outline: 2px solid #8bd9ff;
+  outline-offset: 3px;
+}
+
+/* Título da Fase 1 */
+
+#faseintro.on h1 {
+  animation: tt-titulo-suspense 2.8s ease-in-out infinite;
+}
+
+@keyframes tt-titulo-suspense {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+    text-shadow: 0 0 12px #86aaff33;
+  }
+
+  50% {
+    opacity: .62;
+    filter: brightness(.8);
+    text-shadow: 0 0 2px #86aaff11;
+  }
+}
+
+/* Interação */
+
+button:not(:disabled),
+a[href] {
+  touch-action: manipulation;
+}
+
+button:not(:disabled) {
   cursor: pointer;
 }
+
+button > * {
+  pointer-events: none;
+}
+
+/* Cinema */
+
+.tt-cinema {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse at center,
+    #0001 25%,
+    #0009 100%
+  );
+  transition: opacity .55s ease;
+  box-shadow:
+    inset 0 32px 0 #000,
+    inset 0 -32px 0 #000;
+}
+
+body[data-tt-modo="historia"] .tt-cinema {
+  opacity: 1;
+}
+
+#desk {
+  transition: transform .65s ease;
+  transform-origin: center;
+}
+
+body[data-tt-modo="historia"] #desk {
+  transform: scale(1.015);
+}
+
+/* Aviso de interação */
+
+.tt-sua-vez {
+  position: fixed;
+  left: 50%;
+  top: 16px;
+  transform: translate(-50%, -8px);
+  z-index: 95;
+  width: max-content;
+  max-width: calc(100vw - 128px);
+  box-sizing: border-box;
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: #102236;
+  border: 1px solid #8bd9ff;
+  color: #fff;
+  font: 600 16px/1.4 "Segoe UI", sans-serif;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, transform .3s;
+}
+
+.tt-sua-vez.on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.tt-sua-vez.tt-convite.on {
+  animation: tt-convite-pulso 1.8s ease-in-out infinite;
+}
+
+@keyframes tt-convite-pulso {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 #8bd9ff22,
+      0 0 12px #8bd9ff22;
+    border-color: #8bd9ff;
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 7px #8bd9ff11,
+      0 0 28px #8bd9ff66;
+    border-color: #e1f7ff;
+  }
+}
+
+/* Controle de áudio */
+
+.tt-volume {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 9px;
+  border: 1px solid #73829a;
+  border-radius: 8px;
+  background: #151b25;
+  color: #fff;
+  cursor: pointer;
+}
+
+.tt-volume svg {
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+}
+
+.tt-volume:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+.tt-volume-flutuante {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 800;
+}
+
+#taskbar .tt-volume {
+  height: 40px;
+}
+
+.interrog-hud .interrog-row {
+  flex-wrap: wrap;
+}
+
+/* Orientações */
 
 .tt-moldura {
   position: fixed;
@@ -69,21 +248,182 @@
   margin-top: 15px;
 }
 
-.tt-guia :focus-visible,
-.tt-som:focus-visible {
+.tt-guia :focus-visible {
   outline: 3px solid #fff;
   outline-offset: 3px;
 }
 
-@media (max-width: 700px) {
-  .tt-som {
-    top: auto;
-    bottom: 8px;
-    right: 8px;
-    font-size: 11px;
+.tt-guia .tt-guia-proximo {
+  background: #246648;
+  border-color: #8edab4;
+  color: #fff;
+  font-weight: 700;
+  min-width: 150px;
+}
+
+.tt-guia .tt-guia-proximo:hover {
+  background: #2d7b58;
+}
+
+/* Pular separado do botão principal */
+
+.tt-guia-pular {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 10003;
+  padding: 9px 13px;
+  border: 1px solid #758399;
+  border-radius: 8px;
+  background: #172131;
+  color: #dce6f2;
+  font: 14px/1.4 "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+.tt-guia-pular:hover {
+  background: #26364c;
+}
+
+.tt-guia-pular:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+/* Seta do Caderno */
+
+.tt-seta-caderno {
+  position: fixed;
+  z-index: 10002;
+  transform: translateX(-50%);
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #d9f6ff;
+  text-align: center;
+  pointer-events: none;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.tt-seta-caderno[hidden] {
+  display: none !important;
+}
+
+.tt-seta-caderno > span {
+  font-size: 56px;
+  line-height: 1;
+  text-shadow: 0 0 15px #70cde2;
+  animation: tt-seta-pulso 1.4s ease-in-out infinite;
+}
+
+.tt-seta-caderno > small {
+  padding: 5px 9px;
+  margin: 4px 0 0;
+  background: #102236;
+  border: 1px solid #8bd9ff;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.tt-seta-caderno.tt-seta-acima {
+  flex-direction: column-reverse;
+}
+
+@keyframes tt-seta-pulso {
+  0%, 100% {
+    opacity: 1;
   }
 
+  50% {
+    opacity: .65;
+  }
+}
+
+/* Resultado da Fase 1 */
+
+#final {
+  z-index: 700 !important;
+}
+
+#final button,
+.interrog-result button {
+  position: relative;
+  pointer-events: auto;
+  min-height: 44px;
+}
+
+body[data-tt-modo="resultado"] #narr,
+body[data-tt-modo="resultado"] #notice,
+body[data-tt-modo="resultado"] #dica {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+#final .tt-tabela-area {
+  overflow-x: auto;
+}
+
+#final table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+#final th,
+#final td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #344151;
+  text-align: left;
+}
+
+#final th:not(:first-child),
+#final td:not(:first-child) {
+  text-align: right;
+  white-space: nowrap;
+}
+
+#final .tt-feedback td {
+  text-align: left;
+  white-space: normal;
+  color: #c9d3e3;
+}
+
+#final .tt-objetivos {
+  padding-left: 22px;
+  line-height: 1.8;
+}
+
+#final .tt-neutro {
+  color: #c9d3e3;
+}
+
+#final .tt-acoes-final {
+  margin-top: 24px !important;
+}
+
+/* Responsividade e acessibilidade */
+
+@media (max-width: 700px) {
   .tt-guia {
     font-size: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #faseintro.on h1,
+  .tt-sua-vez.tt-convite.on,
+  .tt-seta-caderno > span {
+    animation: none !important;
+  }
+
+  .tt-cinema,
+  .tt-sua-vez,
+  #desk {
+    transition: none !important;
+  }
+
+  body[data-tt-modo="historia"] #desk {
+    transform: none;
   }
 }

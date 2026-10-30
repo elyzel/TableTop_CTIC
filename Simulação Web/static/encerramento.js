@@ -699,7 +699,7 @@ Confira a aparência e o áudio no navegador.
     }
 
     async function iniciarMusica() {
-      if (!som || terminou) return;
+      if (!som || terminou || TTAnimacao.pausada) return;
 
       try {
         const Contexto =
@@ -710,6 +710,18 @@ Confira a aparência e o áudio no navegador.
 
         if (!audio) {
           audio = new Contexto();
+          TTAnimacao.registrarAudio(audio);
+
+          audio.addEventListener('statechange', () => {
+            if (
+              audio.state === 'running' &&
+              !TTAnimacao.pausada &&
+              !terminou &&
+              som
+            ) {
+              void iniciarMusica();
+            }
+          });
 
           ganho = audio.createGain();
           ganho.gain.value = .5;
@@ -720,7 +732,7 @@ Confira a aparência e o áudio no navegador.
           await audio.resume();
         }
 
-        if (!som || terminou) return;
+        if (!som || terminou || TTAnimacao.pausada) return;
 
         ganho.gain.cancelScheduledValues(
           audio.currentTime
@@ -735,7 +747,7 @@ Confira a aparência e o áudio no navegador.
         if (!musicaTimer) {
           tocarCompasso();
 
-          musicaTimer = setInterval(
+          musicaTimer = TTAnimacao.intervalo(
             tocarCompasso,
             3200
           );
@@ -749,7 +761,7 @@ Confira a aparência e o áudio no navegador.
     }
 
     function pararMusica() {
-      clearInterval(musicaTimer);
+      TTAnimacao.cancelar(musicaTimer);
       musicaTimer = null;
 
       if (audio && ganho) {
@@ -764,7 +776,8 @@ Confira a aparência e o áudio no navegador.
     /* ---------- Limpeza e retorno ao resultado ---------- */
 
     function liberar() {
-      clearTimeout(timer);
+      TTAnimacao.encerrar();
+      TTAnimacao.cancelar(timer);
       pararMusica();
 
       for (const o of vozes) {
@@ -822,7 +835,7 @@ Confira a aparência e o áudio no navegador.
     ];
 
     function mostrar(cena) {
-      clearTimeout(timer);
+      TTAnimacao.cancelar(timer);
 
       tela.dataset.cena = cena;
 
@@ -836,6 +849,7 @@ Confira a aparência e o áudio no navegador.
       }
 
       if (cena === 'fim') {
+        TTAnimacao.encerrar();
         terminou = true;
 
         pararMusica();
@@ -881,7 +895,7 @@ Confira a aparência e o áudio no navegador.
         return;
       }
 
-      timer = setTimeout(() => {
+      timer = TTAnimacao.agendar(() => {
         const indice = sequencia.indexOf(cena);
         mostrar(sequencia[indice + 1]);
       }, TEMPOS[cena]);
@@ -937,16 +951,25 @@ Confira a aparência e o áudio no navegador.
 
     rotuloSom();
     tela.showModal();
-    mostrar('recuperacao');
+    el('pular').disabled = true;
 
-    requestAnimationFrame(() => {
+    void TTAnimacao.iniciar('Encerramento', tela).then(() => {
+      if (terminou || !tela.isConnected) return;
+
+      el('pular').disabled = false;
+
+      mostrar('recuperacao');
+
       requestAnimationFrame(() => {
-        if (tela.isConnected) {
-          tela.classList.add('ttf-recuperada');
-        }
+        requestAnimationFrame(() => {
+          if (tela.isConnected) {
+            tela.classList.add('ttf-recuperada');
+          }
+        });
       });
-    });
 
-    void iniciarMusica();
+      void iniciarMusica();
+    });
   };
 })();
+/* TT_CONTROLE_ANIMACAO_V1 */
