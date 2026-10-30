@@ -1091,10 +1091,64 @@ def orientacao_fase1():
         ]
     })
 
+# ---------------------------------------------------------------
+# Configuração de rede (HTTPS + nome local)
+# ---------------------------------------------------------------
+IP_SERVIDOR = "192.168.0.16"
+NOME_HOST = "tabletop-ctic"
+PORTA_HTTPS = 443
+CERT_FILE = os.path.join(BASE, "certs", "cert.pem")
+KEY_FILE = os.path.join(BASE, "certs", "key.pem")
+
+
+def anunciar_mdns(porta):
+    """Anuncia tabletop-ctic.local na rede (mDNS), sem renomear o PC."""
+    try:
+        import socket
+        from zeroconf import Zeroconf, ServiceInfo
+    except ImportError:
+        print("[aviso] zeroconf nao instalado; nome .local desativado.")
+        return None, None
+
+    info = ServiceInfo(
+        "_https._tcp.local.",
+        f"{NOME_HOST}._https._tcp.local.",
+        addresses=[socket.inet_aton(IP_SERVIDOR)],
+        port=porta,
+        server=f"{NOME_HOST}.local.",
+    )
+    zc = Zeroconf()
+    zc.register_service(info)
+    return zc, info
+
+
 if __name__ == "__main__":
 
-    app.run(
-        host="0.0.0.0",
-        port=5000,
-        debug=False
-    )
+    tem_cert = os.path.exists(CERT_FILE) and os.path.exists(KEY_FILE)
+
+    if tem_cert:
+        porta = PORTA_HTTPS
+        ssl_ctx = (CERT_FILE, KEY_FILE)
+        zc, info = anunciar_mdns(porta)
+        print(f"\n  Acesse: https://{NOME_HOST}.local")
+        print(f"          https://{NOME_HOST}  (se o hosts/DNS estiver configurado)")
+        print(f"          https://{IP_SERVIDOR}\n")
+    else:
+        porta = 5000
+        ssl_ctx = None
+        zc, info = None, None
+        print("\n[aviso] Certificado nao encontrado em /certs.")
+        print("        Rode gerar_certificado.bat para ativar o HTTPS.")
+        print(f"        Rodando em HTTP: http://{IP_SERVIDOR}:5000\n")
+
+    try:
+        app.run(
+            host="0.0.0.0",
+            port=porta,
+            ssl_context=ssl_ctx,
+            debug=False
+        )
+    finally:
+        if zc:
+            zc.unregister_service(info)
+            zc.close()

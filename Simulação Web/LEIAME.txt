@@ -1,0 +1,41 @@
+TABLETOP CTIC - HTTPS NA REDE INTERNA
+Servidor: 192.168.0.16  |  Nome: tabletop-ctic  |  Porta: 443
+
+=== NO SERVIDOR (192.168.0.16), UMA VEZ ===
+1. Instale o mkcert:   winget install FiloSottile.mkcert
+2. Duplo clique em:    gerar_certificado.bat
+3. Duplo clique em:    liberar_firewall.bat   (pede administrador)
+4. Reserve o IP 192.168.0.16 para este PC no roteador (DHCP reservado),
+   senao o IP pode mudar e o nome deixa de funcionar.
+
+=== PARA INICIAR O APP ===
+Duplo clique em:       iniciar.bat
+
+Acesso:
+  https://tabletop-ctic.local   (funciona sem configurar nada nos clientes*)
+  https://tabletop-ctic         (precisa do hosts ou DNS do roteador)
+  https://192.168.0.16
+
+* mDNS funciona em Windows 10/11, macOS, iOS e Android recentes.
+  Algumas redes corporativas bloqueiam mDNS.
+
+=== NOS DISPOSITIVOS CLIENTES (para sumir o aviso de seguranca) ===
+Instale o arquivo  para_distribuir\rootCA.crt  em cada dispositivo:
+  - Windows: duplo clique > Instalar certificado > Maquina Local >
+             "Autoridades de Certificacao Raiz Confiaveis"
+  - Android: Configuracoes > Seguranca > Instalar certificado > Certificado de CA
+  - iPhone/iPad: abra o arquivo, instale o perfil e ative em
+             Ajustes > Geral > Sobre > Config. de Confianca de Certificados
+  - Mac: abra no Acesso as Chaves e marque como "Confiar sempre"
+Sem isso tudo funciona, so aparece o aviso (Avancado > Continuar).
+
+Para usar "tabletop-ctic" sem o .local nos clientes Windows:
+  rode adicionar_hosts.bat (como administrador) em cada um.
+  OU cadastre no roteador/DNS local: tabletop-ctic -> 192.168.0.16
+
+=== OBSERVACOES ===
+- Se a porta 443 estiver ocupada (IIS, Skype, VPN...), pare o outro
+  servico ou mude PORTA_HTTPS no app.py.
+- Se nao houver certificado em \certs, o app cai para HTTP na porta 5000.
+- Se mudar o IP do PC, edite IP_SERVIDOR no app.py e rode
+  gerar_certificado.bat de novo (com o novo IP dentro do .bat).

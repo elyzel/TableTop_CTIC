@@ -434,3 +434,61 @@
 2026-10-30 10:06:22;Eli;alerta;Isolar da Rede;10;3;2.2;13
 2026-10-30 10:06:24;Eli;contido;Abrir Chamado (SOC);10;3;2.1;26
 2026-10-30 10:06:26;Eli;preservar;Registrar Linha do Tempo;10;3;1.7;39
+2026-10-30 11:22:32;Fernando;alerta;Chat do Gestor;4;3;7.3;7
+2026-10-30 11:22:39;Fernando;alerta;Varredura BitDefender;2;3;14.0;12
+2026-10-30 11:22:47;Fernando;alerta;Retirar Cabo de Rede;-2;0;22.0;10
+2026-10-30 11:22:54;Fernando;alerta;Isolar da Rede;10;3;28.6;23
+2026-10-30 11:22:59;Fernando;contido;Desligar da Tomada;-3;0;4.7;20
+2026-10-30 11:23:10;Fernando;contido;Abrir Chamado (SOC);10;3;16.5;33
+2026-10-30 11:23:20;Fernando;preservar;Registrar Linha do Tempo;10;3;9.8;46
+2026-10-30 11:24:51;Fernando;fase2_interrogatorio;Pergunta: s2/requisicoes;-25;0;82.9;975
+2026-10-30 11:24:55;Fernando;fase2_interrogatorio;Pergunta: s2/cpu;-25;0;86.4;950
+2026-10-30 11:24:58;Fernando;fase2_interrogatorio;Pergunta: s2/conexoes;-25;0;89.4;925
+2026-10-30 11:25:02;Fernando;fase2_interrogatorio;Pergunta: s2/edr;-25;0;93.8;900
+2026-10-30 11:25:08;Fernando;fase2_interrogatorio;Pergunta: s2/logins;-25;0;100.0;875
+2026-10-30 11:25:12;Fernando;fase2_interrogatorio;Pergunta: s2/destinos;-25;0;104.0;850
+2026-10-30 11:25:16;Fernando;fase2_interrogatorio;Pergunta: s2/intervalo;-25;0;107.3;825
+2026-10-30 11:25:21;Fernando;fase2_interrogatorio;Pergunta: s2/trafego;-25;0;112.8;800
+2026-10-30 11:25:26;Fernando;fase2_interrogatorio;Pergunta: s2/reinicio;-25;0;117.3;775
+2026-10-30 11:25:28;Fernando;fase2_interrogatorio;Pergunta: s2/portas;-25;0;119.8;750
+2026-10-30 11:25:31;Fernando;fase2_interrogatorio;Pergunta: s2/logs;-25;0;122.6;725
+2026-10-30 11:25:34;Fernando;fase2_interrogatorio;Pergunta: s2/arquivos;-25;0;125.3;700
+2026-10-30 11:26:37;Fernando;fase2_interrogatorio;Pergunta: s1/reinicio;-25;0;188.3;675
+2026-10-30 11:26:41;Fernando;fase2_interrogatorio;Pergunta: s1/requisicoes;-25;0;193.1;650
+2026-10-30 11:26:44;Fernando;fase2_interrogatorio;Pergunta: s1/conexoes;-25;0;195.7;625
+2026-10-30 11:27:33;Fernando;fase2_interrogatorio;Pergunta: s1/cpu;-25;0;244.8;600
+2026-10-30 11:27:37;Fernando;fase2_interrogatorio;Pergunta: s1/intervalo;-25;0;249.0;575
+2026-10-30 11:27:40;Fernando;fase2_interrogatorio;Pergunta: s1/destinos;-25;0;252.0;550
+2026-10-30 11:27:43;Fernando;fase2_interrogatorio;Pergunta: s1/logins;-25;0;254.8;525
+2026-10-30 11:27:46;Fernando;fase2_interrogatorio;Pergunta: s1/edr;-25;0;258.0;500
+2026-10-30 11:27:48;Fernando;fase2_interrogatorio;Pergunta: s1/portas;-25;0;260.2;475
+2026-10-30 11:27:51;Fernando;fase2_interrogatorio;Pergunta: s1/logs;-25;0;262.6;450
+2026-10-30 11:27:53;Fernando;fase2_interrogatorio;Pergunta: s1/trafego;-25;0;264.4;425
+2026-10-30 11:27:55;Fernando;fase2_interrogatorio;Pergunta: s1/arquivos;-25;0;267.1;400
+2026-10-30 11:28:04;Fernando;fase2_interrogatorio;Pergunta: s3/reinicio;-25;0;275.7;375
+2026-10-30 11:28:06;Fernando;fase2_interrogatorio;Pergunta: s3/requisicoes;-25;0;277.4;350
+2026-10-30 11:28:08;Fernando;fase2_interrogatorio;Pergunta: s3/arquivos;-25;0;279.8;325
+2026-10-30 11:28:11;Fernando;fase2_interrogatorio;Pergunta: s3/conexoes;-25;0;282.5;300
+2026-10-30 11:28:13;Fernando;fase2_interrogatorio;Pergunta: s3/cpu;-25;0;284.9;275
+2026-10-30 11:28:15;Fernando;fase2_interrogatorio;Pergunta: s3/trafego;-25;0;286.8;250
+2026-10-30 11:28:19;Fernando;fase2_interrogatorio;Pergunta: s3/intervalo;-25;0;290.7;225
+2026-10-30 11:28:22;Fernando;fase2_interrogatorio;Pergunta: s3/logs;-25;0;293.3;200
+2026-10-30 11:28:23;Fernando;fase2_interrogatorio;Pergunta: s3/destinos;-25;0;295.1;175
+2026-10-30 11:28:25;Fernando;fase2_interrogatorio;Pergunta: s3/portas;-25;0;297.0;150
+2026-10-30 11:28:28;Fernando;fase2_interrogatorio;Pergunta: s3/logins;-25;0;299.5;125
+2026-10-30 11:28:34;Fernando;fase2_interrogatorio;Pergunta: s3/edr;-25;0;305.9;100
+2026-10-30 11:29:01;Fernando;fase2_resultado;Acusação: s1;0;0;332.7;100
+2026-10-30 11:29:49;Fernando;fase2_interrogatorio;Pergunta: s1/reinicio;-25;0;35.0;975
+2026-10-30 11:29:51;Fernando;fase2_interrogatorio;Pergunta: s1/requisicoes;-25;0;37.1;950
+2026-10-30 11:30:06;Fernando;fase2_interrogatorio;Pergunta: s1/logins;-25;0;52.3;925
+2026-10-30 11:30:11;Fernando;fase2_interrogatorio;Pergunta: s1/edr;-25;0;57.5;900
+2026-10-30 11:30:18;Fernando;fase2_interrogatorio;Pergunta: s1/cpu;-25;0;64.5;875
+2026-10-30 11:30:29;Fernando;fase2_interrogatorio;Pergunta: s2/edr;-25;0;74.9;850
+2026-10-30 11:30:31;Fernando;fase2_interrogatorio;Pergunta: s2/logins;-25;0;77.3;825
+2026-10-30 11:30:35;Fernando;fase2_interrogatorio;Pergunta: s2/reinicio;-25;0;80.6;800
+2026-10-30 11:30:40;Fernando;fase2_interrogatorio;Pergunta: s2/requisicoes;-25;0;86.2;775
+2026-10-30 11:30:55;Fernando;fase2_interrogatorio;Pergunta: s3/reinicio;-25;0;101.2;750
+2026-10-30 11:31:03;Fernando;fase2_interrogatorio;Pergunta: s3/requisicoes;-25;0;108.6;725
+2026-10-30 11:31:05;Fernando;fase2_interrogatorio;Pergunta: s3/logins;-25;0;111.2;700
+2026-10-30 11:31:09;Fernando;fase2_interrogatorio;Pergunta: s3/edr;-25;0;115.2;675
+2026-10-30 11:32:45;Fernando;fase2_resultado;Acusação: s3;0;0;210.7;675
