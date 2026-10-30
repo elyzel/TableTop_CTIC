@@ -492,3 +492,32 @@
 2026-10-30 11:31:05;Fernando;fase2_interrogatorio;Pergunta: s3/logins;-25;0;111.2;700
 2026-10-30 11:31:09;Fernando;fase2_interrogatorio;Pergunta: s3/edr;-25;0;115.2;675
 2026-10-30 11:32:45;Fernando;fase2_resultado;Acusação: s3;0;0;210.7;675
+2026-10-30 13:40:36;Sabrina;alerta;Abrir Chamado (SOC);6;3;5.4;9
+2026-10-30 13:40:46;Sabrina;alerta;Registrar Linha do Tempo;6;3;15.4;18
+2026-10-30 13:40:53;Sabrina;alerta;Isolar da Rede;10;3;21.7;31
+2026-10-30 13:43:20;Sabrina;fase2_interrogatorio;Pergunta: s2/destinos;-25;0;138.5;975
+2026-10-30 13:43:28;Sabrina;fase2_interrogatorio;Pergunta: s2/intervalo;-25;0;146.7;950
+2026-10-30 13:43:39;Sabrina;fase2_interrogatorio;Pergunta: s3/destinos;-25;0;157.5;925
+2026-10-30 13:43:45;Sabrina;fase2_interrogatorio;Pergunta: s3/intervalo;-25;0;163.8;900
+2026-10-30 13:43:53;Sabrina;fase2_interrogatorio;Pergunta: s1/destinos;-25;0;172.3;875
+2026-10-30 13:44:22;Sabrina;fase2_resultado;Acusação: s1;0;0;201.2;875
+2026-10-30 14:06:53;Sabrina;alerta;Desligar da Tomada;-3;0;67.3;-3
+2026-10-30 14:06:58;Sabrina;alerta;Limpar Histórico;-10;0;72.9;-13
+2026-10-30 14:07:03;Sabrina;alerta;Gerenciador de Tarefas;0;0;78.1;-13
+2026-10-30 14:07:06;Sabrina;alerta;Retirar Cabo de Rede;-2;0;81.1;-15
+2026-10-30 14:07:09;Sabrina;alerta;Varredura BitDefender;2;3;83.4;-10
+2026-10-30 14:07:13;Sabrina;alerta;Isolar da Rede;10;3;88.0;3
+2026-10-30 14:07:15;Sabrina;contido;Abrir Chamado (SOC);10;3;2.0;16
+2026-10-30 14:07:20;Sabrina;preservar;Remover Arquivo Instalador;-1;0;4.6;15
+2026-10-30 14:07:26;Sabrina;preservar;Chat do Gestor;4;3;10.6;22
+2026-10-30 14:07:28;Sabrina;preservar;Registrar Linha do Tempo;10;3;13.0;35
+2026-10-30 14:16:20;Eli;alerta;Formatar Máquina;-10;0;17.6;-10
+2026-10-30 14:16:48;Eli;alerta;Isolar da Rede;10;3;3.6;13
+2026-10-30 14:16:52;Eli;contido;Registrar Linha do Tempo;10;3;4.0;26
+2026-10-30 14:16:54;Eli;contido;Abrir Chamado (SOC);10;3;6.3;39
+2026-10-30 14:21:59;Eli;fase2_interrogatorio;Pergunta: s1/destinos;-25;0;298.6;975
+2026-10-30 14:22:28;Eli;fase2_interrogatorio;Pergunta: s1/requisicoes;-25;0;328.1;950
+2026-10-30 14:22:56;Eli;fase2_interrogatorio;Pergunta: s2/intervalo;-25;0;355.7;925
+2026-10-30 14:23:05;Eli;fase2_interrogatorio;Pergunta: s2/trafego;-25;0;364.7;900
+2026-10-30 14:23:15;Eli;fase2_interrogatorio;Pergunta: s2/destinos;-25;0;374.3;875
+2026-10-30 14:24:08;Eli;fase2_resultado;Acusação: s2;0;0;427.8;875

@@ -1,177 +1,81 @@
-<!--
-OBJETIVO: consolidar a documentação da versão corrigida.
-ARQUIVO: docs/arquitetura.md
-SUBSTITUA TODO O CONTEÚDO.
--->
+<!-- OBJETIVO: documentar os componentes, fluxos, limites e modos reais de implantação. -->
+# Arquitetura
 
-# TableTop CTIC — Arquitetura e execução
+## Visão geral
 
-## 1. Visão geral
+Monólito web Python/Flask com templates Jinja e interface em HTML, CSS e JavaScript sem etapa de compilação de frontend. `app.py` cria a aplicação e registra a Fase 2 por `instalar_fase2(...)`, em `fase2.py`.
 
-Aplicação web de treinamento de resposta a incidentes, com duas etapas:
+```mermaid
+flowchart TD
+    P["Navegador do participante"] --> A["Flask: app.py e Blueprint fase2"]
+    F["Navegador do facilitador"] --> A
+    A --> M["Memória: participantes e histórico de aberturas"]
+    A --> J["JSON: cenário e catálogo"]
+    A --> D["CSV: log de decisões"]
+```
 
-- Fase 1: máquina contaminada.
-- Fase 2: investigação de três servidores suspeitos.
+Os navegadores consultam APIs JSON por `fetch`. O servidor aplica as regras de pontuação e transição; as animações e a apresentação são controladas no cliente. Isso não impede manipulação de requisições, pois não existe autenticação.
 
-Phishing, execução de arquivos, alertas e ações de resposta são simulações.
-Nenhum comando de contenção é executado no computador do participante.
+## Componentes e responsabilidades
 
-## 2. Componentes
+| Caminho relativo a `Simulação Web/` | Responsabilidade |
+| --- | --- |
+| `app.py` | Flask, Fase 1, estado compartilhado, lock, CSV e inicialização direta HTTP/HTTPS |
+| `fase2.py` | Blueprint da investigação, sorteio, respostas, marcações, notas e controle de tentativas |
+| `cenario.json` | Fases, tempos, ações, flags, objetivos e finais da Fase 1 |
+| `interrogatorio.json` | Catálogo da investigação e perfis infectado/normal/pista |
+| `templates/participante.html` | Estrutura da área de trabalho simulada |
+| `templates/fase2.html` | Contêiner e inicialização do interrogatório |
+| `templates/facilitador.html` | Painéis das duas fases e comandos de operação |
+| `static/participante.js`, `static/fase1_ajustes.js` | Fluxo, consulta do estado, abertura e ajustes da Fase 1 |
+| `static/interrogatorio.js` | Interface da investigação e caderno |
+| `static/apoio_ui.js` | Áudio sintetizado e orientação |
+| `static/controle_animacao.js`, `static/bloqueio_animacoes.js` | Coordenação de cenas, indicador e bloqueio de interação |
+| `static/relatorio_final.js`, `static/encerramento.js` | Relatório visual e encerramento no navegador |
+| `static/*.css` | Estilos das interfaces e das cenas |
+| `dados/log_decisoes.csv` | Registro acumulado em disco |
+| `Dockerfile`, `compose.yaml`, `.dockerignore` | Construção e execução em contêiner |
+| `certs/`, `para_distribuir/`, `*.bat` | Apoio à implantação local Windows e certificados |
 
-| Arquivo | Responsabilidade |
-|---|---|
-| `app.py` | Servidor Flask, regras da Fase 1 e registro dos módulos |
-| `fase2.py` | Regras, sorteio, pontuação e APIs da Fase 2 |
-| `cenario.json` | Configuração da Fase 1 |
-| `interrogatorio.json` | Catálogo de perguntas e respostas |
-| `templates/participante.html` | Estrutura da interface da Fase 1 |
-| `static/participante.css` | Aparência da Fase 1 |
-| `static/participante.js` | Comportamento da Fase 1 |
-| `static/fase1_ajustes.js` | Abertura, narração e controle de repetição |
-| `templates/fase2.html` | Carregamento da interface da Fase 2 |
-| `static/interrogatorio.js` | Interface do interrogatório |
-| `static/interrogatorio.css` | Aparência da Fase 2 |
-| `static/cinematica.css` | Títulos e legendas compartilhados |
-| `static/apoio_ui.js` | Som e orientações interativas |
-| `static/apoio_ui.css` | Aparência das orientações |
-| `templates/facilitador.html` | Placares das duas fases |
-| `dados/log_decisoes.csv` | Registro das decisões |
+Os scripts dependem da ordem declarada nos templates. Na Fase 1, `apoio_ui.js` precede `participante.js` e `fase1_ajustes.js`; na Fase 2, precede `interrogatorio.js`, que é carregado antes da chamada a `iniciarInterrogatorio`. O template recebido carrega `encerramento.js` duas vezes; a revisão documental registra essa pendência, sem alterar o HTML.
 
-Os scripts são carregados depois da estrutura HTML.
+## Estado e concorrência
 
-Na Fase 1, a ordem é:
-apoio_ui.js → participante.js → fase1_ajustes.js.
+`participantes` é um dicionário em memória, identificado pelo nome informado. Um `threading.Lock` é compartilhado entre as duas fases. O histórico de aberturas fica no dicionário `vistos`, fechado sobre a função de instalação da Fase 2.
 
-Na Fase 2, a ordem é:
-apoio_ui.js → interrogatorio.js → inicialização da atividade.
+Não há persistência transacional nem compartilhamento entre processos. O Gunicorn do Docker usa um worker e oito threads. Aumentar workers ou réplicas cria estados independentes e pode fazer participantes desaparecerem entre requisições. O [ADR 0001](adr/0001-estado-em-memoria.md) registra essa restrição.
 
-## 3. Execução no Windows
+O CSV é um registro parcial de eventos, não uma cópia do estado. O relatório final é montado no navegador; não existe serviço separado de relatórios nem persistência automática de seu conteúdo completo.
 
-Abra o PowerShell na pasta que contém `app.py`.
+## Fluxo funcional
 
-Na primeira instalação:
+1. `POST /api/entrar` cria ou recupera o nome; o navegador guarda `tt_pid` em `localStorage`.
+2. A interface exibe abertura/orientação e chama `/api/iniciar`; o servidor inicia os tempos.
+3. `/api/estado/<pid>` consulta o estado e avalia tempo; `/api/executar` aplica decisões e também verifica tempo.
+4. A Fase 1 termina ao atingir os três objetivos, em uma transição para `FIM`, por tempo total ou por encerramento do facilitador.
+5. A página `/fase2` exige cookie de identificação, Fase 1 encerrada e ausência da ação “Formatar Máquina”. A API da Fase 2 usa o `pid` enviado no corpo e verifica o estado, sem autenticar o solicitante.
+6. A primeira ação `estado` na API da Fase 2 cria o sorteio. A investigação usa token `tentativa` para evitar alterações de uma tentativa antiga.
+7. A acusação encerra o caso, apresenta resultado e gabarito. O reinício permite novo sorteio após a conclusão.
 
-    py -m venv .venv
-    .\.venv\Scripts\python.exe -m pip install Flask
+Não há tarefa de segundo plano para avançar o relógio. A verificação de tempo ocorre nas requisições de estado/ação; o painel da Fase 1 não realiza essa verificação.
 
-Para iniciar:
+## Modos de implantação
 
-    .\.venv\Scripts\python.exe app.py
+| Modo | Entrada | Transporte | Particularidades |
+| --- | --- | --- | --- |
+| Python com certificados | `python app.py` | HTTPS/443 | Servidor de desenvolvimento Flask; tenta anunciar mDNS |
+| Python sem certificados | `python app.py` | HTTP/5000 | Fallback; escuta em todas as interfaces |
+| Docker recebido | `gunicorn ... app:app` | HTTP/5000 interno | Importa o módulo, sem executar o bloco `__main__`; não ativa TLS ou mDNS |
 
-Participante: http://127.0.0.1:5000/
+O Compose publica `127.0.0.1:5000:5000`: somente o host acessa por padrão. O Dockerfile copia explicitamente código, JSON, `static` e `templates`; não copia certificados nem o CSV recebido. O volume `tabletop_dados` monta `/app/dados`.
 
-Facilitador: http://127.0.0.1:5000/facilitador
+A dependência `gunicorn` está ausente em `requirements.txt`; seguir a [correção prévia do guia Docker](instrucoes_Docker.md). A arquitetura com proxy TLS/autenticação é uma possibilidade futura, não faz parte dos arquivos atuais.
 
-Em outro computador, substitua 127.0.0.1 pelo IP do servidor.
-A conectividade e o firewall precisam permitir a porta TCP 5000.
+## Configuração e limites
 
-Para encerrar, pressione Ctrl+C no terminal.
-
-## 4. Fase 1
-
-O participante acompanha a introdução e toma decisões
-sobre uma máquina potencialmente comprometida.
-
-Objetivos essenciais:
-
-- Conter.
-- Comunicar o SOC.
-- Preservar e documentar.
-
-Antes do cronômetro, a orientação apresenta seleção de ícones,
-descrição da ação e demonstração do botão Executar.
-
-A demonstração não envia decisões ao servidor.
-A rota `/api/orientacao/fase1` fornece somente os dados visuais das ações.
-
-O cronômetro começa após a orientação, por `/api/iniciar`.
-
-## 5. Fase 2
-
-O servidor sorteia um infectado entre três suspeitos.
-Cada inocente recebe duas pistas falsas com justificativas.
-
-Não existe orçamento global de oito perguntas.
-Cada pergunta pode ser consultada uma vez por servidor.
-O catálogo atual permite 36 combinações.
-
-As respostas ficam disponíveis no prontuário e no Caderno.
-Reabrir uma resposta não consome pontos.
-
-O participante decide quando fazer uma única acusação.
-
-### Pontuação
-
-| Regra | Pontos |
-|---|---:|
-| Saldo inicial | 1.000 |
-| Consulta inédita | −25 |
-| Acerto da acusação | +500 |
-| Quente em desvio real | +15 |
-| Frio em resultado normal | +5 |
-| Morno em pista justificada | +5 |
-| Quente em resultado normal de inocente | −10 |
-
-Os bônus das marcações aparecem somente após a acusação.
-
-A Fase 1 mantém sua pontuação independente.
-
-## 6. Caderno
-
-Após uma consulta, a célula correspondente permite alternar:
-
-Sem marca → Frio → Morno → Quente → Sem marca.
-
-As marcações representam a interpretação do participante.
-O jogo apresenta a correção após a acusação.
-
-Anotações precisam ser confirmadas em Salvar anotação.
-
-## 7. Aberturas, orientação e som
-
-A primeira abertura de cada fase não permite pular.
-Após concluir a abertura, as tentativas seguintes permitem.
-
-O histórico é preservado no reinício individual.
-Resetar todos ou reiniciar o processo Python limpa esse histórico.
-
-A orientação pode ser pulada independentemente da abertura.
-Na Fase 2, o botão Como jogar permite revê-la.
-
-O som começa habilitado.
-Quando necessário, o navegador libera o áudio no primeiro gesto.
-O botão Som de digitação permite silenciá-lo.
-
-O título da Fase 2 é configurado no objeto `CINEMA`.
-`TITULO_LEITURA_MS` controla a leitura do título.
-`LEITURA_MINIMA_MS` controla a leitura após a digitação das falas.
-
-## 8. Facilitador e armazenamento
-
-O painel possui abas independentes para Fase 1 e Fase 2,
-atualizadas aproximadamente a cada dois segundos.
-
-Encerrar Fase 1 de todos atua somente na Fase 1.
-Resetar todos remove participantes das duas fases e mantém o CSV.
-
-Partidas, marcações e anotações ficam em memória.
-O CSV não restaura automaticamente as partidas.
-
-O projeto utiliza identificação por nome e não possui
-autenticação individual ou administrativa.
-
-## 9. Validação da consolidação
-
-Foram verificadas:
-
-- Sintaxe dos scripts.
-- Renderização dos templates pelo Flask.
-- APIs e pontuação das 36 consultas.
-- Bloqueio de consultas repetidas.
-- Bônus apresentados somente no resultado.
-- Separação dos placares.
-- Presença dos controles exigidos pela interface.
-- Ordem de carregamento dos scripts.
-
-A aparência das animações, o som e os destaques interativos
-devem ser conferidos no navegador.
+- `IP_SERVIDOR`, `NOME_HOST` e `PORTA_HTTPS` estão fixos em `app.py`; não há leitura dessas opções de variáveis de ambiente.
+- O IP também aparece em `adicionar_hosts.bat` e `gerar_certificado.bat`.
+- `cenario.json` é relido durante as chamadas que o utilizam; `interrogatorio.json` é lido ao instalar o Blueprint e exige reinício para recarga.
+- Os hosts/IPs dos três suspeitos são conteúdo da simulação; o código não os consulta para investigar ou executar comandos.
+- Não há integração automática com BitDefender, banco de dados ou recuperação de sessões.
+- Não há capacidade simultânea homologada. Um ensaio com o público previsto é necessário.
